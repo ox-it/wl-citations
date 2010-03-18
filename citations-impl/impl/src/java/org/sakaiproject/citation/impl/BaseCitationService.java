@@ -4348,10 +4348,9 @@ public abstract class BaseCitationService implements CitationService
 	public Collection getEntityAuthzGroups(Reference ref, String userId)
 	{
 		// entities that are actually in /content use the /content authz groups
-
-		// those in /citation are open?
-
-		return null;
+		String id = ref.getId();
+		Reference contentRef = m_entityManager.newReference(ContentHostingService.REFERENCE_ROOT + id);
+		return m_contentHostingService.getEntityAuthzGroups(contentRef, userId);
 	}
 
 	/*
