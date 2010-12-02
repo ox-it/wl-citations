@@ -45,16 +45,6 @@
     </dependency>
     <dependency>
       <groupId>org.sakaiproject</groupId>
-      <artifactId>sakai-citations-impl</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.sakaiproject</groupId>
-          <artifactId>sakai-user-util</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-citations-util</artifactId>
       <exclusions>
         <exclusion>
@@ -98,12 +88,6 @@
         <directory>${basedir}/src/webapp</directory>
         <includes>
           <include>velocity.properties</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>${basedir}/../../citations-util/util/src/bundle</directory>
-        <includes>
-          <include>**/*.properties</include>
         </includes>
       </resource>
       <resource>

@@ -26,7 +26,7 @@ import java.util.List;
 import org.sakaiproject.citation.util.api.OsidConfigurationException;
 
 /**
- * Repository OSID configuration
+ * Repository OSID configuration.
  */
 public interface ConfigurationService
 {
@@ -217,4 +217,27 @@ public interface ConfigurationService
    */
   public boolean librarySearchEnabled();
 
+  /**
+   * Enable/disable the external search support.
+   * @param state true to enable support.
+   */
+  public void setExternalSearchEnabled(boolean state);
+  
+  /**
+   * Is the external search support enabled.
+   * @return true if so
+   */
+  public boolean isExternalSerarchEnabled();
+  
+  /**
+   * Set the URL which the external search is deployed on.
+   * @param url 
+   */
+  public void setExternalSearchUrl(String url);
+  
+  /**
+   * Get the current URL for the external search.
+   * @return
+   */
+  public String getExternalSearchUrl();
 }

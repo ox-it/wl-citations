@@ -24,6 +24,8 @@ package org.sakaiproject.citation.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -1853,6 +1855,8 @@ public class BaseSearchManager implements SearchManager, Observer
 	public static final String SAKAI_HOST = "sakai.host";
 
 	public static final String SERVLET_NAME = "savecite";
+	
+	public static final String WINDOW_PREFIX = "WebLearn-";
 
 	// Our types (defined in setupTypes())
 	protected static BasicType categoryAssetType;
@@ -2611,6 +2615,17 @@ public class BaseSearchManager implements SearchManager, Observer
 		{
 			m_log.warn( "getGoogleScholarUrl encoding failed", e );
 			return null;
+		}
+    }
+    
+    public String getExternalSearchWindowName(String resourceId)
+    {
+    	String serverUrl = serverConfigurationService.getServerUrl() + Entity.SEPARATOR + SERVLET_NAME + Entity.SEPARATOR + resourceId;
+    	try {
+			String encodedUrl = URLEncoder.encode(serverUrl, "UTF-8");
+			return WINDOW_PREFIX + encodedUrl;
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException("Does anywhere not have UTF-8?", e);
 		}
     }
 

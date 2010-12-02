@@ -65,12 +65,6 @@ public interface Citation 	// extends Entity
     public String addCustomUrl(String label, String url, String prefixRequest);
 
     /**
-     * @param name
-     * @param value
-     */
-    public void addPropertyValue(String name, Object value);
-
-    /**
      * Write this citation in RIS format to an output stream
      * @param buffer
      * @throws IOException
@@ -88,6 +82,12 @@ public interface Citation 	// extends Entity
 	public Map getCitationProperties();
 
 	/**
+	 * Access a list of names of citation properties defined for this resource.
+	 * @return The list of property names.  The list may be empty, but it should never be null.
+	 */
+	public List listCitationProperties();
+
+	/**
 	 * Access a representation of the value(s) of a named property.  If the property is multivalued,
 	 * the object returned will be a (possibly empty) java.util.List.  Otherwise it will be an Object
 	 * of a type appropriate for the named property (usually a String or a Date). The value(s)
@@ -98,6 +98,42 @@ public interface Citation 	// extends Entity
 	 * if the property is not defined.
 	 */
 	public Object getCitationProperty(String name);
+	
+	/**
+	 * Check if the citation property is defined.
+	 * @param name The name of the property to check.
+	 * @return <code>true</code> if the property is defined and is not null or is not an empty list.
+	 */
+	public boolean hasCitationProperty(String name);
+
+	/**
+	 * @param name
+	 * @param value
+	 */
+	public void setCitationProperty(String name, Object value);
+
+	/**
+	 * Replaces the current value(s) of a citation property.  If the field identified by the parameter "name"
+	 * is multivalued, the values in the list parameter "values" replace the current values.  If the field is
+	 * single valued, the first value in the list "values" replaces the current value. In either case, if the
+	 * values parameter is null or empty, all current values are removed and no new values are added.
+	 *
+	 * @param name
+	 * @param values
+	 */
+	public void updateCitationProperty(String name, List values);
+
+	/**
+	 * @deprecated This should never have been added as other methods are clearer.
+	 * @see #setCitationProperty(String, Object)
+	 */
+	public void addPropertyValue(String name, Object value);
+
+	/**
+	 * @deprecated This doesn't fit with the naming pattern.
+	 * @see #hasCitationProperty(String)
+	 */
+	public boolean hasPropertyValue(String fieldId);
 
 	/**
 	 * @return
@@ -210,11 +246,6 @@ public interface Citation 	// extends Entity
     public boolean hasPreferredUrl();
 
 	/**
-	 * @return
-	 */
-	public boolean hasPropertyValue(String fieldId);
-
-	/**
      * Read this citation from an input stream in RIS format
      * @param istream
 	 * @throws IOException
@@ -240,21 +271,9 @@ public interface Citation 	// extends Entity
     public boolean isMultivalued(String fieldId);
 
 	/**
-	 * Access a list of names of citation properties defined for this resource.
-	 * @return The list of property names.  The list may be empty, but it should never be null.
-	 */
-	public List listCitationProperties();
-
-    /**
      * @param added
      */
     public void setAdded(boolean added);
-
-    /**
-	 * @param name
-	 * @param value
-	 */
-	public void setCitationProperty(String name, Object value);
 
     /**
 	 * @param name
@@ -265,17 +284,6 @@ public interface Citation 	// extends Entity
      * @param schema
      */
     public void setSchema(Schema schema);
-
-	/**
-	 * Replaces the current value(s) of a citation property.  If the field identified by the parameter "name"
-	 * is multivalued, the values in the list parameter "values" replace the current values.  If the field is
-	 * single valued, the first value in the list "values" replaces the current value. In either case, if the
-	 * values parameter is null or empty, all current values are removed and no new values are added.
-	 *
-	 * @param name
-	 * @param values
-	 */
-	public void updateCitationProperty(String name, List values);
 
 	/**
      * @param urlid Unique ID for this URL

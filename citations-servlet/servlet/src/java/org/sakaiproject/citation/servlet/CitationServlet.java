@@ -31,25 +31,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log; 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.sakaiproject.cheftool.VmServlet;
 import org.sakaiproject.citation.api.Citation;
 import org.sakaiproject.citation.api.CitationCollection;
-import org.sakaiproject.citation.api.CitationHelper;
 import org.sakaiproject.citation.api.CitationService;
 import org.sakaiproject.citation.api.Schema;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResource;
-import org.sakaiproject.entity.api.Entity;
-import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.entity.api.Reference;
+import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.entity.cover.EntityManager;
-import org.sakaiproject.event.api.SessionState;
 import org.sakaiproject.exception.IdUnusedException;
-import org.sakaiproject.exception.InUseException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.ServerOverloadException;
 import org.sakaiproject.exception.TypeException;
@@ -59,6 +54,7 @@ import org.sakaiproject.tool.api.Tool;
 import org.sakaiproject.tool.api.ToolException;
 import org.sakaiproject.tool.cover.ActiveToolManager;
 import org.sakaiproject.tool.cover.SessionManager;
+import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.util.BasicAuth;
 import org.sakaiproject.util.ParameterParser;
 import org.sakaiproject.util.ResourceLoader;
@@ -72,11 +68,7 @@ import org.sakaiproject.util.Web;
 //public class CitationServlet extends VelocityPortletPaneledAction
 public class CitationServlet extends VmServlet
 {
-	/**
-	 * 
-	 */
 	public static final String SERVLET_TEMPLATE = "/vm/servlet.vm";
-//	private String collectionTitle = null;
 	
 	/** Our log (commons). */
 	private static Log M_log = LogFactory.getLog(CitationServlet.class);
@@ -84,46 +76,17 @@ public class CitationServlet extends VmServlet
 	/** Resource bundle using current language locale */
 	protected static ResourceLoader rb = new ResourceLoader("citations");
 
-	/** set to true when init'ed. */
-//	protected boolean m_ready = false;
-
 	protected BasicAuth basicAuth = null;
+
+	private ContentHostingService contentService;
+
+	private CitationService citationService;
 
 	protected enum Status
 	{
 		SUCCESS,
 		ERROR;
 	}
-
-
-//	/** init thread - so we don't wait in the actual init() call */
-//	public class CitationServletInit extends Thread
-//	{
-//		protected CitationService m_citationService;
-		
-//		public void setCitationService(CitationService service)
-//		{
-//			this.m_citationService = service;
-//		}
-		
-//		/**
-//		 * construct and start the init activity
-//		 */
-//		public CitationServletInit()
-//		{
-//			m_ready = false;
-//			start();
-//		}
-
-//		/**
-//		 * run the init
-//		 */
-//		public void run()
-//		{
-//			m_ready = true;
-//		}
-//	}
-
 
 	/**
 	 * initialize the AccessServlet servlet
@@ -136,19 +99,13 @@ public class CitationServlet extends VmServlet
 	public void init( ServletConfig config ) throws ServletException
 	{
 		super.init(config);
-//		startInit();
 		basicAuth = new BasicAuth();
 		basicAuth.init();
+		
+		// get services from ComponentManager
+		contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		citationService = (CitationService) ComponentManager.get("org.sakaiproject.citation.api.CitationService");
 	}
-
-//	/**
-//	 * Start the initialization process
-//	 */
-//	public void startInit()
-//	{
-//		new CitationServletInit();
-//	}
-
 
 	/**
 	 * respond to an HTTP GET request
@@ -175,33 +132,56 @@ public class CitationServlet extends VmServlet
 		{
 			doLogin( req, res, null );
 		}
-		else
-		{
-			// try to add the Citation
-			
-			
-			List citationCollectionTitleList = addCitation( ( ParameterParser )req.getAttribute( ATTR_PARAMS ),
-					option, res );
-			
-			Citation citation = (Citation) citationCollectionTitleList.get(0);
-			String collectionTitle = (String) citationCollectionTitleList.get(1);
-			
-			
-			if( citation != null )
-			{
-				// return success
-				M_log.debug( "doGet() [addCitation()] added Citation '" + citation.getDisplayName() + "'" );
-				respond( Status.SUCCESS, citation, collectionTitle, req, res );
+		else {
+			// Setup velocity.
+			setupResponse(req, res);
+			ContentResource resource = null;
+			try {
+				ParameterParser paramParser = (ParameterParser) req
+						.getAttribute(ATTR_PARAMS);
+				resource = findResource(paramParser, option);
+				
+				boolean fromGoogle = false;
+				Citation citation = findGoogleCitation(paramParser);
+				if (citation == null) {
+					
+					citation = findOpenUrlCitation(req);
+				}
+				// set the success flag
+				setVmReference("success", citation != null, req);
+				
+				if (citation != null) {
+					addCitiation(resource, citation);
+					setVmReference( "citation", citation, req );
+					setVmReference("topRefresh", Boolean.TRUE, req ); // TODO
+				} else {
+					// return failure
+					setVmReference("error", rb.getString("error.notfound"), req);
+				}
+			} catch (IdUnusedException iue) {
+				setVmReference("error", rb.getString("error.noid"), req);
+			} catch (ServerOverloadException e) {
+				setVmReference("error", rb.getString("error.unavailable"), req);
+			} catch (PermissionException e) {
+				setVmReference("error", rb.getString("error.permission"), req);
 			}
-			else
-			{
-				// return failure
-				M_log.debug( "doGet() [addCitation()] failed to add citation" );
-				respond( Status.ERROR, null, collectionTitle, req, res );
-			}
+			// Set near end so we always have something
+			setVmReference( "titleArgs",  new String[]{ getCollectionTitle(resource) }, req );
+			// return the servlet template
+			includeVm( SERVLET_TEMPLATE, req, res );
 		}
 	}
-		
+	
+	/**
+	 * Looks for an OpenURL citation in the request.
+	 * @param req
+	 * @return
+	 */
+	private Citation findOpenUrlCitation(HttpServletRequest req) {
+		Citation citation = citationService.addCitation(req);
+		return citation;
+	}
+
 	/**
 	 * respond to an HTTP POST request; only to handle the login process
 	 * 
@@ -235,232 +215,164 @@ public class CitationServlet extends VmServlet
 		}
 	}
 
+	
+	public ContentResource findResource(ParameterParser params, String option) throws PermissionException, IdUnusedException {
+		// get the path info
+		String path = params.getPath();
+		if (path == null)
+			path = "";
+
+		// parse the request path
+		String[] parts = option.split("/");
+		String resourceUuid = parts[1];
+		String resourceId = contentService.resolveUuid(resourceUuid);
+
+		ContentResource resource = null;
+		if (resourceId != null) {
+			// revise permission granted
+			if (!citationService.allowReviseCitationList(resourceId)) {
+				// revise permission denied
+				throw new PermissionException(null, null, null);
+			}
+			try {
+				resource = contentService.getResource(resourceId);
+				return resource;
+			} catch (TypeException e) {
+				// Ignore.
+			}
+		}
+		throw new IdUnusedException(resourceUuid);
+	}
+	
+	public void addCitiation(ContentResource resource, Citation citation) throws IdUnusedException, ServerOverloadException {
+
+		String collectionId = new String(resource.getContent());
+		CitationCollection collection = citationService.getCollection(collectionId);
+
+		collection.add(citation);
+		citationService.save(collection);
+	}
+	
+	public String getCollectionTitle(ContentResource resource) {
+		String collectionTitle = null;
+		if (resource != null) {
+			//String refStr = resource.getReference();
+			//Reference ref = EntityManager.newReference(refStr);
+			//collectionTitle = ref.getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME);
+			collectionTitle = resource.getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME);
+		}
+		return collectionTitle == null || "".equals(collectionTitle)? "your current citation list": collectionTitle; //TODO i18n
+	}
+	
 	/**
-	 * handle get and post communication from the user
+	 * Try and extract a Citation from the request.
 	 * 
 	 * @param req  HttpServletRequest object with the client request
 	 * @param res  HttpServletResponse object back to the client
 	 */
-	public List addCitation( ParameterParser params, String option, HttpServletResponse res )
-	{
-		// get the path info
-		String path = params.getPath();
-		if (path == null) path = "";
+	public Citation findGoogleCitation(ParameterParser params) {
 
-//		if (!m_ready)
-//		{
-//			sendError( res, HttpServletResponse.SC_SERVICE_UNAVAILABLE );
-//		}
+		// http://localhost:8080/savecite/71b84348-5962-4e0e-aa49-4ce5824ed84f
+		// ?sakai.session.key=nada&sid=google&genre=book&au=Siever,+E.&au=Figgins,+S.&au=Love,+R.&au=Robbins,+A.
+		// &title=Linux+in+a+Nutshell&date=2009&publisher=Oreilly+%26+Associates+Inc
 
-		String collectionTitle = null;
-		
-		// parse the request path
-		String[] parts = option.split("/");
-		String resourceUuid = parts[1];
-		
-		// get services from ComponentManager
-		ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
-		CitationService citationService = (CitationService) ComponentManager.get("org.sakaiproject.citation.api.CitationService");
-		
-		CitationCollection collection = null;
-		Citation citation = null;
-		
-		try
-        {
-			String resourceId = contentService.resolveUuid(resourceUuid);
-			
-			// check to see if user has revise permission
-			if( !citationService.allowReviseCitationList( resourceId ) )
-			{
-				// revise permission denied
-				return null;
-			}
-			
-			// revise permission granted
-			ContentResource resource = contentService.getResource(resourceId);
-			
-			String collectionId = new String(resource.getContent());
-			collection = citationService.getCollection(collectionId);
+		// Google is't passing much information with the Import into WebLearn
+		// link as can be seen in the difference between the OpenURL version and
+		// our version.
+		// http://localhost:8080/savecite/71b84348-5962-4e0e-aa49-4ce5824ed84f?sakai.session.key=nada&sid=google&genre=article&au=Elsworth,+JD&au=Glover,+V.&au=Reynolds,+GP&au=Sandler,+M.&au=Lees,+AJ&au=Phuapradit,+P.&au=Shaw,+KM&au=Stern,+GM&au=Kumar,+P.&atitle=Deprenyl+administration+in+man:+a+selective+monoamine+oxidase+B+inhibitor+without+the+%E2%80%98cheese+effect%E2%80%99&title=Psychopharmacology&volume=57&issue=1&pages=33-38&date=1978&publisher=Springer
+		// http://oxfordsfx.hosted.exlibrisgroup.com/oxford?sid=google&auinit=JD&aulast=Elsworth&atitle=Deprenyl+administration+in+man:+a+selective+monoamine+oxidase+B+inhibitor+without+the+%E2%80%98cheese+effect%E2%80%99&id=doi:10.1007/BF00426954&title=Psychopharmacology&volume=57&issue=1&date=1978&spage=33&issn=0033-3158
 
-			String genre = params.getString("genre");
-			String[] authors = params.getStrings("au");
-			String title = params.getString("title");
-			String atitle = params.getString("atitle");
-			String volume = params.getString("volume");
-			String issue = params.getString("issue");
-			String pages = params.getString("pages");
-			String publisher = params.getString("publisher");
-			String date = params.getString("date");
-			String id = params.getString("id");
+		String genre = params.getString("genre");
+		String[] authors = params.getStrings("au");
+		String title = params.getString("title");
+		String atitle = params.getString("atitle");
+		String volume = params.getString("volume");
+		String issue = params.getString("issue");
+		String pages = params.getString("pages");
+		String publisher = params.getString("publisher");
+		String date = params.getString("date");
+		String id = params.getString("id");
 
-			// do we have enough info for a meaningful citation?
-			if( ( title == null || title.trim().equals("") ) &&
-					( atitle == null || atitle.trim().equals("") ) ) {
-				// both title AND atitle are null
-				return null;
-			}
-			
-			// force a generic genre if we don't know any better
-			if (genre == null || genre.trim().equals("")) {
-				genre = CitationService.UNKNOWN_TYPE;
-			}
-			
-			citation = citationService.addCitation(genre);
+		// do we have enough info for a meaningful citation?
+		if ((title == null || title.trim().equals(""))
+				&& (atitle == null || atitle.trim().equals(""))) {
+			// both title AND atitle are null
+			return null;
+		}
 
-			StringBuilder info = new StringBuilder();
-			if(M_log.isDebugEnabled()) {
-				info.append("New citation from Google Scholar:\n\t genre:\t\t");
-				info.append(genre);
-			}
-			
-			// Generally, only books have a title that's the actual title of the piece.
-			// We'll check to see if there's an atitle; if not, use the title as the 
-			// work's title. Otherwise, use the title as the source.
-			
-			if(title != null)
-			{
-				if (atitle != null) 
-				{
-					if(M_log.isDebugEnabled()) {
-						info.append("\n\t source title:\t\t");
-					}
-					citation.addPropertyValue(Schema.SOURCE_TITLE, title);
-				} else 
-				{
-					if(M_log.isDebugEnabled()) {
-						info.append("\n\t title:\t\t");
-					}
-					citation.addPropertyValue(Schema.TITLE, title);
-				}
-				if(M_log.isDebugEnabled()) {
-					info.append( title );
-				}
-			}
-			
-			if(atitle != null)
-			{
-				if(M_log.isDebugEnabled()) {
-					info.append("\n\t title:\t\t");
-					info.append( atitle );
-				}
-				citation.addPropertyValue(Schema.TITLE, atitle);
-			}			
-			
-			if(authors != null && authors.length > 0)
-			{
-				for(int i = 0; i < authors.length; i++)
-				{
-					if(M_log.isDebugEnabled()) {
-						info.append("\n\t au:\t\t");
-						info.append(authors[i]);
-					}
-					citation.addPropertyValue(Schema.CREATOR, authors[i]);
-				}
-			}
+		// force a generic genre if we don't know any better
+		if (genre == null || genre.trim().equals("")) {
+			genre = CitationService.UNKNOWN_TYPE;
+		}
 
-			if(volume != null)
-			{
-				if(M_log.isDebugEnabled()) {
-					info.append("\n\t volume:\t\t");
-					info.append(volume);
-				}
-				citation.addPropertyValue(Schema.VOLUME, volume);
-			}
-			if(issue != null)
-			{
-				if(M_log.isDebugEnabled()) {
-					info.append("\n\t issue:\t\t");
-					info.append(issue);
-				}
-				citation.addPropertyValue(Schema.ISSUE, issue);
-			}
-			if(pages != null)
-			{
-				if(M_log.isDebugEnabled()) {
-					info.append("\n\t pages:\t\t");
-					info.append(pages);
-				}
-				citation.addPropertyValue(Schema.PAGES, pages);
-			}
-			if(publisher != null)
-			{
-				if(M_log.isDebugEnabled()) {
-					info.append("\n\t publisher:\t\t");
-					info.append(publisher);
-				}
-				citation.addPropertyValue(Schema.PUBLISHER, publisher);
-			}
-			if(date != null)
-			{
-				if(M_log.isDebugEnabled()) {
-					info.append("\n\t date:\t\t");
-					info.append(date);
-				}
-				citation.addPropertyValue(Schema.YEAR, date);
-			}
-			if(id != null)
-			{
-				if(M_log.isDebugEnabled()) {
-					info.append("\n\t id:\t\t");
-					info.append(id);
-				}
-				citation.addPropertyValue(Schema.ISN, id);
-			}
-			if(M_log.isDebugEnabled()) {
-				info.append("\n");
-			}
-			
-			collection.add(citation);
-			citationService.save(collection);
-			
-			if(M_log.isDebugEnabled()) {
-				M_log.debug(info.toString());
-			}
-			
-			// get the citation list title
-			String refStr = contentService.getReference(resourceId);
-			Reference ref = EntityManager.newReference(refStr);
+		Citation citation = citationService.addCitation(genre);
 
-			collectionTitle = ref.getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME);
-        }
-        catch (PermissionException e)
-        {
-	        // TODO Auto-generated catch block
-	        M_log.warn("PermissionException ", e);
-        	return null;
-        }
-        catch (IdUnusedException e)
-        {
-	        // TODO Auto-generated catch block
-	        M_log.warn("IdUnusedException ", e);
-        	return null;
-        }
-        catch (TypeException e)
-        {
-	        // TODO Auto-generated catch block
-	        M_log.warn("TypeException ", e);
-        	return null;
-        }
-        catch (ServerOverloadException e)
-        {
-	        // TODO Auto-generated catch block
-        	M_log.warn("ServerOverloadException ", e);
-        	return null;
-        }
+		String info = "New citation from Google Scholar:\n\t genre:\t\t"
+				+ genre;
 
-        List citationCollectionTitleList = new ArrayList();
-        
-        citationCollectionTitleList.add(citation);
-        citationCollectionTitleList.add(collectionTitle);
-        
-//		return citation;
-        
-        return citationCollectionTitleList;
+		// Generally, only books have a title that's the actual title of the
+		// piece.
+		// We'll check to see if there's an atitle; if not, use the title as the
+		// work's title. Otherwise, use the title as the source.
+
+		if (title != null) {
+			if (atitle != null) {
+				info += "\n\t source title:\t\t" + title;
+				citation.setCitationProperty(Schema.SOURCE_TITLE, title);
+			} else {
+				info += "\n\t title:\t\t" + title;
+				citation.setCitationProperty(Schema.TITLE, title);
+			}
+		}
+
+		if (atitle != null) {
+			info += "\n\t title:\t\t" + atitle;
+			citation.setCitationProperty(Schema.TITLE, atitle);
+		}
+
+		if (authors != null && authors.length > 0) {
+			for (int i = 0; i < authors.length; i++) {
+				info += "\n\t au:\t\t" + authors[i];
+				citation.setCitationProperty(Schema.CREATOR, authors[i]);
+			}
+		}
+
+		if (volume != null) {
+			info += "\n\t volume:\t\t" + volume;
+			citation.setCitationProperty(Schema.VOLUME, volume);
+		}
+		if (issue != null) {
+			info += "\n\t issue:\t\t" + issue;
+			citation.setCitationProperty(Schema.ISSUE, issue);
+		}
+		if (pages != null) {
+			info += "\n\t pages:\t\t" + pages;
+			citation.setCitationProperty(Schema.PAGES, pages);
+		}
+		if (publisher != null) {
+			info += "\n\t publisher:\t\t" + publisher;
+			citation.setCitationProperty(Schema.PUBLISHER, publisher);
+		}
+		if (date != null) {
+			info += "\n\t date:\t\t" + date;
+			citation.setCitationProperty(Schema.YEAR, date);
+		}
+		if (id != null) {
+			info += "\n\t id:\t\t" + id;
+			citation.setCitationProperty(Schema.ISN, id);
+		}
+		info += "\n";
+
+		M_log.debug(info);
+
+		return citation;
+
 	}
 
-	protected void respond( Status status, Citation citation, String collectionTitle,
-			HttpServletRequest req, HttpServletResponse res ) throws ServletException
-	{
+	/**
+	 * Setup the request/response ready for Velocity.
+	 */
+	private void setupResponse(HttpServletRequest req, HttpServletResponse res) {
 		// the context wraps our real vm attribute set
 		ResourceProperties props = new org.sakaiproject.util.BaseResourceProperties();
 		setVmReference("props", props, req);
@@ -468,32 +380,6 @@ public class CitationServlet extends VmServlet
 		setVmReference("validator", new Validator(), req);
 		setVmReference("tlang", rb, req);
 		res.setContentType("text/html; charset=UTF-8");
-		
-		Object success = null;
-		if( status == Status.SUCCESS )
-		{
-			success = new Object();
-			setVmReference( "citation", citation, req );
-			
-			// schedule a refresh of the main toolframe
-//			ToolSession toolSession = SessionManager.getCurrentToolSession();
-//			toolSession.setAttribute( "sakai.vppa.top.refresh", Boolean.TRUE );
-			setVmReference("topRefresh", Boolean.TRUE, req );  // TODO
-		}
-		
-		// set the success flag
-		setVmReference("success", success, req);
-		
-		// include object arrays for formatted messages
-		if( collectionTitle == null || collectionTitle.trim().equals("") )
-		{
-			collectionTitle = "your current citation list";
-		}
-		Object[] titleArgs = { Validator.escapeHtml(collectionTitle) };  // TODO temporary placeholder
-		setVmReference( "titleArgs", titleArgs, req );
-
-		// return the servlet template
-		includeVm( SERVLET_TEMPLATE, req, res );
 	}
 	
 	/**

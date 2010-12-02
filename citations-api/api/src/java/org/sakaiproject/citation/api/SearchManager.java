@@ -96,4 +96,7 @@ public interface SearchManager
      * @return
      */
     public String getGoogleScholarUrl(String resourceId);
+    
+    public String getExternalSearchWindowName(String resourceId);
+
 }
