@@ -63,6 +63,19 @@ doubleDeep = true;
 			<input name="$!{specialHelperFlag}" id="$!{specialHelperFlag}" value="$!{citationToolId}" type="hidden" />
 			<table>
 			
+			#if ($externalSearch )
+			  <tr valign="middle">
+			    <td align="center">
+			      <div class="act">
+				    <input type="button" name="ExternalSearch" id="ExternalSearch" 
+				      value="$tlang.getString("action.external.search")"
+				      onclick="openWindow('$externalSearchUrl','$externalSearchWindowName','scrollbars=yes,toolbar=yes,resizable=yes,height=610,width=1200');"/>
+			      </div>
+			    </td>
+			    <td>$tlang.getString("description.external.search")</td>
+			  </tr>
+			#end
+			
 			#if( $searchLibrary )
 			  <tr valign="middle">
 			    <td align="center">

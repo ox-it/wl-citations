@@ -65,6 +65,8 @@
     <property name="contentHostingService"><ref bean="org.sakaiproject.content.api.ContentHostingService"/></property>
     <property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property>
     <property name="configurationService"><ref bean="org.sakaiproject.citation.api.ConfigurationService"/></property>
+    <property name="idManager"><ref bean="org.sakaiproject.id.api.IdManager"/></property>
+    <property name="openURLService"><ref bean="org.sakaiproject.citation.impl.openurl.OpenURLServiceImpl"/></property>
     <property name="autoDdl"><value>${auto.ddl}</value></property>
 	<property name="attemptToMatchSchema"><value>true</value></property>
 	<property name="resourceTypeRegistry"><ref bean="org.sakaiproject.content.api.ResourceTypeRegistry"/></property>
@@ -112,5 +114,8 @@
     	<property name="timeToLive" ><value>43200</value></property>
     	<property name="timeToIdle" ><value>900</value></property>
   	</bean>
+	
+	<!-- Pulling this off the classpath means we can use it in tests and in production -->
+	<import resource="classpath:org/sakaiproject/citation/impl/openurl.xml"/>
 
 </beans>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springkernel.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="org.sakaiproject.citation.api.CitationService"
+		class="org.sakaiproject.citation.impl.MockCitationServiceImpl"
+		init-method="init">
+	</bean>
+</beans>

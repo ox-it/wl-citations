@@ -43,6 +43,8 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.net.URLEncoder;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osid.repository.Asset;
@@ -59,6 +61,8 @@ import org.sakaiproject.citation.api.CitationService;
 import org.sakaiproject.citation.api.ConfigurationService;
 import org.sakaiproject.citation.api.Schema;
 import org.sakaiproject.citation.api.Schema.Field;
+import org.sakaiproject.citation.impl.openurl.ContextObject;
+import org.sakaiproject.citation.impl.openurl.OpenURLServiceImpl;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.content.api.ContentEntity;
@@ -90,7 +94,7 @@ import org.sakaiproject.exception.OverQuotaException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.ServerOverloadException;
 import org.sakaiproject.exception.TypeException;
-import org.sakaiproject.id.cover.IdManager;
+import org.sakaiproject.id.api.IdManager;
 import org.sakaiproject.javax.Filter;
 import org.sakaiproject.time.cover.TimeService;
 import org.sakaiproject.tool.api.SessionManager;
@@ -511,7 +515,7 @@ public abstract class BaseCitationService implements CitationService
 		 */
 		public BasicCitation(String mediatype)
 		{
-			m_id = IdManager.createUuid();
+			m_id = m_idManager.createUuid();
 			m_citationProperties = new Hashtable();
 			m_urls = new Hashtable();
 			setType(mediatype);
@@ -549,7 +553,7 @@ public abstract class BaseCitationService implements CitationService
 		public String addCustomUrl(String label, String url)
 		{
 			UrlWrapper wrapper = new UrlWrapper(label, url);
-			String id = IdManager.createUuid();
+			String id = m_idManager.createUuid();
 			m_urls.put(id, wrapper);
 			return id;
 		}
@@ -565,7 +569,7 @@ public abstract class BaseCitationService implements CitationService
 		{
 			UrlWrapper wrapper = new UrlWrapper(label, url,
 			                                    getPrefixBoolean(prefixRequest));
-			String id = IdManager.createUuid();
+			String id = m_idManager.createUuid();
 			m_urls.put(id, wrapper);
 			return id;
 		}
@@ -2620,7 +2624,7 @@ public abstract class BaseCitationService implements CitationService
 
 		public BasicCitationCollection()
 		{
-			m_id = IdManager.createUuid();
+			m_id = m_idManager.createUuid();
 		}
 
 		/**
@@ -2637,13 +2641,13 @@ public abstract class BaseCitationService implements CitationService
 			}
 			else
 			{
-				m_id = IdManager.createUuid();
+				m_id = m_idManager.createUuid();
 			}
 		}
 
 		public BasicCitationCollection(Map attributes, List citations)
 		{
-			m_id = IdManager.createUuid();
+			m_id = m_idManager.createUuid();
 
 			m_order = new TreeSet<String>(m_comparator);
 
@@ -4040,6 +4044,12 @@ public abstract class BaseCitationService implements CitationService
 	/** Dependency: EntityManager. */
 	protected EntityManager m_entityManager = null;
 
+	/** Depenedency: IdManager */
+	protected IdManager m_idManager = null;
+	
+	/** Dependency: OpenURLServiceImpl */
+	protected OpenURLServiceImpl m_openURLService;
+	
 	protected String m_defaultSchema;
 
 	/** A Storage object for persistent storage. */
@@ -4068,6 +4078,11 @@ public abstract class BaseCitationService implements CitationService
 	public ResourceTypeRegistry getResourceTypeRegistry()
 	{
 		return m_resourceTypeRegistry;
+	}
+	
+	public void setOpenURLService(OpenURLServiceImpl openURLServiceImpl)
+	{
+		m_openURLService = openURLServiceImpl;
 	}
 
 	public static final String PROP_TEMPORARY_CITATION_LIST = "citations.temporary_citation_list";
@@ -5393,7 +5408,7 @@ public abstract class BaseCitationService implements CitationService
 	{
 		if (citation instanceof BasicCitation && ((BasicCitation) citation).isTemporary())
 		{
-			((BasicCitation) citation).m_id = IdManager.createUuid();
+			((BasicCitation) citation).m_id = m_idManager.createUuid();
 			((BasicCitation) citation).m_temporary = false;
 			((BasicCitation) citation).m_serialNumber = null;
 		}
@@ -5453,6 +5468,10 @@ public abstract class BaseCitationService implements CitationService
 		m_serverConfigurationService = service;
 	}
 
+	public void setIdManager(IdManager idManager)
+	{
+		m_idManager = idManager;
+	}
 	/*
 	 * (non-Javadoc)
 	 *
@@ -5560,6 +5579,15 @@ public abstract class BaseCitationService implements CitationService
 			M_log.warn("OverQuotaException ", e);
 		}
     }
+
+	public Citation addCitation(HttpServletRequest request) {
+		ContextObject co = m_openURLService.parse(request);
+		Citation citation = null;
+		if (co != null) {
+			citation = m_openURLService.convert(co);
+		}
+		return citation;
+	}
 
 } // BaseCitationService
 
