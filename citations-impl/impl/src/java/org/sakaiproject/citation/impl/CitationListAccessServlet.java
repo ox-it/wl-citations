@@ -300,9 +300,6 @@ public class CitationListAccessServlet implements HttpAccess
 					+ "<link href=\"/library/skin/default/tool.css\" type=\"text/css\" rel=\"stylesheet\" media=\"all\" />\n"
 					+ "<script type=\"text/javascript\" src=\"/sakai-citations-tool/js/citationscript.js\"></script>\n"
 					+ "<script type=\"text/javascript\" src=\"/library/juice/jquery-1.3.2.min.js\"></script>\n"
-					+ "<script type=\"text/javascript\">\n"
-					+ "jQuery.noConflict();\n"
-					+ "</script>\n"
 					+ "<script type=\"text/javascript\" src=\"/library/juice/juice.js\"></script>\n"
 					+ "<script type=\"text/javascript\" src=\"/library/juice/juice-weblearn.js\"></script>\n"
 					+ "</head>\n<body>" );
