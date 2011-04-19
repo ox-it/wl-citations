@@ -93,19 +93,19 @@ public class KEVFormat implements Format {
 	public String encode(ContextObject contextObject) {
 		StringBuilder output = new StringBuilder();
 		output.append("&"+"ctx_id"+ "="+ ContextObject.VERSION);
-		output.append("&"+"ctx_enc"+ "+"+ "UTF-8");
+		output.append("&"+"ctx_enc"+ "="+ "UTF-8");
 		for(EntityFormatter encoder: entityFormatters) {
-			output.append(encoder.encode(contextObject));
+			String coEncoded = encoder.encode(contextObject);
+			if (coEncoded != null && coEncoded.length()>0) {
+				output.append('&');
+				output.append(coEncoded);
+			}
 		}
-		try {
-			return new URI(null, null, null, output.toString(), null).toASCIIString().substring(1);
-		} catch (URISyntaxException e) {
-			throw new RuntimeException("Badly formed data: "+ output, e);
-		}
+		return output.toString();
 	}
 	
 	/**
-	 * Parser for an entity.
+	 * Parser/formatter for an entity.
 	 * @author buckett
 	 *
 	 */
@@ -161,7 +161,7 @@ public class KEVFormat implements Format {
 			if (entity == null){
 				return "";
 			}
-			StringBuilder output = new StringBuilder();
+			URLBuilder output = new URLBuilder("UTF-8");
 			for (String id: entity.getIds()) {
 				addKEV(output, ID_SUFFIX, id);
 			}
@@ -177,9 +177,9 @@ public class KEVFormat implements Format {
 			return output.toString();
 		}
 		
-		public void addKEV(StringBuilder output, String key, Object value) {
+		public void addKEV(URLBuilder output, String key, Object value) {
 			if (value != null) {
-				output.append("&").append(prefix).append(key).append("=").append(value);
+				output.append(prefix+key, value.toString());
 			}
 		}
 	}

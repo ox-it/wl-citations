@@ -22,13 +22,13 @@ public class BookConverterTest extends BaseCitationServiceSupport {
 		converter.setCitationService(citationService);
 		
 		Citation book = citationService.addCitation("book");
-		book.addPropertyValue(Schema.TITLE, TITLE);
-		book.addPropertyValue(Schema.CREATOR, AUTHOR);
-		book.addPropertyValue(Schema.YEAR, DATE);
-		book.addPropertyValue(Schema.PUBLISHER, PUBLISHER);
-		book.addPropertyValue(Schema.ISN, ISBN);
-		book.addPropertyValue(Schema.SOURCE_TITLE, BOOK_SERIES);
-		book.addPropertyValue("doi", DOI);
+		book.setCitationProperty(Schema.TITLE, TITLE);
+		book.setCitationProperty(Schema.CREATOR, AUTHOR);
+		book.setCitationProperty(Schema.YEAR, DATE);
+		book.setCitationProperty(Schema.PUBLISHER, PUBLISHER);
+		book.setCitationProperty(Schema.ISN, ISBN);
+		book.setCitationProperty(Schema.SOURCE_TITLE, BOOK_SERIES);
+		book.setCitationProperty("doi", DOI);
 		
 		ContextObjectEntity bookContextObject = converter.convert(book);
 		assertEquals(TITLE, bookContextObject.getValue("btitle"));

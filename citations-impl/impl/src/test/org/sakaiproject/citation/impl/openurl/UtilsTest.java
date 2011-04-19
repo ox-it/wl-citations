@@ -1,7 +1,10 @@
 package org.sakaiproject.citation.impl.openurl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -80,6 +83,48 @@ public class UtilsTest extends TestCase {
 		
 		decoded = Utils.decode(raw, "ISO-8859-1");
 		assertEquals("E with dots \u00CB", decoded.get("6")[0]);
+	}
+	
+	public void testLookForAuthor() {
+		Map<String, List<String>> values = new HashMap<String, List<String>>();
+		assertNull(Utils.lookForAuthor(values));
+		
+		values.put("au", Collections.singletonList("Buckett, Matthew"));
+		assertNull(Utils.lookForAuthor(values));
+		
+		values.put("aufirst", Collections.singletonList("Matthew"));
+		assertNull(Utils.lookForAuthor(values));
+		
+		values.put("auinit", Collections.singletonList("M"));
+		assertNull(Utils.lookForAuthor(values));
+		
+		values.put("aulast", Collections.singletonList("Buckett"));
+		assertNull(Utils.lookForAuthor(values));
+		
+		// Now switch to a different author
+		values.put("au", Collections.singletonList("Smith, John"));
+		assertEquals("Buckett, Matthew", Utils.lookForAuthor(values));
+		
+		values.remove("aufirst");
+		assertEquals("Buckett, M", Utils.lookForAuthor(values));
+		
+		values.put("auinitm", Collections.singletonList("A"));
+		values.remove("auinit");
+		assertEquals("Buckett", Utils.lookForAuthor(values));
+		
+		values.put("auinit1", Collections.singletonList("M"));
+		assertEquals("Buckett, M A", Utils.lookForAuthor(values));
+	}
+	
+	public void testLookForAuthorBad() {
+		Map<String, List<String>> values = new HashMap<String, List<String>>();
+		values.put("au", new ArrayList<String>());
+		
+		values.put("au", Collections.singletonList("Buckett, Matthew"));
+		assertNull(Utils.lookForAuthor(values));
+		
+		values.put("aulast", new ArrayList<String>());
+		assertNull(Utils.lookForAuthor(values));
 	}
 
 }

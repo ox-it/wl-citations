@@ -22,6 +22,8 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 	"rft.part=&rft.quarter=&rft.ssn=&rft.spage=&rft.epage=&rft.pages=&rft.artnum=&rft.issn=&rft.eissn=&" +
 	"rft.isbn=9780596154486&rft.sici=&rft.coden=&rft_id=info:doi/&rft.object_id=&" +
 	"rft_dat=<UkOxU>UkOxUb17140770</UkOxU>&rft.eisbn=";
+	
+	private static final String PRIMO_EXAMPLE_FULL_ID = "ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&ctx_tim=2011-04-11T15%3A40%3A37IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=article&rft.atitle=Cheese&rft.jtitle=Journal%20of%20Agricultural%20%26%20Food%20Information&rft.btitle=&rft.aulast=Cherubin&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=Cherubin,%20Dan&rft.aucorp=&rft.date=2007049&rft.volume=7&rft.issue=4&rft.part=&rft.quarter=&rft.ssn=&rft.spage=3&rft.epage=10&rft.pages=&rft.artnum=&rft.issn=1049-6505&rft.eissn=&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/10.1300/J108v07n04_02&rft.object_id=&rft_dat=%3Ccrossref%3E10.1300/J108v07n04_02%3C/crossref%3E&rft.eisbn=&rft_id=http%3A%2F%2Fsolo.bodleian.ox.ac.uk%2Fprimo_library%2Flibweb%2Faction%2Fdisplay.do%3Fdoc%3DTN_crossref10.1300/J108v07n04_02%26vid%3DOXVU1%26fn%3Ddisplay%26displayMode%3Dfull&rft_id=info:oai/";
 
 	private OpenURLServiceImpl service;
 
@@ -65,12 +67,26 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 		assertEquals("Linux in a nutshell", bookCitation.getCitationProperty(Schema.TITLE));
 	}
 	
-	public void testParseBook() {
-		// TODO Fix failing test
-//		Citation book = convert(find(mockGetRequest(SamplePrimoOpenURLs.BOOK)));
-//		Map props = book.getCitationProperties();
-//		assertEquals("", props.get("title"));
+	public void testParsePrimoFullId() {
+		MockHttpServletRequest req = new MockHttpServletRequest("GET", "http://localhost:8080/url?"+ PRIMO_EXAMPLE_FULL_ID);
+		req.setQueryString(PRIMO_EXAMPLE_FULL_ID);
+		req.setParameters(parseQueryString(PRIMO_EXAMPLE_FULL_ID));
 		
+		ContextObject contextObject = service.parse(req);
+		Citation bookCitation = service.convert(contextObject);
+		
+		// This fails becuase there isn't a good value for rtf_val_fmt
+		assertNotNull(bookCitation.getCitationProperty("otherIds"));
+
+		
+	}
+	
+	public void testParseBook() {
+		Citation book = convert(find(mockGetRequest(SamplePrimoOpenURLs.BOOK)));
+		Map props = book.getCitationProperties();
+		assertEquals("Patent searching: tools & techniques", props.get("title"));
+		assertEquals("047178379X", props.get("isnIdentifier"));
+		assertEquals("[edited By] David Hunt, Long Nguyen, Matthew Rodgers.", props.get("creator"));
 	}
 	
 	public Citation convert(ContextObject contextObject) {

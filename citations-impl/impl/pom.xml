@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>citations-base</artifactId>
@@ -17,7 +19,7 @@
   <inceptionYear>2003</inceptionYear>
   <packaging>jar</packaging>
   <properties>
-    <deploy.target/>
+    <deploy.target />
   </properties>
   <dependencies>
     <dependency>
@@ -74,10 +76,10 @@
       <type>jar</type>
     </dependency>
     <dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jmock</groupId>
       <artifactId>jmock-junit3</artifactId>
@@ -85,17 +87,22 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring</artifactId>
-        <version>2.5.6.SEC01</version>
-        <scope>test</scope>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <version>2.5.6.SEC01</version>
+      <scope>test</scope>
     </dependency>
-    
     <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-test</artifactId>
-        <version>2.5.6.SEC01</version>
-        <scope>test</scope>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>2.5.6.SEC01</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sakaiproject</groupId>
+      <artifactId>sakai-test-harness</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -109,18 +116,20 @@
       </resource>
       <resource>
         <directory>${basedir}/src/resources</directory>
-        <includes><include>**/*.xml</include></includes>
+        <includes>
+          <include>**/*.xml</include>
+        </includes>
       </resource>
     </resources>
-<!-- java source -->
+    <!-- java source -->
     <sourceDirectory>src/java</sourceDirectory>
     <testResources>
-    	<testResource>
-    		<directory>${basedir}/src/test</directory>
-    		<includes>
-    			<include>**/*.xml</include>
-    		</includes>
-    	</testResource>
+      <testResource>
+        <directory>${basedir}/src/test</directory>
+        <includes>
+          <include>**/*.xml</include>
+        </includes>
+      </testResource>
     </testResources>
   </build>
 </project>

@@ -76,8 +76,16 @@ public class OpenURLServiceImpl {
 	 */
 	public ContextObject convert(Citation citation) {
 		ContextObject contextObject = null;
-		if (citation != null) {
-			// 
+		if (citation != null && citation.getSchema() != null) {
+			String schema = citation.getSchema().getIdentifier();
+			for(Converter converter: converters) {
+				if (converter.canConvertCitation(schema)) {
+					contextObject = new ContextObject();
+					contextObject.getEntities().put(Entity.REFERENT, converter.convert(citation));
+					break;
+				}
+				
+			}
 		}
 		return contextObject;
 	}
@@ -90,7 +98,7 @@ public class OpenURLServiceImpl {
 			if (referent != null) {
 				String format = referent.getFormat();
 				for(Converter converter: converters) {
-					if (converter.getId().equals(format)) {
+					if (converter.canConvertOpenUrl(format)) {
 						citation = converter.convert(referent);
 						break;
 					}

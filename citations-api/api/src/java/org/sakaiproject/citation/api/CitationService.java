@@ -97,7 +97,7 @@ public interface CitationService extends EntityProducer
 
 	/**
 	 * 
-	 * @param listId
+	 * @param mediatype The Scheme type to create.
 	 * @return
 	 */
 	public Citation addCitation(String mediatype);

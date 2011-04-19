@@ -9,7 +9,8 @@ import org.sakaiproject.citation.api.Citation;
  */
 public interface Converter {
 
-	public String getId();
+	public boolean canConvertOpenUrl(String format);
+	public boolean canConvertCitation(String format);
 	public ContextObjectEntity convert(Citation citation);
 	public Citation convert(ContextObjectEntity entity);
 

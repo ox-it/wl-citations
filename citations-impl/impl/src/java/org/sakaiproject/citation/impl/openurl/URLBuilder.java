@@ -49,6 +49,10 @@ public class URLBuilder {
 		return this;
 	}
 	
+	public int length() {
+		return url.length();
+	}
+	
 	public String toString() {
 		return url.toString();
 	}

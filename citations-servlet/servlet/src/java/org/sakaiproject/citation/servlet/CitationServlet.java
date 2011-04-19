@@ -138,8 +138,10 @@ public class CitationServlet extends VmServlet
 						.getAttribute(ATTR_PARAMS);
 				resource = findResource(paramParser, option);
 				
+				boolean fromGoogle = false;
 				Citation citation = findGoogleCitation(paramParser);
 				if (citation == null) {
+					
 					citation = findOpenUrlCitation(req);
 				}
 				// set the success flag
@@ -313,48 +315,48 @@ public class CitationServlet extends VmServlet
 		if (title != null) {
 			if (atitle != null) {
 				info += "\n\t source title:\t\t" + title;
-				citation.addPropertyValue(Schema.SOURCE_TITLE, title);
+				citation.setCitationProperty(Schema.SOURCE_TITLE, title);
 			} else {
 				info += "\n\t title:\t\t" + title;
-				citation.addPropertyValue(Schema.TITLE, title);
+				citation.setCitationProperty(Schema.TITLE, title);
 			}
 		}
 
 		if (atitle != null) {
 			info += "\n\t title:\t\t" + atitle;
-			citation.addPropertyValue(Schema.TITLE, atitle);
+			citation.setCitationProperty(Schema.TITLE, atitle);
 		}
 
 		if (authors != null && authors.length > 0) {
 			for (int i = 0; i < authors.length; i++) {
 				info += "\n\t au:\t\t" + authors[i];
-				citation.addPropertyValue(Schema.CREATOR, authors[i]);
+				citation.setCitationProperty(Schema.CREATOR, authors[i]);
 			}
 		}
 
 		if (volume != null) {
 			info += "\n\t volume:\t\t" + volume;
-			citation.addPropertyValue(Schema.VOLUME, volume);
+			citation.setCitationProperty(Schema.VOLUME, volume);
 		}
 		if (issue != null) {
 			info += "\n\t issue:\t\t" + issue;
-			citation.addPropertyValue(Schema.ISSUE, issue);
+			citation.setCitationProperty(Schema.ISSUE, issue);
 		}
 		if (pages != null) {
 			info += "\n\t pages:\t\t" + pages;
-			citation.addPropertyValue(Schema.PAGES, pages);
+			citation.setCitationProperty(Schema.PAGES, pages);
 		}
 		if (publisher != null) {
 			info += "\n\t publisher:\t\t" + publisher;
-			citation.addPropertyValue(Schema.PUBLISHER, publisher);
+			citation.setCitationProperty(Schema.PUBLISHER, publisher);
 		}
 		if (date != null) {
 			info += "\n\t date:\t\t" + date;
-			citation.addPropertyValue(Schema.YEAR, date);
+			citation.setCitationProperty(Schema.YEAR, date);
 		}
 		if (id != null) {
 			info += "\n\t id:\t\t" + id;
-			citation.addPropertyValue(Schema.ISN, id);
+			citation.setCitationProperty(Schema.ISN, id);
 		}
 		info += "\n";
 

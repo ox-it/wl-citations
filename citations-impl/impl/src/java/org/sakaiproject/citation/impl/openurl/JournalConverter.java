@@ -16,7 +16,7 @@ import org.sakaiproject.citation.api.CitationService;
  * @author buckett
  *
  */
-public class JournalConverter implements Converter {
+public class JournalConverter extends AbstractConverter {
 
 	private final static Log log = LogFactory.getLog(JournalConverter.class);
 	
@@ -44,55 +44,37 @@ public class JournalConverter implements Converter {
 		// DOI and ISBN should become IDs on the context object.
 	}
 	
-	public String getId() {
-		return ID;
+	@Override
+	protected String getCitationsKey(String openUrlKey) {
+		return (String) conversion.getKey(openUrlKey);
 	}
 	
+	@Override
+	protected String getOpenUrlKey(String citationsKey) {
+		return (String) conversion.get(citationsKey);
+	}
+	
+	public boolean canConvertOpenUrl(String format) {
+		return ID.equals(format);
+	}
+	
+	public boolean canConvertCitation(String type) {
+		return "journal".equals(type);
+	}
+	
+
 	public ContextObjectEntity convert(Citation citation) {
 		Map<String,Object> props = citation.getCitationProperties();
 		ContextObjectEntity entity = new ContextObjectEntity();
 		entity.addValue("genre", "journal");
 		// Loop through the citation props
-		for (Map.Entry<String, Object> entry : props.entrySet()) {
-			String key = entry.getKey();
-			Object value = entry.getValue();
-			String entityKey = (String) conversion.get(key);
-			
-			// If it maps to a CO property
-			if (entityKey != null) {
-				// TODO Not sure that citations ever uses anything other than strings.
-				if (value instanceof String || value instanceof Date) {
-					addValue(entity, entityKey, value.toString());
-				} else if (value instanceof List) {
-					// If it's multivalued add them all.
-					for (String listValue : (List<String>) value) {
-						addValue(entity, entityKey, listValue);
-					}
-				}
-			} else {
-				// Do other mapping.
-				if ("doi".equals(key)) {
-					if (value instanceof String) {
-						entity.addId("info:doi"+ value);
-					}
-				}
-			}
+		convertSimple(props, entity);
+		// Do other mapping.
+		if (citation.hasCitationProperty("doi")) {
+			Object value = citation.getCitationProperty("doi");
+			addId(entity, value, DOI_PREFIX);
 		}
 		return entity;
-	}
-	
-	/**
-	 * Adds a value to the context object, but handles some special cases (ISBN).
-	 * @param entity
-	 * @param key
-	 * @param value
-	 */
-	public void addValue(ContextObjectEntity entity, String key, String value) {
-		entity.addValue(key, value);
-		// Custom handling of some properties.
-		if ("isbn".equals(key)) {
-			entity.addId("ISBN:"+ value);
-		}
 	}
 	
 	public Citation convert(ContextObjectEntity entity) {
@@ -112,46 +94,29 @@ public class JournalConverter implements Converter {
 
 		// Map the IDs from CO the citation.
 		for (String id: entity.getIds()) {
-			if (id.startsWith("ISSN:")) {
-				String isbn = id.substring("ISSN:".length());
+			if (id.startsWith(ISSN_PREFIX)) {
+				String isbn = id.substring(ISSN_PREFIX.length());
 				if (isbn.length() > 0 ) {
-					citation.addPropertyValue("isnIdentifier", isbn);
+					citation.setCitationProperty("isnIdentifier", isbn);
 				}
-			} else if (id.startsWith("info:doi")) {
-				String doi = id.substring("info:doi".length());
+			} else if (id.startsWith(DOI_PREFIX)) {
+				String doi = id.substring(DOI_PREFIX.length());
 				if (doi.length() > 0) {
-					citation.addPropertyValue("info:doi", doi);
+					citation.setCitationProperty(DOI_PREFIX, doi);
 				}
+			} else {
+				citation.setCitationProperty("otherIds", id);
 			}
 		}
 		
 		// Map the rest of the values.
-		for(Map.Entry<String, List<String>> entry: values.entrySet()) {
-			String key = entry.getKey();
-			List<String> entryValues = entry.getValue();
-			String citationKey = (String)conversion.getKey(key);
-			if (citationKey != null) {
-				if (citation.hasPropertyValue(citationKey)) {
-					if (citation.isMultivalued(citationKey)) {
-						for (String value: entryValues) {
-							citation.addPropertyValue(citationKey, value);
-						}
-					} else {
-						log.debug("Property already exists for: "+ citationKey);
-					}
-					
-				} else {
-					for (String value: entryValues) {
-						if (value != null) {
-							citation.addPropertyValue(citationKey, value);
-						}
-					}
-				}
-			} else {
-				// TODO need to handle things like aufirst which don't map onto one citations value. 
-			}
+		convertSimple(values, citation);
+		
+		String author = Utils.lookForAuthor(values);
+		if (author != null) {
+			citation.setCitationProperty("creator", author);
 		}
 		return citation;
 	}
-	
+
 }

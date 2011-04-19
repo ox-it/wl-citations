@@ -81,4 +81,56 @@ public class Utils {
 			throw new IllegalArgumentException("Unsupported encoding: "+encoding);
 		}
 	}
+
+	/**
+	 * Attempts to extract the author from the multiple fields in an OpenURL and return an author string.
+	 * @return Author string, such as John Smith.
+	 */
+	public static String lookForAuthor(Map<String, List<String>> values) {
+		// If we don't have a surname don't event bother
+		StringBuilder author = new StringBuilder();
+		if (appendFirst(author, values.get("aulast"), null)) {
+			
+			// Check for author in other fields. 
+			if (values.containsKey("au")) {
+				for (String otherAuthor: values.get("au")) {
+					if (otherAuthor != null && otherAuthor.toLowerCase().contains(author.toString().toLowerCase())) {
+						// Surname already exist in other field, assume we don't need this one.
+						return null;
+					}
+				}
+			}
+			
+			// Try to build as much of a name as possible without duplicating parts.
+			if (!appendFirst(author, values.get("aufirst"), ", ")) {
+				if (!appendFirst(author, values.get("auinit"), ", ")) {
+					if (appendFirst(author, values.get("auinit1"), ", ")) {
+						appendFirst(author, values.get("auinitm"), " ");
+					}
+				}
+			}
+			return author.toString();
+		}
+		return null;
+	}
+	
+	/**
+	 * Simple utility function for adding the first value of the list of strings to the buffer.
+	 * @param buffer
+	 * @param values
+	 * @param seperator
+	 */
+	public static boolean appendFirst(StringBuilder buffer, List<String> values, String seperator) {
+		if (values != null && !values.isEmpty()) {
+			String value = values.get(0);
+			if (value != null) {
+				if (seperator != null) {
+					buffer.append(seperator);
+				}
+				buffer.append(value);
+				return true;
+			}
+		}
+		return false;
+	}
 }
