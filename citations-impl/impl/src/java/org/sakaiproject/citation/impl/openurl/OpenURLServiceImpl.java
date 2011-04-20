@@ -100,7 +100,10 @@ public class OpenURLServiceImpl {
 				for(Converter converter: converters) {
 					if (converter.canConvertOpenUrl(format)) {
 						citation = converter.convert(referent);
-						break;
+						// Basic validation.
+						if (citation.hasCitationProperty("title")) {
+							break;
+						}
 					}
 				}
 				if (citation == null) {

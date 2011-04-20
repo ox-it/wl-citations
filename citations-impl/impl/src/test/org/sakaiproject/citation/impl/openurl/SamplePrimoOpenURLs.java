@@ -73,7 +73,7 @@ public interface SamplePrimoOpenURLs {
 			"ctx_tim=2010-11-26T17%3A18%3A27IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&" +
 			"rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-eric&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=unknown&" +
 			"rft.atitle=Patent%20Policy.%20Universities%27%20Research%20Efforts%20under%20Public%20Law%2096-517.%20" +
-			"	Report%20to%20the%20Honorable%20Robert%20Dole,%20United%20States%20Senate.&" +
+			" Report%20to%20the%20Honorable%20Robert%20Dole,%20United%20States%20Senate.&" +
 			"rft.jtitle=&rft.btitle=&rft.aulast=&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=&rft.aucorp=&" +
 			"rft.date=198604&rft.volume=&rft.issue=&rft.part=&rft.quarter=&rft.ssn=&rft.spage=&rft.epage=&rft.pages=&rft.artnum=&" +
 			"rft.issn=&rft.eissn=&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/&rft.object_id=&" +

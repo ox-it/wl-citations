@@ -17,13 +17,13 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 	private static final String PRIMO_EXAMPLE = "ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&" +
 	"ctx_tim=2010-10-20T13:27:00IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&" +
 	"rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Journal-UkOxU&rft_val_fmt=info:ofi/fmt:kev:mtx:book&" +
-	"rft.genre=book&rft.atitle=&rft.jtitle=&rft.btitle=Linux%20in%20a%20nutshell&rft.aulast=Siever&" +
+	"rft.genre=book&rft.atitle=&rft.jtitle=&rft.btitle=Linux in a nutshell&rft.aulast=Siever&" +
 	"rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=&rft.aucorp=&rft.volume=&rft.issue=&" +
 	"rft.part=&rft.quarter=&rft.ssn=&rft.spage=&rft.epage=&rft.pages=&rft.artnum=&rft.issn=&rft.eissn=&" +
 	"rft.isbn=9780596154486&rft.sici=&rft.coden=&rft_id=info:doi/&rft.object_id=&" +
 	"rft_dat=<UkOxU>UkOxUb17140770</UkOxU>&rft.eisbn=";
 	
-	private static final String PRIMO_EXAMPLE_FULL_ID = "ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&ctx_tim=2011-04-11T15%3A40%3A37IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=article&rft.atitle=Cheese&rft.jtitle=Journal%20of%20Agricultural%20%26%20Food%20Information&rft.btitle=&rft.aulast=Cherubin&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=Cherubin,%20Dan&rft.aucorp=&rft.date=2007049&rft.volume=7&rft.issue=4&rft.part=&rft.quarter=&rft.ssn=&rft.spage=3&rft.epage=10&rft.pages=&rft.artnum=&rft.issn=1049-6505&rft.eissn=&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/10.1300/J108v07n04_02&rft.object_id=&rft_dat=%3Ccrossref%3E10.1300/J108v07n04_02%3C/crossref%3E&rft.eisbn=&rft_id=http%3A%2F%2Fsolo.bodleian.ox.ac.uk%2Fprimo_library%2Flibweb%2Faction%2Fdisplay.do%3Fdoc%3DTN_crossref10.1300/J108v07n04_02%26vid%3DOXVU1%26fn%3Ddisplay%26displayMode%3Dfull&rft_id=info:oai/";
+	private static final String PRIMO_EXAMPLE_FULL_ID = "ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&ctx_tim=2011-04-11T15%3A40%3A37IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=article&rft.atitle=Cheese&rft.jtitle=Journal of Agricultural %26 Food Information&rft.btitle=&rft.aulast=Cherubin&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=Cherubin, Dan&rft.aucorp=&rft.date=2007049&rft.volume=7&rft.issue=4&rft.part=&rft.quarter=&rft.ssn=&rft.spage=3&rft.epage=10&rft.pages=&rft.artnum=&rft.issn=1049-6505&rft.eissn=&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/10.1300/J108v07n04_02&rft.object_id=&rft_dat=%3Ccrossref%3E10.1300/J108v07n04_02%3C/crossref%3E&rft.eisbn=&rft_id=http%3A%2F%2Fsolo.bodleian.ox.ac.uk%2Fprimo_library%2Flibweb%2Faction%2Fdisplay.do%3Fdoc%3DTN_crossref10.1300/J108v07n04_02%26vid%3DOXVU1%26fn%3Ddisplay%26displayMode%3Dfull&rft_id=info:oai/";
 
 	private OpenURLServiceImpl service;
 
@@ -54,9 +54,7 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 	}
 	
 	public void testParsePrimo() {
-		MockHttpServletRequest req = new MockHttpServletRequest("GET", "http://localhost:8080/someurl?" + PRIMO_EXAMPLE);
-		req.setQueryString(PRIMO_EXAMPLE);
-		req.setParameters(parseQueryString(PRIMO_EXAMPLE));
+		MockHttpServletRequest req = createRequest(PRIMO_EXAMPLE);
 		
 		ContextObject contextObject = service.parse(req);
 		assertNotNull(contextObject);
@@ -66,19 +64,22 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 		Citation bookCitation = service.convert(contextObject);
 		assertEquals("Linux in a nutshell", bookCitation.getCitationProperty(Schema.TITLE));
 	}
+
+	private MockHttpServletRequest createRequest(String openUrl) {
+		MockHttpServletRequest req = new MockHttpServletRequest("GET", "http://localhost:8080/someurl?" + openUrl);
+		req.setQueryString(openUrl);
+		req.setParameters(parseQueryString(openUrl));
+		return req;
+	}
 	
 	public void testParsePrimoFullId() {
-		MockHttpServletRequest req = new MockHttpServletRequest("GET", "http://localhost:8080/url?"+ PRIMO_EXAMPLE_FULL_ID);
-		req.setQueryString(PRIMO_EXAMPLE_FULL_ID);
-		req.setParameters(parseQueryString(PRIMO_EXAMPLE_FULL_ID));
+		MockHttpServletRequest req = createRequest(PRIMO_EXAMPLE_FULL_ID);
 		
 		ContextObject contextObject = service.parse(req);
-		Citation bookCitation = service.convert(contextObject);
+		Citation citation = service.convert(contextObject);
 		
-		// This fails becuase there isn't a good value for rtf_val_fmt
-		assertNotNull(bookCitation.getCitationProperty("otherIds"));
-
-		
+		assertNotNull(citation.getCitationProperty("otherIds"));
+		assertEquals("Cheese", citation.getCitationProperty("title"));
 	}
 	
 	public void testParseBook() {
@@ -188,5 +189,154 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 			}
 		}
 		return sb.toString();
+	}
+	
+	public void testParseSampleArticle() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.ARTICLE);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("Patent", entity.getValue("atitle"));
+		Citation citation = service.convert(co);
+		assertEquals("Patent", citation.getCitationProperty("title"));
+		assertEquals("Metal Powder Report", citation.getCitationProperty("sourceTitle"));
+		assertEquals("199206", citation.getCitationProperty("date"));
+		assertEquals("47", citation.getCitationProperty("volume"));
+		assertEquals("6", citation.getCitationProperty("issue"));
+		assertEquals("59", citation.getCitationProperty("startPage"));
+		assertEquals("61", citation.getCitationProperty("endPage"));
+		assertEquals("00260657", citation.getCitationProperty("isnIdentifier"));
+		assertEquals("10.1016/0026-0657(92)91523-M", citation.getCitationProperty("doi"));
+	}
+	
+	public void testParseSampleNewspaper() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.NEWSPAPER);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("THE NATIONAL ERA", entity.getValue("jtitle"));
+		Citation citation = service.convert(co);
+		assertTrue(((String)citation.getCitationProperty("title")).startsWith("AZA")); 
+		assertEquals("THE NATIONAL ERA", citation.getCitationProperty("sourceTitle"));
+		assertEquals("18590310", citation.getCitationProperty("date"));
+		assertEquals("XIII", citation.getCitationProperty("volume"));
+		assertEquals("636", citation.getCitationProperty("issue"));
+	}
+	
+	public void testParseSampleOther() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.OTHER);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("European Journal of Echocardiography", entity.getValue("jtitle"));
+		Citation citation = service.convert(co);
+		// Fails because it's described as a book, but is actually a journal
+		assertEquals("Eustachian valve interfering with transcatheter closure of patent foramen ovale", citation.getCitationProperty("title"));
+		assertEquals("European Journal of Echocardiography", citation.getCitationProperty("sourceTitle"));
+		assertEquals("Roelandt, Philip", citation.getCitationProperty("creator"));
+		assertEquals("200707", citation.getCitationProperty("date"));
+		assertEquals("9", citation.getCitationProperty("volume"));
+		assertEquals("1", citation.getCitationProperty("issue"));
+		assertEquals("158", citation.getCitationProperty("startPage"));
+		assertEquals("159", citation.getCitationProperty("endPage"));
+		assertEquals("1525-2167", citation.getCitationProperty("isnIdentifier"));
+		assertEquals("10.1016/j.euje.2007.05.006", citation.getCitationProperty("doi"));
+	}
+	
+	public void testParseSampleText() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.TEXT);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("Cardiology in the Young", entity.getValue("jtitle"));
+		Citation citation = service.convert(co);
+		assertEquals("Complete transcatheter closure of a patent arterial duct with subsequent haemolysis", citation.getCitationProperty("title"));
+		assertEquals("Cardiology in the Young", citation.getCitationProperty("sourceTitle"));
+		assertEquals("Cace, Neven", citation.getCitationProperty("creator"));
+		assertEquals("20100325201008", citation.getCitationProperty("date"));
+		assertEquals("20", citation.getCitationProperty("volume"));
+		assertEquals("4", citation.getCitationProperty("issue"));
+		assertEquals("462", citation.getCitationProperty("startPage"));
+		assertEquals("464", citation.getCitationProperty("endPage"));
+		assertEquals("1047-9511", citation.getCitationProperty("isnIdentifier"));
+		assertEquals("10.1017/S1047951110000326", citation.getCitationProperty("doi"));
+	}
+	
+	public void testParseSampleBook() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.BOOK);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("Patent searching: tools & techniques", entity.getValue("btitle"));
+		Citation citation = service.convert(co);
+		assertEquals("Patent searching: tools & techniques", citation.getCitationProperty("title"));
+		assertEquals("[edited By] David Hunt, Long Nguyen, Matthew Rodgers.", citation.getCitationProperty("creator"));
+		assertEquals("047178379X", citation.getCitationProperty("isnIdentifier"));
+	}
+	
+	public void testParseSampleReview() {
+		// Rather screwed, a book by rft_val_fmt but using journal properties.
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.REVIEW);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("Theatre Research International", entity.getValue("jtitle"));
+		Citation citation = service.convert(co);
+		assertEquals("Children of the Queen's Revels: A Jacobean Theatre Repertory (Book Review)", citation.getCitationProperty("title"));
+		assertEquals("Theatre Research International", citation.getCitationProperty("sourceTitle"));
+		assertEquals("PRICE, VICTORIA E", citation.getCitationProperty("creator"));
+		assertEquals("200707", citation.getCitationProperty("date"));
+		assertEquals("32", citation.getCitationProperty("volume"));
+		assertEquals("2", citation.getCitationProperty("issue"));
+		assertEquals("225", citation.getCitationProperty("startPage"));
+		assertEquals("0307-8833", citation.getCitationProperty("isnIdentifier"));
+		assertEquals("10.1017/S0307883306002653", citation.getCitationProperty("doi"));
+	}
+	
+	public void testSampleJournal() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.JOURNAL);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("Kingston Journal", entity.getValue("jtitle"));
+		Citation citation = service.convert(co);
+		assertEquals("Kingston Journal", citation.getCitationProperty("title"));
+		assertEquals("1789", citation.getCitationProperty("date"));
+	}
+	
+	public void testSampleLegal() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.LEGAL);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("198604", entity.getValue("date"));
+		Citation citation = service.convert(co);
+		assertTrue(((String)citation.getCitationProperty("title")).startsWith("Patent Policy"));
+		assertEquals("198604", citation.getCitationProperty("date"));
+	}
+	
+	public void testSampleDissertation() {
+		// Again a book, but using article title.
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.DISSERTATION);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("Thomas Blanchard's Patent Management", entity.getValue("atitle"));
+		Citation citation = service.convert(co);
+		assertEquals("Thomas Blanchard's Patent Management", citation.getCitationProperty("title"));
+		assertEquals("The Journal of Economic History", citation.getCitationProperty("sourceTitle"));
+		assertEquals("Cooper, Carolyn C", citation.getCitationProperty("creator"));
+		assertEquals("198706", citation.getCitationProperty("date"));
+		assertEquals("47", citation.getCitationProperty("volume"));
+		assertEquals("2", citation.getCitationProperty("issue"));
+		assertEquals("487", citation.getCitationProperty("startPage"));
+		assertEquals("488", citation.getCitationProperty("endPage"));
+		assertEquals("0022-0507", citation.getCitationProperty("isnIdentifier"));
+		assertEquals("10.1017/S002205070004821X", citation.getCitationProperty("doi"));
+	}
+	
+	public void testSamplePrimoImage() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.IMAGE);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("Cocktail Hour", entity.getValue("atitle"));
+		Citation citation = service.convert(co);
+		assertEquals("Cocktail Hour", citation.getCitationProperty("title"));
+		assertEquals("2008", citation.getCitationProperty("date"));
+		assertEquals("Nov/Dec 2008", citation.getCitationProperty("issue"));
+		assertEquals("58", citation.getCitationProperty("startPage"));
+		assertEquals("63", citation.getCitationProperty("endPage"));
+		assertEquals("1836-7526", citation.getCitationProperty("isnIdentifier"));
 	}
 }

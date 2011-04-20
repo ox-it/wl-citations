@@ -35,7 +35,6 @@ public class GenericConverter extends AbstractConverter {
 		conversion.put("publicationLocation", "place");
 		conversion.put("edition", "edition");
 		// conversion.put("sourceTitle", "series"); // Only for books, sourceTitle is used for other things.
-		conversion.put("isnIdentifier", "isbn");
 		// From Journals
 		conversion.put("sourceTitle", "jtitle");
 		// conversion.put("date", "date");
@@ -169,6 +168,8 @@ public class GenericConverter extends AbstractConverter {
 		
 		convertSingle(values, citation, "atitle", "title");
 		convertSingle(values, citation, "btitle", "title");
+		convertSingle(values, citation, "issn", "isnIdentifier");
+		convertSingle(values, citation, "isbn", "isnIdentifier");
 		if (destGenre != null) {
 			if ("info:ofi/fmt:kev:mtx:journal".equals(destGenre.openUrlId)) {
 				convertSingle(values, citation, "title", "sourceTitle");
@@ -176,7 +177,7 @@ public class GenericConverter extends AbstractConverter {
 			if ("info:ofi/fmt:kev:mtx:book".equals(destGenre.openUrlId)) {
 				convertSingle(values, citation, "title", "title");
 			}
-		} 
+		}
 		
 		
 		String author = Utils.lookForAuthor(values);
@@ -188,10 +189,19 @@ public class GenericConverter extends AbstractConverter {
 		return citation;
 	}
 
+	
+	/**
+	 * Converts a single value only if a value doesn't exist for the field already.
+	 * @param values
+	 * @param citation
+	 * @param srcProp
+	 * @param destProp
+	 * @return
+	 */
 	private boolean convertSingle(Map<String, List<String>> values,
 			Citation citation, String srcProp, String destProp) {
 		List<String> valueList = values.get(srcProp);
-		if (valueList != null && !valueList.isEmpty()) {
+		if (valueList != null && !valueList.isEmpty() && !citation.hasCitationProperty(destProp)) {
 			String value = valueList.get(0);
 			if (value != null && value.length() > 0) {
 				citation.setCitationProperty(destProp, value);
