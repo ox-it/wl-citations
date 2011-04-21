@@ -54,7 +54,7 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 	}
 	
 	public void testParsePrimo() {
-		MockHttpServletRequest req = createRequest(PRIMO_EXAMPLE);
+		MockHttpServletRequest req = createRequest("http://localhost:8080/someurl?"+PRIMO_EXAMPLE);
 		
 		ContextObject contextObject = service.parse(req);
 		assertNotNull(contextObject);
@@ -66,14 +66,14 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 	}
 
 	private MockHttpServletRequest createRequest(String openUrl) {
-		MockHttpServletRequest req = new MockHttpServletRequest("GET", "http://localhost:8080/someurl?" + openUrl);
+		MockHttpServletRequest req = new MockHttpServletRequest("GET", openUrl);
 		req.setQueryString(openUrl);
 		req.setParameters(parseQueryString(openUrl));
 		return req;
 	}
 	
 	public void testParsePrimoFullId() {
-		MockHttpServletRequest req = createRequest(PRIMO_EXAMPLE_FULL_ID);
+		MockHttpServletRequest req = createRequest("http://localhost:8080/someurl?"+PRIMO_EXAMPLE_FULL_ID);
 		
 		ContextObject contextObject = service.parse(req);
 		Citation citation = service.convert(contextObject);
@@ -338,5 +338,16 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 		assertEquals("58", citation.getCitationProperty("startPage"));
 		assertEquals("63", citation.getCitationProperty("endPage"));
 		assertEquals("1836-7526", citation.getCitationProperty("isnIdentifier"));
+	}
+	
+	// We had an issue with this one where both the title and sourceTitle ended up with being the the same.
+	public void testSamplePrimoJournalCorrect() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.CORRECT_JOURNAL);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertEquals("Theory and practice of logic programming", entity.getValue("jtitle"));
+		Citation citation = service.convert(co);
+		assertEquals("Theory and practice of logic programming", citation.getCitationProperty("title"));
+		assertEquals("", citation.getCitationProperty("sourceTitle"));
 	}
 }

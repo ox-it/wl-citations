@@ -93,4 +93,13 @@ public interface SamplePrimoOpenURLs {
 			"rft.au=&rft.aucorp=&rft.date=2008&rft.volume=&rft.issue=Nov/Dec%202008&rft.part=&rft.quarter=&rft.ssn=&rft.spage=58&" +
 			"rft.epage=63&rft.pages=&rft.artnum=&rft.issn=1836-7526&rft.eissn=&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/&" +
 			"rft.object_id=&rft_dat=%3Cinformit%3E750082611527469%3C/informit%3E&rft.eisbn=";
+	
+	String CORRECT_JOURNAL = "http://oxfordsfx-direct.hosted.exlibrisgroup.com/oxford?ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&" +
+			"ctx_tim=2011-04-21T10%3A02%3A00IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&" +
+			"rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Journal-UkOxU&rft_val_fmt=info:ofi/fmt:kev:mtx:journal&rft.genre=journal&" +
+			"rft.atitle=&rft.jtitle=Theory%20and%20practice%20of%20logic%20programming&rft.btitle=&rft.aulast=&rft.auinit=&rft.auinit1=&" +
+			"rft.auinitm=&rft.ausuffix=&rft.au=&rft.aucorp=&rft.volume=&rft.issue=&rft.part=&rft.quarter=&rft.ssn=&rft.spage=&rft.epage=&" +
+			"rft.pages=&rft.artnum=&rft.issn=1475-3081&rft.eissn=&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/&rft.object_id=&" +
+			"rft_bat=%3CUkOxU%3EUkOxUb16836813%3C/UkOxU%3E&rft.eisbn=&rft_id=info:oai/&" +
+			"rft_id=http%3A%2F%2Fsolo.bodleian.ox.ac.uk%2Fprimo_library%2Flibweb%2Faction%2Fdisplay.do%3Fdoc%3DUkOxUUkOxUb16836813%26vid%3DOXVU1%26fn%3Ddisplay%26displayMode%3Dfull";
 }

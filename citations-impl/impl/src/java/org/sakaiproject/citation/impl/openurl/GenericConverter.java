@@ -173,6 +173,12 @@ public class GenericConverter extends AbstractConverter {
 		if (destGenre != null) {
 			if ("info:ofi/fmt:kev:mtx:journal".equals(destGenre.openUrlId)) {
 				convertSingle(values, citation, "title", "sourceTitle");
+				if ("journal".equals(destGenre.openUrlGenre)) {
+					// If it says it's a journal and doesn't have a title already use the jtitle
+					convertSingle(values, citation, "jtitle", "title");
+					// Clear out the sourceTitle.
+					citation.setCitationProperty("sourceTitle", null);
+				}
 			}
 			if ("info:ofi/fmt:kev:mtx:book".equals(destGenre.openUrlId)) {
 				convertSingle(values, citation, "title", "title");
