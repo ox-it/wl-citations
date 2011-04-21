@@ -730,6 +730,9 @@ public class BaseConfigurationService implements ConfigurationService, Observer
       saveParameter(document, parameterMap, "sakai-serverkey");
 
       saveParameter(document, parameterMap, "searchable-databases");
+      
+      saveParameter(document, parameterMap, "external-search-enabled");
+      saveParameter(document, parameterMap, "external-search-url");
 
       saveParameter(document, parameterMap, "config-id");               // obsolete?
       saveParameter(document, parameterMap, "database-xml");            // obsolete?
