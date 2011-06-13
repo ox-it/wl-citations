@@ -1,10 +1,16 @@
 package org.sakaiproject.citation.impl;
 
+import java.util.List;
+
+import org.jmock.Expectations;
 import org.sakaiproject.citation.api.Citation;
 import org.sakaiproject.citation.api.CitationService;
 import org.sakaiproject.citation.api.Schema;
+import org.sakaiproject.citation.api.Schema.Field;
 import org.sakaiproject.citation.impl.openurl.BookConverter;
 import org.sakaiproject.citation.impl.openurl.ContextObjectEntity;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 public class BookConverterTest extends BaseCitationServiceSupport {
 
@@ -40,4 +46,51 @@ public class BookConverterTest extends BaseCitationServiceSupport {
 		assertTrue(bookContextObject.getIds().contains("info:doi"+ DOI));
 	}
 	
+	public void testSetMultipleProperties() throws Exception {
+		CitationService citationService = createCitationService();
+		Citation book = citationService.addCitation("book");
+
+		// The Schema aren't loaded so we need to mock the schema.
+		final Schema bookSchema = mock(Schema.class);
+		final Field titleField = mock(Field.class);
+		
+		checking(new Expectations() {
+			{
+				// The single field in our fake schema.
+				allowing(titleField).isMultivalued();
+				will(returnValue(false));
+				allowing(titleField).isRequired();
+				will(returnValue(true));
+				allowing(titleField).getDefaultValue();
+				will(returnValue(null));
+				
+				// The Schema
+				allowing(bookSchema).getFields();
+				will(returnValue(Collections.singletonList(titleField)));
+				allowing(bookSchema).getRequiredFields();
+				will(returnValue(Collections.singletonList("title")));
+				allowing(bookSchema).getField("title");
+				will(returnValue(titleField));
+				allowing(bookSchema).getField(with(any(String.class)));
+				will(returnValue(null));
+			}
+		});
+		
+		
+		book.setSchema(bookSchema);
+		// Check that a property off schema can grow to be multiple values.
+		book.setCitationProperty("otherId", "first");
+		book.setCitationProperty("otherId", "second");
+		assertTrue(book.getCitationProperty("otherId") instanceof List);
+		List ids = (List)book.getCitationProperty("otherId");
+		assertTrue(ids.contains("first"));
+		assertTrue(ids.contains("second"));
+		assertFalse(ids.contains("missing"));
+		
+		// Check that titles don't become multivalued.
+		book.setCitationProperty("title", "My Book");
+		assertEquals("My Book", book.getCitationProperty("title"));
+		book.setCitationProperty("title", "Other Book");
+		assertEquals("Other Book", book.getCitationProperty("title"));
+	}
 }

@@ -350,4 +350,20 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 		assertEquals("Theory and practice of logic programming", citation.getCitationProperty("title"));
 		assertEquals("", citation.getCitationProperty("sourceTitle"));
 	}
+	
+	public void testLinuxInANutshellGood() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.WORKING_IMPORT);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertNotNull(entity.getIds());
+		assertTrue(entity.getIds().contains("http://solo.bodleian.ox.ac.uk/primo_library/libweb/action/display.do?doc=UkOxUUkOxUb15585873&vid=OXVU1&fn=display&displayMode=full"));
+	}
+	
+	public void testLinuxInANutshellBad() {
+		HttpServletRequest req = createRequest(SamplePrimoOpenURLs.BROKEN_IMPORT);
+		ContextObject co = service.parse(req);
+		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
+		assertNotNull(entity.getIds());
+		assertTrue(entity.getIds().contains("http://solo.bodleian.ox.ac.uk/primo_library/libweb/action/display.do?doc=UkOxUUkOxUb17140770&vid=OXVU1&fn=display&displayMode=full"));
+	}
 }

@@ -95,7 +95,7 @@ public class Utils {
 			if (values.containsKey("au")) {
 				for (String otherAuthor: values.get("au")) {
 					if (otherAuthor != null && otherAuthor.toLowerCase().contains(author.toString().toLowerCase())) {
-						// Surname already exist in other field, assume we don't need this one.
+						// Surname already exist in other au field, assume we don't need this one.
 						return null;
 					}
 				}

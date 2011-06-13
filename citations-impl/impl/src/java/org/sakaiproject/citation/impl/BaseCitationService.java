@@ -945,6 +945,7 @@ public abstract class BaseCitationService implements CitationService
 				}
 				else
 				{
+					Object newValue = value;
 					// Make value multivalued if possible.
 					// Only do this on setCitation.
 					if (!isSchemaLimited(name)) 
@@ -955,11 +956,10 @@ public abstract class BaseCitationService implements CitationService
 							List list = new Vector();
 							list.add(existingValue);
 							list.add(value);
-							m_citationProperties.put(name, value);
+							newValue = list;
 						}
 					}
-					
-					m_citationProperties.put(name, value);
+					m_citationProperties.put(name, newValue);
 				}
 			}
 		
