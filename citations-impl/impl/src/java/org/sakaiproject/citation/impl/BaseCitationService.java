@@ -1935,11 +1935,11 @@ public abstract class BaseCitationService implements CitationService
 		{
 			if (name == null || name.trim().equals(""))
 			{
-				setCitationProperty(Schema.TITLE, "untitled");
+				addPropertyValue(Schema.TITLE, "untitled");
 			}
 			else
 			{
-				setCitationProperty(Schema.TITLE, name);
+				addPropertyValue(Schema.TITLE, name);
 			}
 		}
 
