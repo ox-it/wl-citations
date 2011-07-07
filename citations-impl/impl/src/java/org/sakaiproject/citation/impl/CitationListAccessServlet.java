@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -70,6 +71,13 @@ public class CitationListAccessServlet implements HttpAccess
 	
 	/** Our logger. */
 	private static Log m_log = LogFactory.getLog(CitationListAccessServlet.class);
+	
+	private static final Collection<String> specialKeys = new HashSet<String>();
+	static {
+		specialKeys.add("edition");
+		specialKeys.add("note");
+		specialKeys.add("notes");
+	};
 
 	/**
 	 * Handle an HTTP request for access. The request and response objects are provider.<br />
@@ -342,14 +350,11 @@ public class CitationListAccessServlet implements HttpAccess
     			// TODO This doesn't need any Inline HTTP Transport.
     			out.println("\t\t\t\t<span class=\"Z3988\" title=\""+ citation.getOpenurlParameters().substring(1).replace("&", "&amp;")+ "\"></span>");
     			out.println("\t\t\t</div>");
-
-    			// show detailed info
-    			out.println("\t\t<div id=\"details_" + escapedId + "\" class=\"citationDetails\" style=\"display: none;\">");
-       			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
-	     			
+    			
+    			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
+     			
     			Schema schema = citation.getSchema();
-    			if(schema == null)
-    			{
+    			if(schema == null)	{
     				m_log.warn("CLAS.handleViewRequest() Schema is null: " + citation);
     				continue;
     			}
@@ -359,53 +364,127 @@ public class CitationListAccessServlet implements HttpAccess
     			while(fieldIt.hasNext())
     			{
     				Field field = (Field) fieldIt.next();
+    				if(specialKeys.contains(field.getIdentifier())) {
     				
-    				if(field.isMultivalued())
-    				{
-    					// don't want to repeat authors
-    					if( !Schema.CREATOR.equals(field.getIdentifier()) )
+    					if(field.isMultivalued())
     					{
-    						List values = (List) citation.getCitationProperty(field.getIdentifier());
-    						Iterator valueIt = values.iterator();
-    						boolean first = true;
-    						while(valueIt.hasNext())
+    						// don't want to repeat authors
+    						if( !Schema.CREATOR.equals(field.getIdentifier()) )
     						{
-    							String value = (String) valueIt.next();
-    							if( value != null && !value.trim().equals("") )
+    							List values = (List) citation.getCitationProperty(field.getIdentifier());
+    							Iterator valueIt = values.iterator();
+    							boolean first = true;
+    							while(valueIt.hasNext())
     							{
-    								if(first)
+    								String value = (String) valueIt.next();
+    								if( value != null && !value.trim().equals("") )
     								{
-    									String label = rb.getString(schema.getIdentifier() + "." + field.getIdentifier(), field.getIdentifier());
-    									out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
-    								}
-    								else
-    								{
-    									out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\">&nbsp;</td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>\n");
-    								}
-    							}	
-    							first = false;
+    									if(first)
+    									{
+    										String label = rb.getString(schema.getIdentifier() + "." + field.getIdentifier(), field.getIdentifier());
+    										out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
+    									}
+    									else
+    									{
+    										out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\">&nbsp;</td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>\n");
+    									}
+    								}	
+    								first = false;
+    							}
+    						}
+    					}
+    					else
+    					{
+    						String value = (String) citation.getCitationProperty(field.getIdentifier());
+    						if(value != null && ! value.trim().equals(""))
+    						{
+    							String label = rb.getString(schema.getIdentifier() + "." + field.getIdentifier(), field.getIdentifier());
+    							/* leaving out "Find It!" link for now as we're not using it anywhere else anymore
+ 								if(Schema.TITLE.equals(field.getIdentifier()))
+ 								{
+ 								value += " [<a href=\"" + citation.getOpenurl() + "\" target=\"_blank\">" + openUrlLabel + "</a>]";
+ 								}
+    							 */
+ 							
+    							// don't want to repeat titles
+    							if( !Schema.TITLE.equals(field.getIdentifier()) )
+    							{
+    								out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
+    							}
+
     						}
     					}
     				}
-    				else
-    				{
-    					String value = (String) citation.getCitationProperty(field.getIdentifier());
-    					if(value != null && ! value.trim().equals(""))
-    					{
- 							String label = rb.getString(schema.getIdentifier() + "." + field.getIdentifier(), field.getIdentifier());
- 							/* leaving out "Find It!" link for now as we're not using it anywhere else anymore
- 							if(Schema.TITLE.equals(field.getIdentifier()))
- 							{
- 								value += " [<a href=\"" + citation.getOpenurl() + "\" target=\"_blank\">" + openUrlLabel + "</a>]";
- 							}
- 							*/
- 							
- 							// don't want to repeat titles
- 							if( !Schema.TITLE.equals(field.getIdentifier()) )
- 							{
- 								out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
- 							}
+    			}
+      			out.println("\t\t\t</table>");
+    			
+    			
+    			
 
+    			// show detailed info
+    			out.println("\t\t<div id=\"details_" + escapedId + "\" class=\"citationDetails\" style=\"display: none;\">");
+       			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
+	     			
+    			//Schema schema = citation.getSchema();
+    			//if(schema == null)
+    			//{
+    			//	m_log.warn("CLAS.handleViewRequest() Schema is null: " + citation);
+    			//	continue;
+    			//}
+    			fields = schema.getFields();
+    			fieldIt = fields.iterator();
+    			
+    			while(fieldIt.hasNext())
+    			{
+    				Field field = (Field) fieldIt.next();
+    				
+    				if(!specialKeys.contains(field.getIdentifier())) {
+    					if(field.isMultivalued())
+    					{
+    						// don't want to repeat authors
+    						if( !Schema.CREATOR.equals(field.getIdentifier()) )
+    						{
+    							List values = (List) citation.getCitationProperty(field.getIdentifier());
+    							Iterator valueIt = values.iterator();
+    							boolean first = true;
+    							while(valueIt.hasNext())
+    							{
+    								String value = (String) valueIt.next();
+    								if( value != null && !value.trim().equals("") )
+    								{
+    									if(first)
+    									{
+    										String label = rb.getString(schema.getIdentifier() + "." + field.getIdentifier(), field.getIdentifier());
+    										out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
+    									}
+    									else
+    									{
+    										out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\">&nbsp;</td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>\n");
+    									}
+    								}	
+    								first = false;
+    							}
+    						}
+    					}
+    					else
+    					{
+    						String value = (String) citation.getCitationProperty(field.getIdentifier());
+    						if(value != null && ! value.trim().equals(""))
+    						{
+    							String label = rb.getString(schema.getIdentifier() + "." + field.getIdentifier(), field.getIdentifier());
+    							/* leaving out "Find It!" link for now as we're not using it anywhere else anymore
+ 								if(Schema.TITLE.equals(field.getIdentifier()))
+ 								{
+ 								value += " [<a href=\"" + citation.getOpenurl() + "\" target=\"_blank\">" + openUrlLabel + "</a>]";
+ 								}
+ 								*/
+ 							
+    							// don't want to repeat titles
+    							if( !Schema.TITLE.equals(field.getIdentifier()) )
+    							{
+    								out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
+    							}
+    						}
     					}
     				}
     			}
