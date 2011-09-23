@@ -602,6 +602,25 @@ public abstract class BaseCitationService implements CitationService
       }
       return Citation.ADD_PREFIX_TEXT.equals(prefixRequest);
     }
+    
+	public void addPropertyValue(String name, Object value)
+	{
+		getCitationProperties();
+		if (isMultivalued(name))
+		{
+			List list = (List) this.m_citationProperties.get(name);
+			if (list == null)
+			{
+				list = new Vector();
+				this.m_citationProperties.put(name, list);
+			}
+			list.add(value);
+		}
+		else
+		{
+			this.m_citationProperties.put(name, value);
+		}
+	}
 
 		/**
 		 *
@@ -884,17 +903,6 @@ public abstract class BaseCitationService implements CitationService
 
 		}
 
-		public List listCitationProperties()
-		{
-			if (m_citationProperties == null)
-			{
-				m_citationProperties = new Hashtable();
-			}
-		
-			return new Vector(m_citationProperties.keySet());
-		
-		}
-
 		/* (non-Javadoc)
 		 * @see org.sakaiproject.citation.api.Citation#getCitationProperty(java.lang.String)
 		 */
@@ -916,119 +924,6 @@ public abstract class BaseCitationService implements CitationService
 
 			return value;
 
-		}
-
-		public void setCitationProperty(String name, Object value)
-		{
-			// Check if it's not restricted to a single value by the schema
-			if (isMultivalued(name))
-			{
-				List list = (List) m_citationProperties.get(name);
-				if (list == null)
-				{
-					list = new Vector();
-					m_citationProperties.put(name, list);
-				}
-				if (value != null)
-				{
-					list.add(value);
-				}
-			}
-			else
-			{ 
-				if (value == null)
-				{
-					m_citationProperties.remove(name);
-				}
-				else
-				{
-					Object newValue = value;
-					// Make value multivalued if possible.
-					// Only do this on setCitation.
-					if (!isSchemaLimited(name)) 
-					{
-						if (hasCitationProperty(name))
-						{
-							Object existingValue =  m_citationProperties.get(name);
-							List list = new Vector();
-							list.add(existingValue);
-							list.add(value);
-							newValue = list;
-						}
-					}
-					m_citationProperties.put(name, newValue);
-				}
-			}
-		
-		}
-
-		public void updateCitationProperty(String name, List values)
-		{
-			if (isMultivalued(name))
-			{
-				List list = (List) m_citationProperties.get(name);
-				if (list == null)
-				{
-					list = new Vector();
-					m_citationProperties.put(name, list);
-				}
-				list.clear();
-				if (values != null)
-				{
-					list.addAll(values);
-				}
-			}
-			else
-			{
-				if (values == null || values.isEmpty())
-				{
-					m_citationProperties.remove(name);
-				}
-				else
-				{
-					m_citationProperties.put(name, values.get(0));
-				}
-			}
-		
-		}
-		
-		public boolean hasCitationProperty(String fieldId) {
-			Object val = m_citationProperties.get(fieldId);
-			boolean hasValue = val != null;
-			if (hasValue)
-			{
-				if (val instanceof List)
-				{
-					List list = (List) val;
-					hasValue = !list.isEmpty();
-				}
-			}
-		
-			return hasValue;
-		}
-
-		public void addPropertyValue(String name, Object value)
-		{
-			getCitationProperties();
-			if (isMultivalued(name))
-			{
-				List list = (List) this.m_citationProperties.get(name);
-				if (list == null)
-				{
-					list = new Vector();
-					this.m_citationProperties.put(name, list);
-				}
-				list.add(value);
-			}
-			else
-			{
-				this.m_citationProperties.put(name, value);
-			}
-		}
-
-		public boolean hasPropertyValue(String fieldId)
-		{
-			return hasCitationProperty(fieldId);
 		}
 
 		/*
@@ -1601,6 +1496,13 @@ public abstract class BaseCitationService implements CitationService
 			return m_urls != null && !m_urls.isEmpty();
 		}
 
+
+		public boolean hasPropertyValue(String fieldId)
+		{
+			return hasCitationProperty(fieldId);
+		}
+
+
 		/*
 		 * (non-Javadoc)
 		 *
@@ -2025,18 +1927,29 @@ public abstract class BaseCitationService implements CitationService
 			return (field != null && field.isMultivalued());
 			
 		}
-		
-		protected boolean isSchemaLimited(String fieldId)
-		{
-			return m_schema != null && m_schema.getField(fieldId) != null;
-		}
-		
+
 		/**
 		 * @return
 		 */
 		public boolean isTemporary()
 		{
 			return m_temporary;
+		}
+		
+		protected boolean isSchemaLimited(String fieldId)
+		{
+			return m_schema != null && m_schema.getField(fieldId) != null;
+		}
+
+		public List listCitationProperties()
+		{
+			if (m_citationProperties == null)
+			{
+				m_citationProperties = new Hashtable();
+			}
+		
+			return new Vector(m_citationProperties.keySet());
+		
 		}
 
 		/*
@@ -2047,6 +1960,66 @@ public abstract class BaseCitationService implements CitationService
 		public void setAdded(boolean added)
 		{
 			this.m_isAdded = added;
+		}
+
+		public void setCitationProperty(String name, Object value)
+		{
+			// Check if it's not restricted to a single value by the schema
+			if (isMultivalued(name))
+			{
+				List list = (List) m_citationProperties.get(name);
+				if (list == null)
+				{
+					list = new Vector();
+					m_citationProperties.put(name, list);
+				}
+				if (value != null)
+				{
+					list.add(value);
+				}
+			}
+			else
+			{ 
+				if (value == null)
+				{
+					m_citationProperties.remove(name);
+				}
+				else
+				{
+					Object newValue = value;
+					// Make value multivalued if possible.
+					// Only do this on setCitation.
+					if (!isSchemaLimited(name)) 
+					{
+						if (hasCitationProperty(name))
+						{
+							Object existingValue =  m_citationProperties.get(name);
+							List list = new Vector();
+							list.add(existingValue);
+							list.add(value);
+							newValue = list;
+						}
+					}
+					m_citationProperties.put(name, newValue);
+				}
+			}
+		
+		}
+
+		public boolean hasCitationProperty(String fieldId)
+		{
+			Object val = m_citationProperties.get(fieldId);
+			boolean hasValue = val != null;
+			if (hasValue)
+			{
+				if (val instanceof List)
+				{
+					List list = (List) val;
+					hasValue = !list.isEmpty();
+				}
+			}
+		
+			return hasValue;
 		}
 
 		protected void setDefaults()
@@ -2121,6 +2094,37 @@ public abstract class BaseCitationService implements CitationService
 		public String toString()
 		{
 			return "BasicCitation: " + this.m_id;
+		}
+		
+
+		public void updateCitationProperty(String name, List values)
+		{
+			if (isMultivalued(name))
+			{
+				List list = (List) m_citationProperties.get(name);
+				if (list == null)
+				{
+					list = new Vector();
+					m_citationProperties.put(name, list);
+				}
+				list.clear();
+				if (values != null)
+				{
+					list.addAll(values);
+				}
+			}
+			else
+			{
+				if (values == null || values.isEmpty())
+				{
+					m_citationProperties.remove(name);
+				}
+				else
+				{
+					m_citationProperties.put(name, values.get(0));
+				}
+			}
+		
 		}
 
 		public String getPreferredUrlId()
