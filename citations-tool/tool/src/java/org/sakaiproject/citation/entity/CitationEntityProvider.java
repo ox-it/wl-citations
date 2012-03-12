@@ -137,12 +137,12 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 
 	public class DecoratedCitationCollection {
 		private String name;
-		private String desctiption;
+		private String description;
 		private List<DecoratedCitation> citations;
 
 		public DecoratedCitationCollection(String name, String description) {
 			this.name = name;
-			this.desctiption = description;
+			this.description = description;
 			this.citations = new ArrayList<DecoratedCitation>();
 		}
 
@@ -154,8 +154,8 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 			return name;
 		}
 
-		public String getDesctiption() {
-			return desctiption;
+		public String getDescription() {
+			return description;
 		}
 
 		public List<DecoratedCitation> getCitations() {
