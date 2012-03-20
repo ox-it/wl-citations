@@ -6,5 +6,6 @@
         class="org.sakaiproject.citation.entity.CitationEntityProvider">
         <property name="citationService" ref="org.sakaiproject.citation.api.CitationService"/>
         <property name="contentHostingService" ref="org.sakaiproject.content.api.ContentHostingService"/>
+        <property name="userDirectoryService" ref="org.sakaiproject.user.api.UserDirectoryService"/>
     </bean>
 </beans>

@@ -22,6 +22,7 @@ import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.ServerOverloadException;
 import org.sakaiproject.exception.TypeException;
+import org.sakaiproject.user.api.UserDirectoryService;
 
 /**
  * Citations service is built on top of resources. All permissions checks are
@@ -35,6 +36,7 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 
 	private CitationService citationService;
 	private ContentHostingService contentHostingService;
+	private UserDirectoryService userDirectoryService;
 
 	public void setCitationService(CitationService citationService) {
 		this.citationService = citationService;
@@ -43,6 +45,10 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 	public void setContentHostingService(
 			ContentHostingService contentHostingService) {
 		this.contentHostingService = contentHostingService;
+	}
+
+	public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
+		this.userDirectoryService = userDirectoryService;
 	}
 
 	public String getEntityPrefix() {
@@ -87,18 +93,20 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 					.getProperty(ResourceProperties.PROP_DESCRIPTION);
 
 			DecoratedCitationCollection dCollection = new DecoratedCitationCollection(
-					title, description);
+					collection.getId(), title, description);
 
 			for (Citation citation : (List<Citation>) collection.getCitations()) {
-				dCollection.addCitation(new DecoratedCitation(citation
-						.getSchema().getIdentifier(), citation
-						.getCitationProperties()));
+				dCollection.addCitation(new DecoratedCitation(
+						citation.getId(), citation.getSchema().getIdentifier(),
+						citation.getCitationProperties()));
 			}
 			return dCollection;
 		} catch (PermissionException e) {
-			// TODO User logged in?
-			throw new EntityException("Permission denied",
-					resourceId.toString(), 401);
+			if (userDirectoryService.getAnonymousUser().equals(userDirectoryService.getCurrentUser())) {
+				throw new EntityException("Login required", resourceId.toString(), 401);
+			} else {
+				throw new EntityException("Permission denied", resourceId.toString(), 403);
+			}
 		} catch (IdUnusedException e) {
 			throw new EntityException("Not found", resourceId.toString(), 404);
 		} catch (TypeException e) {
@@ -120,10 +128,16 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 	public class DecoratedCitation {
 		private String type;
 		private Map<String, String> values;
+		private String id;
 
-		public DecoratedCitation(String type, Map<String, String> values) {
+		public DecoratedCitation(String id, String type, Map<String, String> values) {
+			this.id = id;
 			this.type = type;
 			this.values = values;
+		}
+		
+		public String getId() {
+			return id;
 		}
 
 		public String getType() {
@@ -136,11 +150,13 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 	}
 
 	public class DecoratedCitationCollection {
+		private String id;
 		private String name;
 		private String description;
 		private List<DecoratedCitation> citations;
 
-		public DecoratedCitationCollection(String name, String description) {
+		public DecoratedCitationCollection(String id, String name, String description) {
+			this.id = id;
 			this.name = name;
 			this.description = description;
 			this.citations = new ArrayList<DecoratedCitation>();
@@ -148,6 +164,10 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 
 		public void addCitation(DecoratedCitation citation) {
 			citations.add(citation);
+		}
+		
+		public String getId() {
+			return id;
 		}
 
 		public String getName() {
