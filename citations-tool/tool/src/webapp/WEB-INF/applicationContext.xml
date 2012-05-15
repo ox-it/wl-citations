@@ -7,5 +7,6 @@
         <property name="citationService" ref="org.sakaiproject.citation.api.CitationService"/>
         <property name="contentHostingService" ref="org.sakaiproject.content.api.ContentHostingService"/>
         <property name="userDirectoryService" ref="org.sakaiproject.user.api.UserDirectoryService"/>
+        <property name="entityManager" ref="org.sakaiproject.entity.api.EntityManager"/>
     </bean>
 </beans>
