@@ -957,6 +957,13 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		// get the citation list title
 		String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
 		ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		try {
+			ContentResource resource = contentService.getResource(resourceId);
+			String description = resource.getProperties().getProperty(ResourceProperties.PROP_DESCRIPTION);
+			context.put("description", description);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		String refStr = contentService.getReference(resourceId);
 		Reference ref = EntityManager.newReference(refStr);
 		String collectionTitle = null;
@@ -1554,6 +1561,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
     	SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
 		ToolSession toolSession = SessionManager.getCurrentToolSession();
 		ParameterParser params = data.getParameters();
+		
 
 		int requestStateId = params.getInt("requestStateId", 0);
 		restoreRequestState(state, new String[]{CitationHelper.RESOURCES_REQUEST_PREFIX, CitationHelper.CITATION_PREFIX}, requestStateId);
@@ -1643,6 +1651,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		        logger.warn("Exception ", e);
 	        }
 		}
+		
 
 		// set content (mime) type
 		pipe.setRevisedMimeType(ResourceType.MIME_TYPE_HTML);
@@ -1661,6 +1670,15 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		String[] args = new String[]{ Integer.toString(collection.size()) };
 		String size_str =rb.getFormattedMessage("citation.count",  args);
     	pipe.setRevisedResourceProperty(ResourceProperties.PROP_CONTENT_LENGTH, size_str);
+    	
+	   	String temporaryResourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
+	   	ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+	    String description = params.getString("description");
+	    try {
+			contentService.addProperty(temporaryResourceId,ResourceProperties.PROP_DESCRIPTION,description);
+		} catch (Exception e) {
+			 logger.warn("Failed to set resource description on citation list update. Reason: " + e.getMessage());
+		}
 
     	// leave helper mode
 		pipe.setActionCanceled(false);
