@@ -964,7 +964,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			String description = resource.getProperties().getProperty(ResourceProperties.PROP_DESCRIPTION);
 			context.put("description", description);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception whilst setting citation list resource description.",e);
 		}
 		String refStr = contentService.getReference(resourceId);
 		Reference ref = EntityManager.newReference(refStr);
@@ -1679,7 +1679,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	    try {
 			contentService.addProperty(temporaryResourceId,ResourceProperties.PROP_DESCRIPTION,description);
 		} catch (Exception e) {
-			 logger.warn("Failed to set resource description on citation list update. Reason: " + e.getMessage());
+			 logger.error("Failed to set resource description on citation list update.", e);
 		}
 
     	// leave helper mode
