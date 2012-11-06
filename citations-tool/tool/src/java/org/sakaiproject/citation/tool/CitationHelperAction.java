@@ -465,7 +465,8 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	public static ResourceLoader rb = new ResourceLoader("citations");
 
 	public static final Integer DEFAULT_RESULTS_PAGE_SIZE = new Integer(10);
-	public static Integer DEFAULT_LIST_PAGE_SIZE = new Integer(50);
+
+	public static Integer defaultListPageSize;
 
 	protected static final String ELEMENT_ID_CREATE_FORM = "createForm";
 	protected static final String ELEMENT_ID_EDIT_FORM = "editForm";
@@ -559,9 +560,10 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		ServerConfigurationService scs
 			= (ServerConfigurationService) ComponentManager.get(ServerConfigurationService.class);
 		if(scs != null) {
-			DEFAULT_LIST_PAGE_SIZE = scs.getInt("citations.default.list.page.size", 50);
+			defaultListPageSize = scs.getInt("citations.default.list.page.size", 50);
 		} else {
-			logger.warn("Failed to get default list page size as ServerConfigurationService is null. Defaulting to " + DEFAULT_LIST_PAGE_SIZE);
+			logger.warn("Failed to get default list page size as ServerConfigurationService is null. Defaulting to " + defaultListPageSize);
+            defaultListPageSize = 50;
 		}
 	}
 
@@ -997,7 +999,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		Integer listPageSize = (Integer) state.getAttribute(STATE_LIST_PAGE_SIZE);
 		if(listPageSize == null)
 		{
-			listPageSize = DEFAULT_LIST_PAGE_SIZE;
+			listPageSize = defaultListPageSize;
 			state.setAttribute(STATE_LIST_PAGE_SIZE, listPageSize);
 		}
 		context.put("listPageSize", listPageSize);
@@ -3482,7 +3484,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 		if(state.getAttribute(STATE_LIST_PAGE_SIZE) == null)
 		{
-			state.setAttribute(STATE_LIST_PAGE_SIZE, DEFAULT_LIST_PAGE_SIZE);
+			state.setAttribute(STATE_LIST_PAGE_SIZE, defaultListPageSize);
 		}
 
 		return true;
