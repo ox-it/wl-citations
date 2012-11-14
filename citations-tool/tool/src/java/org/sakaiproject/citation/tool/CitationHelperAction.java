@@ -95,9 +95,12 @@ import org.sakaiproject.exception.OverQuotaException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.ServerOverloadException;
 import org.sakaiproject.exception.TypeException;
+import org.sakaiproject.tool.api.Placement;
 import org.sakaiproject.tool.api.Tool;
 import org.sakaiproject.tool.api.ToolException;
 import org.sakaiproject.tool.api.ToolSession;
+import org.sakaiproject.user.api.User;
+import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.FileItem;
@@ -703,6 +706,14 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		// get the collection we're now working on
 		String collectionId = (String)state.getAttribute(STATE_COLLECTION_ID);
 		context.put( "collectionId", collectionId );
+		
+		// We need to add the current siteId for the FCK resource picker
+		Placement placement = ToolManager.getCurrentPlacement();
+		if (placement == null) {
+			logger.warn("Current tool placement is null.");
+		} else {
+			context.put("siteId", placement.getContext());
+		}
 
 		CitationCollection collection = getCitationCollection(state, false);
 		int collectionSize = 0;
@@ -2528,6 +2539,45 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		setMode(state, Mode.LIST);
 
 	}  // doRemoveAllCitations
+
+    public void doImportCitationFromResourceUrl( RunData data )
+    {
+        // get the state object
+        SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
+        ParameterParser params = data.getParameters();
+        String resourceUrl = params.getString("resourceUrl");
+ 
+        CitationCollection collection = getCitationCollection(state, false);
+        
+        if(resourceUrl != null)
+        {
+            String resourceId = resourceUrl.substring(resourceUrl.indexOf("/group"));
+            ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
+            try
+            {
+                ContentResource resource = contentService.getResource(resourceId);
+                ResourceProperties props = resource.getProperties();
+                String displayName = props.getProperty(ResourceProperties.PROP_DISPLAY_NAME);
+                Citation citation = CitationService.addCitation("unknown");
+                citation.setDisplayName(displayName);
+                citation.setCitationProperty("resourceId", resourceId);
+                String urlId = citation.addCustomUrl(resourceUrl, resourceUrl);
+                citation.setPreferredUrl(urlId);
+                collection.add(citation);
+                CitationService.save(collection);
+            } catch (Exception e) {
+            	logger.error("Failed to add resource '" + resourceId,e);
+            }
+        }
+           
+        // Had to do this to force a reload from storage in buildListPanelContext
+        state.removeAttribute(STATE_COLLECTION);
+           
+        state.setAttribute("sort", CitationCollection.SORT_BY_TITLE);
+           
+        setMode(state, Mode.LIST);
+
+    } // doImportCitationsFromResourceUrl
 
 	public void doRemoveSelectedCitations( RunData data )
 	{
