@@ -616,7 +616,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
     {
 		// get the citation list title
 		String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-		ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 		String refStr = contentService.getReference(resourceId);
 		Reference ref = EntityManager.newReference(refStr);
 		String collectionTitle = null;
@@ -689,7 +689,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 		// get the citation list title
 		String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-		ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 		String refStr = contentService.getReference(resourceId);
 		Reference ref = EntityManager.newReference(refStr);
 		String collectionTitle = null;
@@ -971,7 +971,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 		// get the citation list title
 		String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-		ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 		try {
 			ContentResource resource = contentService.getResource(resourceId);
 			String description = resource.getProperties().getProperty(ResourceProperties.PROP_DESCRIPTION);
@@ -1091,7 +1091,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 		// get the citation list title
 		String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-		ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 		String refStr = contentService.getReference(resourceId);
 		Reference ref = EntityManager.newReference(refStr);
 		String collectionTitle = null;
@@ -1471,7 +1471,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
     	// resource-related
     	String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-    	ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+    	ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
     	String guid = contentService.getUuid(resourceId);
     	context.put("RESOURCE_ID", guid);
 
@@ -1645,7 +1645,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 	    	// delete the temporary resource
 			String temporaryResourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-			ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+			ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 			ContentResource tempResource = null;
 			try
             {
@@ -1731,7 +1731,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
     	pipe.setRevisedResourceProperty(ResourceProperties.PROP_CONTENT_LENGTH, size_str);
     	
 	   	String temporaryResourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-	   	ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+	   	ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 	    String description = params.getString("description");
 	    try {
 			contentService.addProperty(temporaryResourceId,ResourceProperties.PROP_DESCRIPTION,description);
@@ -1789,7 +1789,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 	    	// TODO: delete the temporary resource
 			String temporaryResourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-			ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+			ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 			ContentResourceEdit edit = null;
 			try
             {
@@ -3638,7 +3638,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
     {
         try
         {
-			ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+			ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 			ContentResourceEdit newItem = contentService.addResource(pipe.getContentEntity().getId(), rb.getString("new.citations.list"), null, ContentHostingService.MAXIMUM_ATTEMPTS_FOR_UNIQUENESS);
 			newItem.setResourceType(CitationService.CITATION_LIST_ID);
 			newItem.setContentType( ResourceType.MIME_TYPE_HTML );
