@@ -500,6 +500,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		ERROR,
 		ERROR_FATAL,
 		LIST,
+		REORDER,
 		ADD_CITATIONS,
 		IMPORT_CITATIONS,
 		MESSAGE,
@@ -551,6 +552,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	protected static final String TEMPLATE_ERROR = "citation/error";
 	protected static final String TEMPLATE_ERROR_FATAL = "citation/error_fatal";
 	protected static final String TEMPLATE_LIST = "citation/list";
+	protected static final String TEMPLATE_REORDER = "citation/reorder";
 	protected static final String TEMPLATE_ADD_CITATIONS = "citation/add_citations";
 	protected static final String TEMPLATE_IMPORT_CITATIONS = "citation/import_citations";
 	protected static final String TEMPLATE_MESSAGE = "citation/_message";
@@ -1075,6 +1077,47 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		return TEMPLATE_LIST;
 
 	}	// buildListPanelContext
+	
+	public String buildReorderPanelContext(VelocityPortlet portlet, Context context, RunData rundata, SessionState state) {
+		// always put appropriate bundle in velocity context
+		context.put("tlang", rb);
+
+		// validator
+		context.put("xilator", new Validator());
+		
+		// We don't want the frame resizing to the document, or else dragging
+		// won't scroll the frame.
+		context.put("sakai_onload", "");
+
+		// get the citation list title
+		String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
+		ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		String refStr = contentService.getReference(resourceId);
+		Reference ref = EntityManager.newReference(refStr);
+		String collectionTitle = null;
+		if( ref != null ) {
+			collectionTitle = ref.getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME);
+		}
+		if(collectionTitle == null) {
+			collectionTitle = (String)state.getAttribute( STATE_COLLECTION_TITLE );
+		}
+		else if( !collectionTitle.trim().equals("") ) {
+			context.put( "collectionTitle", Validator.escapeHtml(collectionTitle));
+		}
+
+		CitationCollection collection = getCitationCollection(state, true);
+
+		collection.setSort(CitationCollection.SORT_BY_POSITION,true);
+
+		CitationIterator newIterator = collection.iterator();
+		newIterator.setPageSize(collection.size());
+		context.put("citations", newIterator);
+		context.put("collectionId", collection.getId());
+		state.setAttribute(STATE_LIST_ITERATOR, newIterator);
+
+		return TEMPLATE_REORDER;
+	}
+
 
 	/**
 	 * This method retrieves the CitationCollection for the current session.
@@ -1189,6 +1232,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 				break;
 			case LIST:
 				template = buildListPanelContext(portlet, context, rundata, state);
+				break;
+			case REORDER:
+				template = buildReorderPanelContext(portlet, context, rundata, state);
 				break;
 			case MESSAGE:
 				template = buildMessagePanelContext(portlet, context, rundata, state);
@@ -2197,7 +2243,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		// add citation to current collection
 		collection.add(citation);
 		CitationService.save(collection);
-
+		state.removeAttribute(STATE_COLLECTION);
 		// call buildListPanelContext to show updated list
 		//state.setAttribute(CitationHelper.SPECIAL_HELPER_ID, CitationHelper.CITATION_ID);
 		setMode(state, Mode.LIST);
@@ -2539,6 +2585,48 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		setMode(state, Mode.LIST);
 
 	}  // doRemoveAllCitations
+	
+	public void doShowReorderCitations( RunData data )
+	{
+		// get the state object
+		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
+		setMode(state, Mode.REORDER);
+
+	}  // doShowReorderCitations
+	
+	public void doReorderCitations( RunData data ) {
+		// get the state object
+		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
+		ParameterParser params = data.getParameters();
+		String orderedCitationIds = params.getString("orderedCitationIds");
+		
+		if(orderedCitationIds == null || orderedCitationIds.length() < 1) {
+			logger.warn("The orderedCitationIds paramter must be supplied. Returning to reordering screen.");
+			setMode(state, Mode.REORDER);
+			return;
+		}
+		
+		CitationCollection collection = getCitationCollection(state, false);
+		
+		String[] splitIds = orderedCitationIds.split(",");
+		
+		try {
+			for(int i = 1;i <= splitIds.length;i++) {
+				collection.getCitation(splitIds[i - 1]).setPosition(i);
+			}
+			CitationService.save(collection);
+		} catch(IdUnusedException iue) {
+			logger.error("One of the supplied citation ids was invalid. The new order was not saved.");
+		}
+		
+		// Had to do this to force a reload from storage in buildListPanelContext
+		state.removeAttribute(STATE_COLLECTION);
+		
+	    state.setAttribute("sort", CitationCollection.SORT_BY_POSITION);
+		
+		setMode(state, Mode.LIST);
+
+	}  // doReorderCitations
 
     public void doImportCitationFromResourceUrl( RunData data )
     {
@@ -3789,6 +3877,8 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			       collection.setSort(CitationCollection.SORT_BY_AUTHOR, true);
 	        else if (sort.equalsIgnoreCase(CitationCollection.SORT_BY_YEAR))
 				   collection.setSort(CitationCollection.SORT_BY_YEAR , true);
+	        else if (sort.equalsIgnoreCase(CitationCollection.SORT_BY_POSITION))
+				   collection.setSort(CitationCollection.SORT_BY_POSITION , true);
 
 	        state.setAttribute("sort", sort);
 

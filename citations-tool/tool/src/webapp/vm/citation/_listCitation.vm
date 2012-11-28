@@ -4,7 +4,6 @@
 		  value="$!{citation.id}" onclick="highlightCheckedSelections();" /> 
 	</td>
 	<td colspan="2" headers="details">
-
 		#if( $citation.hasPreferredUrl() )
 			#set( $urlHref = $citation.getCustomUrl( "$citation.getPreferredUrlId()" ).toString() )
 		#else

@@ -584,6 +584,18 @@ function removeSelectedCitations( baseUrl ) {
   window.location.assign( baseUrl );
 }
 
+function reorderCitations( baseUrl, ids ) {
+
+	// There could potentially be a lot of ids here. It should be posted really.
+	baseUrl += "&orderedCitationIds=" + ids;
+	
+	document.body.style.cursor = 'wait';
+  
+  	// Navigate to the doReorderCitations url, passing
+  	// the citation ids in their new order.
+  	window.location.assign( baseUrl );
+}
+
 function removeAllCitations( formname ) {
   document.getElementById('sakai_action').value='doRemoveAllCitations';
   submitform( formname );
