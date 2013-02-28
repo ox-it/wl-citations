@@ -906,10 +906,11 @@ public class BaseConfigurationService implements ConfigurationService, Observer
     }
     else
     {
+    	SecurityAdvisor pushed = null;
     	// need to create
     	try
     	{
-    		enableSecurityAdvisor();
+    		pushed = enableSecurityAdvisor();
     		Session s = m_sessionManager.getCurrentSession();
     		s.setUserId(UserDirectoryService.ADMIN_ID);
 
@@ -947,6 +948,15 @@ public class BaseConfigurationService implements ConfigurationService, Observer
 		{
 		  // TODO Auto-generated catch block
 		  m_log.warn("IdUnusedException ", e);
+		}
+		finally {
+			if(pushed != null) {
+				boolean found = false;
+				while(SecurityService.hasAdvisors() && ! found) {
+					SecurityAdvisor popped = SecurityService.popAdvisor();
+					found = pushed == popped;
+				}
+			}
 		}
 	}
 
@@ -1391,7 +1401,8 @@ public class BaseConfigurationService implements ConfigurationService, Observer
   protected void updateConfig(String configFileRef)
   {
     Reference ref = EntityManager.newReference(configFileRef);
-
+    
+    SecurityAdvisor pushed = null;
     if (ref != null)
     {
       try
@@ -1400,7 +1411,7 @@ public class BaseConfigurationService implements ConfigurationService, Observer
         /*
          * Fetch configuration details from our XML resource
          */
-        enableSecurityAdvisor();
+        pushed = enableSecurityAdvisor();
 
         resource = org.sakaiproject.content.cover.ContentHostingService.getResource(ref.getId());
         if (resource != null)
@@ -1425,7 +1436,16 @@ public class BaseConfigurationService implements ConfigurationService, Observer
       catch (ServerOverloadException e)
       {
         m_log.warn("Exception: " + e + ", continuing");
+      } finally {
+    	  if(pushed != null) {
+    		  boolean found = false;
+    		  while(SecurityService.hasAdvisors() && ! found) {
+    			  SecurityAdvisor popped = SecurityService.popAdvisor();
+    			  found = popped == pushed;
+    		  }
+    	  }
       }
+      
     }
     /*
      * Always add our reference to the list of observed resources
@@ -1445,6 +1465,7 @@ public class BaseConfigurationService implements ConfigurationService, Observer
    */
   private boolean exists(String resourceName)
   {
+    SecurityAdvisor pushed = null;
     try
     {
     	String configFolderRef  = getConfigFolderReference();
@@ -1457,7 +1478,7 @@ public class BaseConfigurationService implements ConfigurationService, Observer
         Reference reference = EntityManager.newReference(referenceName);
     		if (reference == null) return false;
 
-    		enableSecurityAdvisor();
+    		pushed = enableSecurityAdvisor();
     		ContentResource resource = org.sakaiproject.content.cover.ContentHostingService.getResource(reference.getId());
 
         return (resource != null);
@@ -1471,23 +1492,35 @@ public class BaseConfigurationService implements ConfigurationService, Observer
     {
       m_log.warn("exists() failed find resource: ", exception);
     }
+    finally {
+    	  if(pushed != null) {
+    		  boolean found = false;
+    		  while(SecurityService.hasAdvisors() && ! found) {
+    			  SecurityAdvisor popped = SecurityService.popAdvisor();
+    			  found = popped == pushed;
+    		  }
+    	  }
+      }
    	return false;
   }
 
   /**
    * Establish a security advisor to allow the "embedded" azg work to occur
    * with no need for additional security permissions.
+   * @return the advisor
    */
-  protected void enableSecurityAdvisor()
+  protected SecurityAdvisor enableSecurityAdvisor()
   {
-    // put in a security advisor so we can create citationAdmin site without need
+    SecurityAdvisor advisor = new SecurityAdvisor() {
+        public SecurityAdvice isAllowed(String userId, String function, String reference)
+        {
+          return SecurityAdvice.ALLOWED;
+        }
+      };
+	// put in a security advisor so we can create citationAdmin site without need
     // of further permissions
-    SecurityService.pushAdvisor(new SecurityAdvisor() {
-      public SecurityAdvice isAllowed(String userId, String function, String reference)
-      {
-        return SecurityAdvice.ALLOWED;
-      }
-    });
+    SecurityService.pushAdvisor(advisor );
+    return advisor;
   }
 
   /**
