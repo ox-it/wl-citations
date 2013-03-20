@@ -101,6 +101,18 @@ doubleDeep = true;
 			  </tr>
 			#end
 			
+			  <tr valign="middle">
+			    <td align="center">
+			      <div class="act">
+				    <input type="button" name="PickResource" id="PickResource"
+				      value="$tlang.getString("action.pickresource")"
+				      onclick="launchPicker('#contentLink("Main")&sakai_action=doImportCitationFromResourceUrl&collectionId=$collectionId','http://localhost/library/editor/FCKeditor/editor/filemanager/browser/default/browser.html?Connector=/sakai-fck-connector/web/editor/filemanager/browser/default/connectors/jsp/connector/group/$siteId/&CurrentFolder=/group/$siteId/&langCode=en','$tlang.getString("action.pickresource")');"
+				    />
+			      </div>
+			    </td>
+			    <td>$tlang.getString("description.pickresource")</td>
+			  </tr>
+			
             #if(!$fromListPage)
 			  <tr valign="middle">
 			    <td align="center">

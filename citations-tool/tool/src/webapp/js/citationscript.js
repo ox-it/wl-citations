@@ -584,6 +584,18 @@ function removeSelectedCitations( baseUrl ) {
   window.location.assign( baseUrl );
 }
 
+function reorderCitations( baseUrl, ids ) {
+
+	// There could potentially be a lot of ids here. It should be posted really.
+	baseUrl += "&orderedCitationIds=" + ids;
+	
+	document.body.style.cursor = 'wait';
+  
+  	// Navigate to the doReorderCitations url, passing
+  	// the citation ids in their new order.
+  	window.location.assign( baseUrl );
+}
+
 function removeAllCitations( formname ) {
   document.getElementById('sakai_action').value='doRemoveAllCitations';
   submitform( formname );
@@ -665,4 +677,19 @@ function checkRequiredFields( alertMsg ) {
   }
   
   return true;
+}
+
+function launchPicker(baseUrl, url,title) {
+    var win = openWindow(url,title,'scrollbars=yes,toolbar=yes,resizable=yes,height=610,width=850');
+    
+    // The links rendered in the window will cause SetUrl to be called in the topmost window. In the
+    // case of FCKeditor this function is implemented in the FCK code; we need to implement it here
+    // to simulate the FCK environment. It's a hack, okaaaay? 
+    win.top.opener.SetUrl = function(url) {
+        win.close();
+        // do the action
+        window.location.assign( baseUrl + "&resourceUrl=" + url);
+    };
+
+    return true;
 }

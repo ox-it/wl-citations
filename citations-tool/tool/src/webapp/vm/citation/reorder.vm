@@ -1,0 +1,70 @@
+<style>
+           #citations-sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+           #citations-sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; }
+           #citations-sortable li span { position: absolute; margin-left: -1.3em; }
+           #citations-sortable li:hover { cursor: pointer; }
+           #citations-sortable li.ui-sortable-helper { cursor: move; }
+</style>
+<link rel="stylesheet" href="/library/js/jquery-ui-latest/css/ui-lightness/jquery-ui.css" type="text/css" media="all" />
+<!--script type="text/javascript" src="/library/js/jquery/1.7.1/jquery-1.7.1.min.js"></script-->
+<script type="text/javascript" src="/library/js/jquery/1.4.2/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="/library/js/jquery-ui-latest/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/sakai-citations-tool/js/citationscript.js"></script>
+<div class="portletBody specialLink">
+<h3>$tlang.getString("reorder.title") '${collectionTitle}'</h3>
+<div class="instruction">
+$tlang.getString("reorder.instruction")
+</div>
+<ul id="citations-sortable">
+	#foreach($citation in $citations)
+    <li id="$citation.getId()" class="ui-state-default"><span></span>
+    	<div>
+        ${citation.getDisplayName()} ($!{xilator.escapeHtml( $!{citation.creator} )})
+        </div>
+	</li>
+    #end
+</ul>
+<br />
+<input id="save" class="active" type="button" onclick="submitOrder();" value="$tlang.getString("submit.edit")"/>
+<input id="cancel" type="button" onclick="cancelReorder();" value="$tlang.getString("cancel.edit")"/>
+<script>
+	var order = "";
+    $(function() {
+    	$( "#citations-sortable" ).sortable( {
+        	stop: function(event, ui) {
+           		order = $('#citations-sortable').sortable('toArray');
+        	}
+      	}).disableSelection();
+ 	});
+          
+    function submitOrder() {
+    	reorderCitations( "#contentLink("Main")&sakai_action=doReorderCitations&collectionId=$collectionId", order);
+    }
+          
+    function cancelReorder() {
+    	window.location.assign('#contentLink("Main")&sakai_action=doList');
+    }
+    
+    $(document).ready(function() {
+    	// Set the frame size so it sits inside the screen. Otherwise it won't
+    	// scroll while dragging.
+    	
+    	console.log("Screen Height: " + screen.height);
+    	var frame = parent.document.getElementById(window.name);
+    	var offset = $(frame).offset();
+    	var objToResize = (frame.style) ? frame.style : frame;
+    	console.log("Name: " + frame.tagName);
+    	console.log("Frame Top: " + offset.top);
+    	console.log("Frame Left: " + offset.left);
+    	console.log("Frame Height: " + objToResize.height);
+    	var totalHeight = parent.window.innerHeight;
+    	if(totalHeight == undefined) {
+    		totalHeight = parent.document.documentElement.clientHeight;
+    	}
+    	console.log("Total Height: " + totalHeight);
+    	objToResize.height = (totalHeight - offset.top - 97) + "px";
+    	console.log("NEW HEIGHT: " + objToResize.height);
+    	//objToResize.height="408px";
+    });
+</script>
+</div>

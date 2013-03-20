@@ -43,6 +43,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -71,6 +72,7 @@ import org.sakaiproject.citation.cover.SearchManager;
 import org.sakaiproject.citation.util.api.SearchCancelException;
 import org.sakaiproject.citation.util.api.SearchException;
 import org.sakaiproject.citation.util.api.SearchQuery;
+import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResource;
@@ -93,9 +95,12 @@ import org.sakaiproject.exception.OverQuotaException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.ServerOverloadException;
 import org.sakaiproject.exception.TypeException;
+import org.sakaiproject.tool.api.Placement;
 import org.sakaiproject.tool.api.Tool;
 import org.sakaiproject.tool.api.ToolException;
 import org.sakaiproject.tool.api.ToolSession;
+import org.sakaiproject.user.api.User;
+import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.tool.cover.SessionManager;
 import org.sakaiproject.tool.cover.ToolManager;
 import org.sakaiproject.util.FileItem;
@@ -463,7 +468,8 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	public static ResourceLoader rb = new ResourceLoader("citations");
 
 	public static final Integer DEFAULT_RESULTS_PAGE_SIZE = new Integer(10);
-	public static final Integer DEFAULT_LIST_PAGE_SIZE = new Integer(10);
+
+	public static Integer defaultListPageSize;
 
 	protected static final String ELEMENT_ID_CREATE_FORM = "createForm";
 	protected static final String ELEMENT_ID_EDIT_FORM = "editForm";
@@ -494,6 +500,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		ERROR,
 		ERROR_FATAL,
 		LIST,
+		REORDER,
 		ADD_CITATIONS,
 		IMPORT_CITATIONS,
 		MESSAGE,
@@ -545,6 +552,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	protected static final String TEMPLATE_ERROR = "citation/error";
 	protected static final String TEMPLATE_ERROR_FATAL = "citation/error_fatal";
 	protected static final String TEMPLATE_LIST = "citation/list";
+	protected static final String TEMPLATE_REORDER = "citation/reorder";
 	protected static final String TEMPLATE_ADD_CITATIONS = "citation/add_citations";
 	protected static final String TEMPLATE_IMPORT_CITATIONS = "citation/import_citations";
 	protected static final String TEMPLATE_MESSAGE = "citation/_message";
@@ -552,6 +560,17 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	protected static final String TEMPLATE_RESULTS = "citation/results";
 	protected static final String TEMPLATE_VIEW = "citation/view";
 	protected static final String TEMPLATE_DATABASE = "citation/_databases";
+	
+	public void init() throws ServletException {
+		ServerConfigurationService scs
+			= (ServerConfigurationService) ComponentManager.get(ServerConfigurationService.class);
+		if(scs != null) {
+			defaultListPageSize = scs.getInt("citations.default.list.page.size", 50);
+		} else {
+			logger.warn("Failed to get default list page size as ServerConfigurationService is null. Defaulting to " + defaultListPageSize);
+            defaultListPageSize = 50;
+		}
+	}
 
 
 	/**
@@ -597,7 +616,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
     {
 		// get the citation list title
 		String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-		ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 		String refStr = contentService.getReference(resourceId);
 		Reference ref = EntityManager.newReference(refStr);
 		String collectionTitle = null;
@@ -670,7 +689,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 		// get the citation list title
 		String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-		ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 		String refStr = contentService.getReference(resourceId);
 		Reference ref = EntityManager.newReference(refStr);
 		String collectionTitle = null;
@@ -689,6 +708,14 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		// get the collection we're now working on
 		String collectionId = (String)state.getAttribute(STATE_COLLECTION_ID);
 		context.put( "collectionId", collectionId );
+		
+		// We need to add the current siteId for the FCK resource picker
+		Placement placement = ToolManager.getCurrentPlacement();
+		if (placement == null) {
+			logger.warn("Current tool placement is null.");
+		} else {
+			context.put("siteId", placement.getContext());
+		}
 
 		CitationCollection collection = getCitationCollection(state, false);
 		int collectionSize = 0;
@@ -944,7 +971,14 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 		// get the citation list title
 		String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-		ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
+		try {
+			ContentResource resource = contentService.getResource(resourceId);
+			String description = resource.getProperties().getProperty(ResourceProperties.PROP_DESCRIPTION);
+			context.put("description", description);
+		} catch (Exception e) {
+			logger.error("Exception whilst setting citation list resource description.",e);
+		}
 		String refStr = contentService.getReference(resourceId);
 		Reference ref = EntityManager.newReference(refStr);
 		String collectionTitle = null;
@@ -978,7 +1012,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		Integer listPageSize = (Integer) state.getAttribute(STATE_LIST_PAGE_SIZE);
 		if(listPageSize == null)
 		{
-			listPageSize = DEFAULT_LIST_PAGE_SIZE;
+			listPageSize = defaultListPageSize;
 			state.setAttribute(STATE_LIST_PAGE_SIZE, listPageSize);
 		}
 		context.put("listPageSize", listPageSize);
@@ -1043,6 +1077,47 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		return TEMPLATE_LIST;
 
 	}	// buildListPanelContext
+	
+	public String buildReorderPanelContext(VelocityPortlet portlet, Context context, RunData rundata, SessionState state) {
+		// always put appropriate bundle in velocity context
+		context.put("tlang", rb);
+
+		// validator
+		context.put("xilator", new Validator());
+		
+		// We don't want the frame resizing to the document, or else dragging
+		// won't scroll the frame.
+		context.put("sakai_onload", "");
+
+		// get the citation list title
+		String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
+		ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
+		String refStr = contentService.getReference(resourceId);
+		Reference ref = EntityManager.newReference(refStr);
+		String collectionTitle = null;
+		if( ref != null ) {
+			collectionTitle = ref.getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME);
+		}
+		if(collectionTitle == null) {
+			collectionTitle = (String)state.getAttribute( STATE_COLLECTION_TITLE );
+		}
+		else if( !collectionTitle.trim().equals("") ) {
+			context.put( "collectionTitle", Validator.escapeHtml(collectionTitle));
+		}
+
+		CitationCollection collection = getCitationCollection(state, true);
+
+		collection.setSort(CitationCollection.SORT_BY_POSITION,true);
+
+		CitationIterator newIterator = collection.iterator();
+		newIterator.setPageSize(collection.size());
+		context.put("citations", newIterator);
+		context.put("collectionId", collection.getId());
+		state.setAttribute(STATE_LIST_ITERATOR, newIterator);
+
+		return TEMPLATE_REORDER;
+	}
+
 
 	/**
 	 * This method retrieves the CitationCollection for the current session.
@@ -1157,6 +1232,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 				break;
 			case LIST:
 				template = buildListPanelContext(portlet, context, rundata, state);
+				break;
+			case REORDER:
+				template = buildReorderPanelContext(portlet, context, rundata, state);
 				break;
 			case MESSAGE:
 				template = buildMessagePanelContext(portlet, context, rundata, state);
@@ -1393,7 +1471,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
     	// resource-related
     	String resourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-    	ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+    	ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
     	String guid = contentService.getUuid(resourceId);
     	context.put("RESOURCE_ID", guid);
 
@@ -1542,6 +1620,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
     	SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
 		ToolSession toolSession = SessionManager.getCurrentToolSession();
 		ParameterParser params = data.getParameters();
+		
 
 		int requestStateId = params.getInt("requestStateId", 0);
 		restoreRequestState(state, new String[]{CitationHelper.RESOURCES_REQUEST_PREFIX, CitationHelper.CITATION_PREFIX}, requestStateId);
@@ -1566,7 +1645,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 	    	// delete the temporary resource
 			String temporaryResourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-			ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+			ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 			ContentResource tempResource = null;
 			try
             {
@@ -1631,6 +1710,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		        logger.warn("Exception ", e);
 	        }
 		}
+		
 
 		// set content (mime) type
 		pipe.setRevisedMimeType(ResourceType.MIME_TYPE_HTML);
@@ -1649,6 +1729,15 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		String[] args = new String[]{ Integer.toString(collection.size()) };
 		String size_str =rb.getFormattedMessage("citation.count",  args);
     	pipe.setRevisedResourceProperty(ResourceProperties.PROP_CONTENT_LENGTH, size_str);
+    	
+	   	String temporaryResourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
+	   	ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
+	    String description = params.getString("description");
+	    try {
+			contentService.addProperty(temporaryResourceId,ResourceProperties.PROP_DESCRIPTION,description);
+		} catch (Exception e) {
+			 logger.error("Failed to set resource description on citation list update.", e);
+		}
 
     	// leave helper mode
 		pipe.setActionCanceled(false);
@@ -1700,7 +1789,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 	    	// TODO: delete the temporary resource
 			String temporaryResourceId = (String) state.getAttribute(CitationHelper.RESOURCE_ID);
-			ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+			ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 			ContentResourceEdit edit = null;
 			try
             {
@@ -2154,7 +2243,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		// add citation to current collection
 		collection.add(citation);
 		CitationService.save(collection);
-
+		state.removeAttribute(STATE_COLLECTION);
 		// call buildListPanelContext to show updated list
 		//state.setAttribute(CitationHelper.SPECIAL_HELPER_ID, CitationHelper.CITATION_ID);
 		setMode(state, Mode.LIST);
@@ -2496,6 +2585,87 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		setMode(state, Mode.LIST);
 
 	}  // doRemoveAllCitations
+	
+	public void doShowReorderCitations( RunData data )
+	{
+		// get the state object
+		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
+		setMode(state, Mode.REORDER);
+
+	}  // doShowReorderCitations
+	
+	public void doReorderCitations( RunData data ) {
+		// get the state object
+		SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
+		ParameterParser params = data.getParameters();
+		String orderedCitationIds = params.getString("orderedCitationIds");
+		
+		if(orderedCitationIds == null || orderedCitationIds.length() < 1) {
+			logger.warn("The orderedCitationIds paramter must be supplied. Returning to reordering screen.");
+			setMode(state, Mode.REORDER);
+			return;
+		}
+		
+		CitationCollection collection = getCitationCollection(state, false);
+		
+		String[] splitIds = orderedCitationIds.split(",");
+		
+		try {
+			for(int i = 1;i <= splitIds.length;i++) {
+				collection.getCitation(splitIds[i - 1]).setPosition(i);
+			}
+			CitationService.save(collection);
+		} catch(IdUnusedException iue) {
+			logger.error("One of the supplied citation ids was invalid. The new order was not saved.");
+		}
+		
+		// Had to do this to force a reload from storage in buildListPanelContext
+		state.removeAttribute(STATE_COLLECTION);
+		
+	    state.setAttribute("sort", CitationCollection.SORT_BY_POSITION);
+		
+		setMode(state, Mode.LIST);
+
+	}  // doReorderCitations
+
+    public void doImportCitationFromResourceUrl( RunData data )
+    {
+        // get the state object
+        SessionState state = ((JetspeedRunData)data).getPortletSessionState (((JetspeedRunData)data).getJs_peid ());
+        ParameterParser params = data.getParameters();
+        String resourceUrl = params.getString("resourceUrl");
+ 
+        CitationCollection collection = getCitationCollection(state, false);
+        
+        if(resourceUrl != null)
+        {
+            String resourceId = resourceUrl.substring(resourceUrl.indexOf("/group"));
+            ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
+            try
+            {
+                ContentResource resource = contentService.getResource(resourceId);
+                ResourceProperties props = resource.getProperties();
+                String displayName = props.getProperty(ResourceProperties.PROP_DISPLAY_NAME);
+                Citation citation = CitationService.addCitation("unknown");
+                citation.setDisplayName(displayName);
+                citation.setCitationProperty("resourceId", resourceId);
+                String urlId = citation.addCustomUrl(resourceUrl, resourceUrl);
+                citation.setPreferredUrl(urlId);
+                collection.add(citation);
+                CitationService.save(collection);
+            } catch (Exception e) {
+            	logger.error("Failed to add resource '" + resourceId,e);
+            }
+        }
+           
+        // Had to do this to force a reload from storage in buildListPanelContext
+        state.removeAttribute(STATE_COLLECTION);
+           
+        state.setAttribute("sort", CitationCollection.SORT_BY_TITLE);
+           
+        setMode(state, Mode.LIST);
+
+    } // doImportCitationsFromResourceUrl
 
 	public void doRemoveSelectedCitations( RunData data )
 	{
@@ -3452,7 +3622,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 		if(state.getAttribute(STATE_LIST_PAGE_SIZE) == null)
 		{
-			state.setAttribute(STATE_LIST_PAGE_SIZE, DEFAULT_LIST_PAGE_SIZE);
+			state.setAttribute(STATE_LIST_PAGE_SIZE, defaultListPageSize);
 		}
 
 		return true;
@@ -3468,7 +3638,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
     {
         try
         {
-			ContentHostingService contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+			ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 			ContentResourceEdit newItem = contentService.addResource(pipe.getContentEntity().getId(), rb.getString("new.citations.list"), null, ContentHostingService.MAXIMUM_ATTEMPTS_FOR_UNIQUENESS);
 			newItem.setResourceType(CitationService.CITATION_LIST_ID);
 			newItem.setContentType( ResourceType.MIME_TYPE_HTML );
@@ -3707,6 +3877,8 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			       collection.setSort(CitationCollection.SORT_BY_AUTHOR, true);
 	        else if (sort.equalsIgnoreCase(CitationCollection.SORT_BY_YEAR))
 				   collection.setSort(CitationCollection.SORT_BY_YEAR , true);
+	        else if (sort.equalsIgnoreCase(CitationCollection.SORT_BY_POSITION))
+				   collection.setSort(CitationCollection.SORT_BY_POSITION , true);
 
 	        state.setAttribute("sort", sort);
 
