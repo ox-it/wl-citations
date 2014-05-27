@@ -38,6 +38,13 @@
       <artifactId>sakai-citations-api</artifactId>
     </dependency>
     <dependency>
+      <!-- Having the same JAR in multiple classloader is messy, but we need a newer version. Not needed in 2.9 (KNL-766) -->
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.0.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.sakaiproject</groupId>
       <artifactId>sakai-citations-util</artifactId>
       <exclusions>
