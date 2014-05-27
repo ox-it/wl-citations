@@ -1570,6 +1570,17 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		{
 			context.put( "searchLibrary", Boolean.TRUE );
 		}
+		
+		if (getConfigurationService().isExternalSerarchEnabled())
+		{
+			// External Library Search
+			context.put("externalSearch", Boolean.TRUE);
+			context.put("externalSearchUrl", getConfigurationService().getExternalSearchUrl());
+			
+			String windowName = getSearchManager().getExternalSearchWindowName(contentService.getUuid(resourceId));
+			context.put("externalSearchWindowName", windowName);
+			
+		}
 
 		// form name
 		context.put(PARAM_FORM_NAME, ELEMENT_ID_CREATE_FORM);

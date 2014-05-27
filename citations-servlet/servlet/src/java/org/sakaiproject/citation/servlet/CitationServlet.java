@@ -34,9 +34,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log; 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.sakaiproject.cheftool.VmServlet;
 import org.sakaiproject.citation.api.Citation;
 import org.sakaiproject.citation.api.CitationCollection;
@@ -73,21 +72,15 @@ import org.sakaiproject.util.Web;
 //public class CitationServlet extends VelocityPortletPaneledAction
 public class CitationServlet extends VmServlet
 {
-	/**
-	 * 
-	 */
 	public static final String SERVLET_TEMPLATE = "/vm/servlet.vm";
 	public static final String COMPACT_TEMPLATE = "/vm/compact.vm";
 //	private String collectionTitle = null;
-	
+
 	/** Our log (commons). */
 	private static Log M_log = LogFactory.getLog(CitationServlet.class);
 
 	/** Resource bundle using current language locale */
 	protected static ResourceLoader rb = new ResourceLoader("citations");
-
-	/** set to true when init'ed. */
-//	protected boolean m_ready = false;
 
 	protected BasicAuth basicAuth = null;
 
@@ -103,36 +96,6 @@ public class CitationServlet extends VmServlet
 		ERROR;
 	}
 
-
-//	/** init thread - so we don't wait in the actual init() call */
-//	public class CitationServletInit extends Thread
-//	{
-//		protected CitationService m_citationService;
-		
-//		public void setCitationService(CitationService service)
-//		{
-//			this.m_citationService = service;
-//		}
-		
-//		/**
-//		 * construct and start the init activity
-//		 */
-//		public CitationServletInit()
-//		{
-//			m_ready = false;
-//			start();
-//		}
-
-//		/**
-//		 * run the init
-//		 */
-//		public void run()
-//		{
-//			m_ready = true;
-//		}
-//	}
-
-
 	/**
 	 * initialize the AccessServlet servlet
 	 * 
@@ -144,7 +107,6 @@ public class CitationServlet extends VmServlet
 	public void init( ServletConfig config ) throws ServletException
 	{
 		super.init(config);
-//		startInit();
 		basicAuth = new BasicAuth();
 		basicAuth.init();
 
@@ -152,16 +114,11 @@ public class CitationServlet extends VmServlet
 		contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
 		citationService = (CitationService) ComponentManager.get("org.sakaiproject.citation.api.CitationService");
 		configurationService = (ConfigurationService) ComponentManager.get("org.sakaiproject.citation.api.ConfigurationService");
+
+		// get services from ComponentManager
+		contentService = (ContentHostingService) ComponentManager.get("org.sakaiproject.content.api.ContentHostingService");
+		citationService = (CitationService) ComponentManager.get("org.sakaiproject.citation.api.CitationService");
 	}
-
-//	/**
-//	 * Start the initialization process
-//	 */
-//	public void startInit()
-//	{
-//		new CitationServletInit();
-//	}
-
 
 	/**
 	 * respond to an HTTP GET request
@@ -203,16 +160,16 @@ public class CitationServlet extends VmServlet
 				resource = findResource(paramParser, option);
 				String resourceUuid = this.contentService.getUuid(resource.getId());
 				setVmReference("resourceId", resourceUuid, req);
-       
+
 				boolean fromGoogle = false;
 				Citation citation = findOpenURLVersion01(paramParser);
 				if (citation == null) {
-         
+
 					citation = findOpenUrlCitation(req);
 				}
 				// set the success flag
 				setVmReference("success", citation != null, req);
-       
+
 				if (citation != null) {
 					addCitation(resource, citation);
 					setVmReference( "citation", citation, req );
@@ -228,7 +185,7 @@ public class CitationServlet extends VmServlet
 			} catch (PermissionException e) {
 				setVmReference("error", rb.getString("error.permission"), req);
 			}
-			
+
 			setVmReference("openUrlLabel", configurationService.getSiteConfigOpenUrlLabel(), req);
 			setVmReference("titleProperty", Schema.TITLE, req);
 			// validator
@@ -252,7 +209,7 @@ public class CitationServlet extends VmServlet
 		return citation;
 	}
 
-		
+
 	/**
 	 * 
 	 * @param req
@@ -403,7 +360,16 @@ public class CitationServlet extends VmServlet
 		collection.add(citation);
 		citationService.save(collection);
 	}
- 
+
+	public void addCitiation(ContentResource resource, Citation citation) throws IdUnusedException, ServerOverloadException {
+
+		String collectionId = new String(resource.getContent());
+		CitationCollection collection = citationService.getCollection(collectionId);
+
+		collection.add(citation);
+		citationService.save(collection);
+	}
+	
 	public String getCollectionTitle(ContentResource resource) {
 		String collectionTitle = null;
 		if (resource != null) {
@@ -485,8 +451,8 @@ public class CitationServlet extends VmServlet
 
 		Citation citation = citationService.addCitation(genre);
 
-		String info = "New citation:\n\t genre:\t\t"
-			+ genre;
+		String info = "New citation from Google Scholar:\n\t genre:\t\t"
+				+ genre;
 
 		// Generally, only books have a title that's the actual title of the
 		// piece.
@@ -542,6 +508,7 @@ public class CitationServlet extends VmServlet
 		info += "\n";
 
 		// M_log.info(info);
+		M_log.debug(info);
 
 		return citation;
 
@@ -559,7 +526,7 @@ public class CitationServlet extends VmServlet
 		setVmReference("validator", new Validator(), req);
 		setVmReference("tlang", rb, req);
 		res.setContentType("text/html; charset=UTF-8");
-		
+
 		String client = req.getParameter("client");
 		
 		if(client != null && ! client.trim().equals("")) {

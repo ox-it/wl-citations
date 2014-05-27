@@ -214,7 +214,7 @@ public class OpenURLServiceImplTest extends AbstractSingleSpringContextTests {
 		ContextObjectEntity entity = co.getEntity(Entity.REFERENT);
 		assertEquals("THE NATIONAL ERA", entity.getValue("jtitle"));
 		Citation citation = service.convert(co);
-		assertTrue(((String)citation.getCitationProperty("title", false)).startsWith("AZA")); 
+		assertTrue(((String)citation.getCitationProperty("title", false)).startsWith("AZA"));
 		assertEquals("THE NATIONAL ERA", citation.getCitationProperty("sourceTitle", false));
 		assertEquals("18590310", citation.getCitationProperty("date", false));
 		assertEquals("XIII", citation.getCitationProperty("volume", false));

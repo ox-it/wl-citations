@@ -168,7 +168,7 @@ public abstract class BaseCitationService implements CitationService
 	/**
 	 *
 	 */
-	public class BasicCitation implements Citation
+	public class BasicCitation implements Citation 
 	{
 		/* for OpenUrl creation */
 		protected final static String OPENURL_VERSION = "Z39.88-2004";
@@ -222,10 +222,10 @@ public abstract class BaseCitationService implements CitationService
 			Set multivalued = getMultivalued();
 
 			String description;
-      /*
-       * How to use the preferred URL?  We can omit it, use it as the title
-       * link, or supply it as the related link.
-       *
+			/*
+			 * How to use the preferred URL?  We can omit it, use it as the title
+			 * link, or supply it as the related link.
+			 *
 			 * "preferred" (below) has one of three values: false, related-link,
 			 *                                              or title-link
 			 */
@@ -912,7 +912,7 @@ public abstract class BaseCitationService implements CitationService
 			return m_citationProperties;
 
 		}
-		
+
 		/*
 		 * (non-Javadoc)
 		 * @see org.sakaiproject.citation.api.Citation#getCitationProperty(java.lang.String)
@@ -1267,8 +1267,6 @@ public abstract class BaseCitationService implements CitationService
 				String openUrlParams = m_openURLService.toURL(co);
 				openUrl.append(openUrlParams);
 			}
-
-			// genre needs some further work... TODO
 
 			return openUrl.toString();
 		}
