@@ -9,6 +9,9 @@ import org.sakaiproject.citation.api.CitationCollection;
 import org.sakaiproject.citation.api.CitationService;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResource;
+import org.sakaiproject.entity.api.Entity;
+import org.sakaiproject.entity.api.EntityManager;
+import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
@@ -37,6 +40,7 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 	private CitationService citationService;
 	private ContentHostingService contentHostingService;
 	private UserDirectoryService userDirectoryService;
+	private EntityManager entitymanager;
 
 	public void setCitationService(CitationService citationService) {
 		this.citationService = citationService;
@@ -50,9 +54,22 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 	public void setUserDirectoryService(UserDirectoryService userDirectoryService) {
 		this.userDirectoryService = userDirectoryService;
 	}
+	
+	public void setEntityManager(EntityManager entityManager) {
+		this.entitymanager = entityManager;
+	}
 
 	public String getEntityPrefix() {
 		return "citation";
+	}
+	
+	protected String lookupReference(String resourceId) {
+		Reference reference = entitymanager.newReference(contentHostingService.getReference(resourceId));
+		Entity entity = reference.getEntity();
+		if (entity == null) {
+			throw new EntityNotFoundException("Not found", reference.getId());
+		}
+		return entity.getId();
 	}
 
 	@EntityCustomAction(action = "list", viewKey = EntityView.VIEW_LIST)
@@ -69,8 +86,9 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 					"You must supply a path to the citation list.", null);
 		}
 		try {
+			
 			ContentResource resource = contentHostingService
-					.getResource(resourceId.toString());
+					.getResource(lookupReference(resourceId.toString()));
 
 			if (!CitationService.CITATION_LIST_ID.equals(resource
 					.getResourceType())) {
@@ -125,9 +143,16 @@ public class CitationEntityProvider extends AbstractEntityProvider implements
 	 * @author buckett
 	 * 
 	 */
+
+	//
+	/**
+	 * This wraps fields from a citation for entity broker.
+	 * @author buckett
+	 *
+	 */
 	public class DecoratedCitation {
 		private String type;
-		private Map<String, String> values;
+		private Map<String,String> values;
 		private String id;
 
 		public DecoratedCitation(String id, String type, Map<String, String> values) {
