@@ -5589,7 +5589,7 @@ public abstract class BaseCitationService implements CitationService
 			newCollection.copy((BasicCitationCollection) oldCollection);
 			save(newCollection);
 			edit.setContent(newCollection.getId().getBytes());
-			// When duplicating/copying a citations list notifications shouldn't be sent so that 
+			// When duplicating/copying a citations list notifications shouldn't be sent so that
 			// this follow the behaviour of the standard resource types in Sakai.
 			contentService.commitResource(edit, NotificationService.NOTI_NONE);
 		}
