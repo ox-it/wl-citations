@@ -921,7 +921,7 @@ public abstract class BaseCitationService implements CitationService
 			return this.getCitationProperty(name, false);
 		}
 
-		/* 
+		/*
 		 * (non-Javadoc)
 		 * @see org.sakaiproject.citation.api.Citation#getCitationProperty(java.lang.String, boolean)
 		 */
@@ -2061,7 +2061,7 @@ public abstract class BaseCitationService implements CitationService
 					hasValue = !list.isEmpty();
 				}
 			}
-   
+
 			return hasValue;
 		}
 
