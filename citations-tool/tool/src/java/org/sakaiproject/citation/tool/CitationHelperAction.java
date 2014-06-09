@@ -2240,6 +2240,17 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			context.put("saveciteClients",saveciteClients); 
 		}
 
+		if (getConfigurationService().isExternalSerarchEnabled())
+		{
+			// External Library Search
+			context.put("externalSearch", Boolean.TRUE);
+			context.put("externalSearchUrl", getConfigurationService().getExternalSearchUrl());
+
+			// Use an empty string for resource id because the resource mightn't've been created yet
+			String windowName = getSearchManager().getExternalSearchWindowName("");
+			context.put("externalSearchWindowName", windowName);
+
+		}
 		// determine which features to display
 		if( getConfigurationService().isGoogleScholarEnabled() ) {
 			String googleUrl = getSearchManager().getGoogleScholarUrl(getContentService().getUuid(resourceId));

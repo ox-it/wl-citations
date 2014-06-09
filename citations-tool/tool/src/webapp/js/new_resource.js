@@ -448,6 +448,51 @@ citations_new_resource.init = function() {
 		citations_new_resource.processClick(successObj);
 		return false;
 	});
+	var getResourceUuid = function(jsObj) {
+		if (jsObj && jsObj.resourceUuid) {
+			return jsObj.resourceUuid;
+		} else {
+			return $('form#newCitationListForm input[name=resourceUuid]').attr('value');
+		}
+	};
+	var getCitationCollectionId = function(jsObj) {
+		if (jsObj && jsObj.citationCollectionId) {
+			return jsObj.citationCollectionId;
+		} else {
+			return $('form#newCitationListForm input[name=citationCollectionId]').attr('value');
+		}
+	};
+	$('#ExternalSearch').click(function(eventObject) {
+		var successObj = {
+			citationCollectionId: $('#citationCollectionId').val(),
+			linkId				: $(eventObject.target).attr('id'),
+			searchUrl			: $(eventObject.target).siblings('.searchUrl').text(),
+			popupTitle			: $(eventObject.target).siblings('.popupTitle').text(),
+			popupName			: $(eventObject.target).siblings('.popupName').text(),
+			invoke				: function(jsObj) {
+				try {
+					var resourceUuid = getResourceUuid(jsObj);
+					if (resourceUuid) {
+						this.popupName += resourceUuid;
+					}
+				} catch (e) {
+					reportError(e);
+				}
+				if(jsObj && jsObj.secondsBetweenSaveciteRefreshes) {
+					citations_new_resource.secondsBetweenSaveciteRefreshes = jsObj.secondsBetweenSaveciteRefreshes;
+				}
+				if(citations_new_resource.childWindow && citations_new_resource.childWindow[this.linkId] && citations_new_resource.childWindow[this.linkId].close) {
+					citations_new_resource.childWindow[this.linkId].close();
+				}
+				citations_new_resource.childWindow[this.linkId] = openWindow(this.searchUrl,this.popupTitle,'scrollbars=yes,toolbar=yes,resizable=yes,height=' + DEFAULT_DIALOG_HEIGHT + ',width=' + DEFAULT_DIALOG_WIDTH);
+				citations_new_resource.childWindow[this.linkId].name = this.popupName;
+				citations_new_resource.childWindow[this.linkId].focus();
+				setTimeout(function() { citations_new_resource.watchForUpdates(jsObj.timestamp + 1); }, citations_new_resource.secondsBetweenSaveciteRefreshes * 1000);
+			}
+		};
+		citations_new_resource.processClick(successObj);
+		return false;
+	});
 	$('#Search').on('click', function(eventObject) {
 		var successObj = {
 			citationCollectionId: $('#citationCollectionId').val(),
@@ -456,11 +501,13 @@ citations_new_resource.init = function() {
 			popupTitle			: $(eventObject.target).siblings('.popupTitle').text(),
 			invoke				: function(jsObj) {
 				try {
-					if(jsObj && jsObj.resourceUuid) {
-						searchUrl += "&resourceId=" + jsObj.resourceUuid;
+					var resourceUuid = getResourceUuid();
+					if (resourceUuid) {
+						this.searchUrl += "&resourceId=" + resourceUuid;
 					}
-					if(jsObj && jsObj.citationCollectionId) {
-						searchUrl += "&citationCollectionId=" + jsObj.citationCollectionId;
+					var citationCollectionId = getCitationCollectionId(jsObj);
+					if (citationCollectionId) {
+						this.searchUrl += "&citationCollectionId=" + citationCollectionId;
 					}
 				} catch (e) {
 					reportError(e);
