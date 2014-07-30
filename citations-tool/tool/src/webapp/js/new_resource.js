@@ -214,6 +214,7 @@ citations_new_resource.processClick = function(successAction) {
 		$.ajax({
 			type		: 'POST',
 			url			: actionUrl,
+			async		: false,
 			cache		: false,
 			data		: params,
 			dataType	: 'json',
