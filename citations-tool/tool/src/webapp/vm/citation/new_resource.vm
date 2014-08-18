@@ -71,6 +71,13 @@ span.searchTargetLink { margin-right:50px; }
 				</label>
 				<input type="text" size="40" id="displayName" name="displayName" value="$xilator.escapeHtml("$!resourceTitle")" />
 			</p>
+			############ begin description ##########
+			<fieldset>
+				<legend>$tlang.getString("resource.description")</legend>
+				<p>
+					<textarea name="description" cols="80" rows="5" wrap="virtual">$!{resourceDescription}</textarea>
+				</p>
+			</fieldset>
 			<br />
 		</div>
 		<h4 id="toggleModel" class="toggleAnchor specialLink">
@@ -84,13 +91,6 @@ span.searchTargetLink { margin-right:50px; }
 			</span>
 		</h4>
 		<div id="toggledContent" class="toggledContent" style="display:none;">
-			############ begin description ##########
-			<fieldset>
-			<legend>$tlang.getString("resource.description")</legend>
-			<p>
-				<textarea name="description" cols="80" rows="5" wrap="virtual">$!{resourceDescription}</textarea>
-			</p>
-			</fieldset>
 			######### begin access section ##########
 			<fieldset>
 			<legend>$tlang.getString("resource.access.title")</legend>
