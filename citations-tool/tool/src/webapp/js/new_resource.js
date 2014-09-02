@@ -56,6 +56,13 @@ var reportError = function(msg){
 };
 
 /*
+ * Show error in pop up
+ */
+var popUpError = function(msg){
+	alert(msg);
+};
+
+/*
  * There has been an error
  */
 var reportInvalidity = function(msg){
@@ -484,10 +491,14 @@ citations_new_resource.init = function() {
 				if(citations_new_resource.childWindow && citations_new_resource.childWindow[this.linkId] && citations_new_resource.childWindow[this.linkId].close) {
 					citations_new_resource.childWindow[this.linkId].close();
 				}
-				citations_new_resource.childWindow[this.linkId] = openWindow(this.searchUrl,this.popupTitle,'scrollbars=yes,toolbar=yes,resizable=yes,height=' + DEFAULT_DIALOG_HEIGHT + ',width=' + DEFAULT_DIALOG_WIDTH);
-				citations_new_resource.childWindow[this.linkId].name = this.popupName;
-				citations_new_resource.childWindow[this.linkId].focus();
-				setTimeout(function() { citations_new_resource.watchForUpdates(jsObj.timestamp + 1); }, citations_new_resource.secondsBetweenSaveciteRefreshes * 1000);
+				try {
+					citations_new_resource.childWindow[this.linkId] = openWindow(this.searchUrl,this.popupTitle,'scrollbars=yes,toolbar=yes,resizable=yes,height=' + DEFAULT_DIALOG_HEIGHT + ',width=' + DEFAULT_DIALOG_WIDTH);
+					citations_new_resource.childWindow[this.linkId].name = this.popupName;
+					citations_new_resource.childWindow[this.linkId].focus();
+					setTimeout(function() { citations_new_resource.watchForUpdates(jsObj.timestamp + 1); }, citations_new_resource.secondsBetweenSaveciteRefreshes * 1000);
+				} catch (e) {
+					popUpError("Your browser has blocked a pop up. Please allow pop ups from Solo.");
+				}
 			}
 		};
 		citations_new_resource.processClick(successObj);
@@ -569,12 +580,16 @@ citations_new_resource.init = function() {
                     var baseUrl = $(eventObject.target).siblings('.baseUrl').text();
                     window.location.href = baseUrl + "&resourceUrl=" + url;
                 };
-                
-				var picker = openWindow(this.pickerUrl,this.popupTitle,'scrollbars=yes,toolbar=yes,resizable=yes,height=' + DEFAULT_DIALOG_HEIGHT + ',width=' + DEFAULT_DIALOG_WIDTH);
-				picker.focus();
-				citations_new_resource.childWindow[this.linkId] = picker;
-				setTimeout(function() { citations_new_resource.watchForUpdates(jsObj.timestamp + 1); }
-								, citations_new_resource.secondsBetweenSaveciteRefreshes * 1000);
+
+				try {
+					var picker = openWindow(this.pickerUrl,this.popupTitle,'scrollbars=yes,toolbar=yes,resizable=yes,height=' + DEFAULT_DIALOG_HEIGHT + ',width=' + DEFAULT_DIALOG_WIDTH);
+					picker.focus();
+					citations_new_resource.childWindow[this.linkId] = picker;
+					setTimeout(function() { citations_new_resource.watchForUpdates(jsObj.timestamp + 1); }
+						, citations_new_resource.secondsBetweenSaveciteRefreshes * 1000);
+				} catch (e) {
+					popUpError("Your browser has blocked a pop up. Please allow pop ups from WebLearn.");
+				}
 			}
 		};
 		citations_new_resource.processClick(successObj);
