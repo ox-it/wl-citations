@@ -133,7 +133,7 @@ public class CitationListAccessServlet implements HttpAccess
 			Reference ref, String format, String subtype) 
 			throws EntityNotDefinedException, EntityAccessOverloadException, EntityPermissionException 
 	{
-		if(! ContentHostingService.allowGetResource(req.getParameter("resourceId")))
+		if(! ContentHostingService.allowGetResource(req.getParameter("contentCollectionId")))
 		{
 			String url = (req.getRequestURL()).toString();
 			String user = "";
