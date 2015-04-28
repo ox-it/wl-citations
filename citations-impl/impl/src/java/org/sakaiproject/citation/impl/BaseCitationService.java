@@ -3207,7 +3207,6 @@ public abstract class BaseCitationService implements CitationService
 			{
 				this.m_order = new TreeSet<String>(this.m_comparator);
 			}
-			this.m_order.clear();
 			Iterator it = other.m_citations.keySet().iterator();
 			while(it.hasNext())
 			{
