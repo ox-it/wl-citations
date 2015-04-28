@@ -492,8 +492,7 @@ citations_new_resource.init = function() {
 					citations_new_resource.childWindow[this.linkId].close();
 				}
 				try {
-					citations_new_resource.childWindow[this.linkId] = openWindow(this.searchUrl,this.popupTitle,'scrollbars=yes,toolbar=yes,resizable=yes,height=' + DEFAULT_DIALOG_HEIGHT + ',width=' + DEFAULT_DIALOG_WIDTH);
-					citations_new_resource.childWindow[this.linkId].name = this.popupName;
+					citations_new_resource.childWindow[this.linkId] = openWindow(this.searchUrl,this.popupName,'scrollbars=yes,toolbar=yes,resizable=yes,height=' + DEFAULT_DIALOG_HEIGHT + ',width=' + DEFAULT_DIALOG_WIDTH);
 					citations_new_resource.childWindow[this.linkId].focus();
 					setTimeout(function() { citations_new_resource.watchForUpdates(jsObj.timestamp + 1); }, citations_new_resource.secondsBetweenSaveciteRefreshes * 1000);
 				} catch (e) {
