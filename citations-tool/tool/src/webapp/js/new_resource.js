@@ -492,7 +492,9 @@ citations_new_resource.init = function() {
 					citations_new_resource.childWindow[this.linkId].close();
 				}
 				try {
-					citations_new_resource.childWindow[this.linkId] = openWindow(this.searchUrl,this.popupName,'scrollbars=yes,toolbar=yes,resizable=yes,height=' + DEFAULT_DIALOG_HEIGHT + ',width=' + DEFAULT_DIALOG_WIDTH);
+					// We can't use openWindow() as it strips hyphens from the window name and we use this
+					// in Solo to find the URL. Apparently before IE9 this didn't work, although I'm not sure.
+					citations_new_resource.childWindow[this.linkId] = top.window.open(this.searchUrl,this.popupName,'scrollbars=yes,toolbar=yes,resizable=yes,height=' + DEFAULT_DIALOG_HEIGHT + ',width=' + DEFAULT_DIALOG_WIDTH);
 					citations_new_resource.childWindow[this.linkId].focus();
 					setTimeout(function() { citations_new_resource.watchForUpdates(jsObj.timestamp + 1); }, citations_new_resource.secondsBetweenSaveciteRefreshes * 1000);
 				} catch (e) {
