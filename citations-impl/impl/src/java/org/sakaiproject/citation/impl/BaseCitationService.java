@@ -4697,7 +4697,7 @@ public abstract class BaseCitationService implements CitationService
 			registerResourceType();
 		}
 
-	}
+    }
 
 	/**
      *
@@ -4770,7 +4770,7 @@ public abstract class BaseCitationService implements CitationService
 	    typedef.setIconLocation("sakai/citationlist.gif");
 	    typedef.setHasRightsDialog(false);
 
-	    registry.register(typedef);
+	    registry.register(typedef, new CitationContentChangeHandler());
     }
 
 	/**
@@ -5581,7 +5581,7 @@ public abstract class BaseCitationService implements CitationService
 	/**
      * @param reference
      */
-    private void copyCitationCollection(Reference reference)
+    public void copyCitationCollection(Reference reference)
     {
         ContentHostingService contentService = (ContentHostingService) ComponentManager.get(ContentHostingService.class);
 		try
