@@ -422,7 +422,7 @@ public class CitationListAccessServlet implements HttpAccess
     									if(first)
     									{
     										String label = rb.getString(schema.getIdentifier() + "." + field.getIdentifier(), field.getIdentifier());
-    										out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
+    										out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + ":</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
     									}
     									else
     									{
@@ -464,7 +464,7 @@ public class CitationListAccessServlet implements HttpAccess
     			// show detailed info
     			out.println("\t\t<div id=\"details_" + escapedId + "\" class=\"citationDetails\" style=\"display: none;\">");
        			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
-	     			
+    			out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach header\"><strong>" + "Item details" + "</strong></td></tr>");
     			//Schema schema = citation.getSchema();
     			//if(schema == null)
     			//{
@@ -522,7 +522,7 @@ public class CitationListAccessServlet implements HttpAccess
     							// don't want to repeat titles
     							if( !Schema.TITLE.equals(field.getIdentifier()) )
     							{
-    								out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
+    								out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + ":</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
     							}
     						}
     					}
