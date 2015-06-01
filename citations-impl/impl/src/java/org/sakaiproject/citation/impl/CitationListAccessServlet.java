@@ -360,10 +360,10 @@ public class CitationListAccessServlet implements HttpAccess
     			String href = citation.hasPreferredUrl() ? citation.getCustomUrl(citation.getPreferredUrlId()) : citation.getOpenurl();
     			
     			out.println("\t\t<td headers=\"details\">");
-    			out.println("\t\t\t<a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a><br />");
-    			out.println("\t\t\t\t" + Validator.escapeHtml( citation.getCreator() ) );
-    			out.println("\t\t\t\t" + Validator.escapeHtml( citation.getSource() ) );
-    			out.println("\t\t\t<div class=\"itemAction\">");
+    			out.println("\t\t\t<div style=\"float:left;width:100%;\"><div style=\"float:left\"><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
+    			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
+    			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getSource() )  + "</div></div>");
+    			out.println("\t\t\t<div class=\"itemAction\" style=\"float:right;\">");
     			if( citation.hasCustomUrls() )
     			{
     				List<String> customUrlIds = citation.getCustomUrlIds();
@@ -389,7 +389,7 @@ public class CitationListAccessServlet implements HttpAccess
     			*/
     			// TODO This doesn't need any Inline HTTP Transport.
     			out.println("\t\t\t\t<span class=\"Z3988\" title=\""+ citation.getOpenurlParameters().substring(1).replace("&", "&amp;")+ "\"></span>");
-    			out.println("\t\t\t</div>");
+    			out.println("\t\t\t</div></div>");
     			
     			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
      			
@@ -530,7 +530,10 @@ public class CitationListAccessServlet implements HttpAccess
     			}
       			out.println("\t\t\t</table>");
        		    out.println("\t\t</div>");
-       		    out.println("\t\t</td>");
+
+			    out.println("\t\t<div class=\"availabilityHeader\"></div>");
+
+			    out.println("\t\t</td>");
        		    out.println("\t\t</tr>");
     		}
     		
