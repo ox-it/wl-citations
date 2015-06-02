@@ -316,7 +316,7 @@ public class CitationListAccessServlet implements HttpAccess
     		List<Citation> citations = collection.getCitations();
     		
     		out.println("<div class=\"portletBody\">\n\t<div class=\"indnt1\">");
-    		out.println("\t<h3>" + rb.getString("list.title") + ": " + Validator.escapeHtml(title) + "</h3>");
+    		out.println("\t<h3>" + rb.getString("list.title") + " " + Validator.escapeHtml(title) + "</h3>");
     		if( description != null && !description.trim().equals("") )
     		{
     			out.println("\t<p>" + description + "</p>");
