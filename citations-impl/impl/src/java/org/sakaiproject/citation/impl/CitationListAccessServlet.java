@@ -315,11 +315,12 @@ public class CitationListAccessServlet implements HttpAccess
 
     		List<Citation> citations = collection.getCitations();
     		
-    		out.println("<div class=\"portletBody\">\n\t<div class=\"indnt1\">");
-    		out.println("\t<h3>" + rb.getString("list.title") + " " + Validator.escapeHtml(title) + "</h3>");
+    		out.println("<div class=\"portletBody\">\n\t<div class=\"indnt1 citationList\">");
+    		out.println("\t<div style=\"background-color:" + rb.getFormattedMessage("list.title.bkgd.col") + "; padding: 15px;\"><h3 style=\"color:" +
+				    rb.getFormattedMessage("list.title.text.col") + ";\">" + Validator.escapeHtml(title) + "</h3></div>");
     		if( description != null && !description.trim().equals("") )
     		{
-    			out.println("\t<p>" + description + "</p>");
+    			out.println("\t<div><p>" + description + "</p></div>");
     		}
     		if( citations.size() > 0 )
     		{
