@@ -50,3 +50,12 @@
 	padding:.3em 0;
 	border-bottom:2px solid #ccc
 }
+.floatLeft{
+	float:left;
+}
+.floatRight{
+	float:right;
+}
+.fullWidth{
+	width:100%;
+}
