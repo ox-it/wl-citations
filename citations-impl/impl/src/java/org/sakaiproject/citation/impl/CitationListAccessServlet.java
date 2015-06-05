@@ -41,6 +41,7 @@ import org.sakaiproject.citation.api.Schema;
 import org.sakaiproject.citation.api.Schema.Field;
 import org.sakaiproject.citation.cover.CitationService;
 import org.sakaiproject.citation.cover.ConfigurationService;
+import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.entity.api.EntityAccessOverloadException;
@@ -316,8 +317,8 @@ public class CitationListAccessServlet implements HttpAccess
     		List<Citation> citations = collection.getCitations();
     		
     		out.println("<div class=\"portletBody\">\n\t<div class=\"indnt1 citationList\">");
-    		out.println("\t<div style=\"background-color:" + rb.getFormattedMessage("list.title.bkgd.col") + "; padding: 15px;\"><h3 style=\"color:" +
-				    rb.getFormattedMessage("list.title.text.col") + ";\">" + Validator.escapeHtml(title) + "</h3></div>");
+    		out.println("\t<div class=\"listTitle\" style=\"background-color:" + ServerConfigurationService.getString("official.institution.background.colour") + "; \"><h3 style=\"color:" +
+						    ServerConfigurationService.getString("official.institution.text.colour") + ";\">" + Validator.escapeHtml(title) + "</h3></div>");
     		if( description != null && !description.trim().equals("") )
     		{
     			out.println("\t<div><p>" + description + "</p></div>");
@@ -362,10 +363,10 @@ public class CitationListAccessServlet implements HttpAccess
     			String href = citation.hasPreferredUrl() ? citation.getCustomUrl(citation.getPreferredUrlId()) : citation.getOpenurl();
     			
     			out.println("\t\t<td headers=\"details\">");
-    			out.println("\t\t\t<div class=\"floatLeft fullWidth\"><div class=\"floatLeft\"><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
+    			out.println("\t\t\t<div class=\"detailsDiv\"><div class=\"titleDiv\"><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
     			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
     			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getSource() )  + "</div></div>");
-    			out.println("\t\t\t<div class=\"itemAction floatRight\">");
+    			out.println("\t\t\t<div class=\"itemAction links\">");
     			if( citation.hasCustomUrls() )
     			{
     				List<String> customUrlIds = citation.getCustomUrlIds();
@@ -467,7 +468,7 @@ public class CitationListAccessServlet implements HttpAccess
     			out.println("\t\t<div id=\"details_" + escapedId + "\" class=\"citationDetails\" style=\"display: none;\">");
        			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
 
-    			out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach header\" style=\"color:" + rb.getFormattedMessage("list.title.bkgd.col")  + "\" colspan=\"2\"><strong>" + "Item details" + "</strong></td></tr>");
+    			out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach header\" style=\"color:" + ServerConfigurationService.getString("official.institution.background.colour") + "\" colspan=\"2\"><strong>" + rb.getString("bibl.info.header") + "</strong></td></tr>");
     			//Schema schema = citation.getSchema();
     			//if(schema == null)
     			//{

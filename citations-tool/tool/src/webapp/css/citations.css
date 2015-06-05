@@ -50,11 +50,12 @@
 	padding:.3em 0;
 	border-bottom:2px solid #ccc
 }
-.floatLeft{
+.detailsDiv{
 	float:left;
+	width:100%;
 }
-.floatRight{
-	float:right;
+.titleDiv{
+	float:left;
 }
 .fullWidth{
 	width:100%;
@@ -73,4 +74,10 @@ table.lines tr:nth-child(odd){
 	background: -o-linear-gradient(top, #f3f3f3 0%,#e7e7e7 100%);
 	background: -ms-linear-gradient(top, #f3f3f3 0%,#e7e7e7 100%);
 	background: linear-gradient(top, #f3f3f3 0%,#e7e7e7 100%);
+}
+.listTitle {
+	padding: 15px;
+}
+.citationList .links {
+	float: right;
 }
