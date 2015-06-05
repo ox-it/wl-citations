@@ -2794,7 +2794,7 @@ public abstract class BaseCitationService implements CitationService
 				this.m_comparator = new MultipleKeyComparator( TITLE_AS_KEY, true );
 			}
 
-			set(other);
+			set(other, true);
 
 		}
 
@@ -3179,7 +3179,7 @@ public abstract class BaseCitationService implements CitationService
 				}
 				else
 				{
-					set((BasicCitationCollection) edit);
+					set((BasicCitationCollection) edit, false);
 				}
 			}
 
@@ -3189,7 +3189,7 @@ public abstract class BaseCitationService implements CitationService
 		 * copy
 		 * @param other
 		 */
-		protected void set(BasicCitationCollection other)
+		protected void set(BasicCitationCollection other, boolean isTemporary)
 		{
 			this.m_description = other.m_description;
 //			this.m_comparator = other.m_comparator;
@@ -3217,7 +3217,7 @@ public abstract class BaseCitationService implements CitationService
 				{
 					newCitation.copy(oldCitation);
 					newCitation.m_id = oldCitation.m_id;
-					newCitation.m_temporary = false;
+					newCitation.m_temporary = isTemporary;
 					this.saveCitation(newCitation);
 					this.add(newCitation);
 				}
