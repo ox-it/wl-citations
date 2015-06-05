@@ -41,6 +41,7 @@ import org.sakaiproject.citation.api.Schema;
 import org.sakaiproject.citation.api.Schema.Field;
 import org.sakaiproject.citation.cover.CitationService;
 import org.sakaiproject.citation.cover.ConfigurationService;
+import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.content.cover.ContentHostingService;
 import org.sakaiproject.entity.api.EntityAccessOverloadException;
@@ -306,6 +307,7 @@ public class CitationListAccessServlet implements HttpAccess
 					+ "</title>\n"
 					+ "<link href=\"/library/skin/tool_base.css\" type=\"text/css\" rel=\"stylesheet\" media=\"all\" />\n"
 					+ "<link href=\"/library/skin/default/tool.css\" type=\"text/css\" rel=\"stylesheet\" media=\"all\" />\n"
+					+ "<link href=\"/sakai-citations-tool/css/citations.css\" type=\"text/css\" rel=\"stylesheet\" media=\"all\" />\n"
 					+ "<script type=\"text/javascript\" src=\"/sakai-citations-tool/js/citationscript.js\"></script>\n"
 					+ "<script type=\"text/javascript\" src=\"/library/juice/jquery-1.3.2.min.js\"></script>\n"
 					+ "<script type=\"text/javascript\" src=\"/library/juice/juice.js\"></script>\n"
@@ -314,11 +316,12 @@ public class CitationListAccessServlet implements HttpAccess
 
     		List<Citation> citations = collection.getCitations();
     		
-    		out.println("<div class=\"portletBody\">\n\t<div class=\"indnt1\">");
-    		out.println("\t<h3>" + rb.getString("list.title") + ": " + Validator.escapeHtml(title) + "</h3>");
+    		out.println("<div class=\"portletBody\">\n\t<div class=\"indnt1 citationList\">");
+    		out.println("\t<div class=\"listTitle\" style=\"background-color:" + ServerConfigurationService.getString("official.institution.background.colour") + "; \"><h3 style=\"color:" +
+						    ServerConfigurationService.getString("official.institution.text.colour") + ";\">" + Validator.escapeHtml(title) + "</h3></div>");
     		if( description != null && !description.trim().equals("") )
     		{
-    			out.println("\t<p>" + description + "</p>");
+    			out.println("\t<div><p>" + description + "</p></div>");
     		}
     		if( citations.size() > 0 )
     		{
@@ -360,10 +363,10 @@ public class CitationListAccessServlet implements HttpAccess
     			String href = citation.hasPreferredUrl() ? citation.getCustomUrl(citation.getPreferredUrlId()) : citation.getOpenurl();
     			
     			out.println("\t\t<td headers=\"details\">");
-    			out.println("\t\t\t<a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a><br />");
-    			out.println("\t\t\t\t" + Validator.escapeHtml( citation.getCreator() ) );
-    			out.println("\t\t\t\t" + Validator.escapeHtml( citation.getSource() ) );
-    			out.println("\t\t\t<div class=\"itemAction\">");
+    			out.println("\t\t\t<div class=\"detailsDiv\"><div class=\"titleDiv\"><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
+    			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
+    			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getSource() )  + "</div></div>");
+    			out.println("\t\t\t<div class=\"itemAction links\">");
     			if( citation.hasCustomUrls() )
     			{
     				List<String> customUrlIds = citation.getCustomUrlIds();
@@ -389,7 +392,7 @@ public class CitationListAccessServlet implements HttpAccess
     			*/
     			// TODO This doesn't need any Inline HTTP Transport.
     			out.println("\t\t\t\t<span class=\"Z3988\" title=\""+ citation.getOpenurlParameters().substring(1).replace("&", "&amp;")+ "\"></span>");
-    			out.println("\t\t\t</div>");
+    			out.println("\t\t\t</div></div>");
     			
     			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
      			
@@ -422,7 +425,7 @@ public class CitationListAccessServlet implements HttpAccess
     									if(first)
     									{
     										String label = rb.getString(schema.getIdentifier() + "." + field.getIdentifier(), field.getIdentifier());
-    										out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
+    										out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + ":</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
     									}
     									else
     									{
@@ -464,7 +467,8 @@ public class CitationListAccessServlet implements HttpAccess
     			// show detailed info
     			out.println("\t\t<div id=\"details_" + escapedId + "\" class=\"citationDetails\" style=\"display: none;\">");
        			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
-	     			
+
+    			out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach header\" style=\"color:" + ServerConfigurationService.getString("official.institution.background.colour") + "\" colspan=\"2\"><strong>" + rb.getString("bibl.info.header") + "</strong></td></tr>");
     			//Schema schema = citation.getSchema();
     			//if(schema == null)
     			//{
@@ -495,7 +499,7 @@ public class CitationListAccessServlet implements HttpAccess
     									if(first)
     									{
     										String label = rb.getString(schema.getIdentifier() + "." + field.getIdentifier(), field.getIdentifier());
-    										out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
+    										out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + ":</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
     									}
     									else
     									{
@@ -522,7 +526,7 @@ public class CitationListAccessServlet implements HttpAccess
     							// don't want to repeat titles
     							if( !Schema.TITLE.equals(field.getIdentifier()) )
     							{
-    								out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + "</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
+    								out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach\"><strong>" + label + ":</strong></td>\n\t\t\t\t\t<td>" + Validator.escapeHtml(value) + "</td>\n\t\t\t\t</tr>");
     							}
     						}
     					}
@@ -530,7 +534,10 @@ public class CitationListAccessServlet implements HttpAccess
     			}
       			out.println("\t\t\t</table>");
        		    out.println("\t\t</div>");
-       		    out.println("\t\t</td>");
+
+			    out.println("\t\t<div class=\"availabilityHeader\"></div>");
+
+			    out.println("\t\t</td>");
        		    out.println("\t\t</tr>");
     		}
     		

@@ -50,3 +50,34 @@
 	padding:.3em 0;
 	border-bottom:2px solid #ccc
 }
+.detailsDiv{
+	float:left;
+	width:100%;
+}
+.titleDiv{
+	float:left;
+}
+.fullWidth{
+	width:100%;
+}
+.citationList h3 {
+	margin: 1em;
+}
+table.lines tr:hover {
+	background-color: #FFF;
+}
+table.lines tr:nth-child(odd){
+	background: #eeeeee;
+	background: -moz-linear-gradient(top, #f3f3f3 0%, #e7e7e7 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f3f3f3), color-stop(100%,#e7e7e7));
+	background: -webkit-linear-gradient(top, #f3f3f3 0%,#e7e7e7 100%);
+	background: -o-linear-gradient(top, #f3f3f3 0%,#e7e7e7 100%);
+	background: -ms-linear-gradient(top, #f3f3f3 0%,#e7e7e7 100%);
+	background: linear-gradient(top, #f3f3f3 0%,#e7e7e7 100%);
+}
+.listTitle {
+	padding: 15px;
+}
+.citationList .links {
+	float: right;
+}
