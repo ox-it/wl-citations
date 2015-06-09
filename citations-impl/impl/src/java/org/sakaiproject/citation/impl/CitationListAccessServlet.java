@@ -363,7 +363,7 @@ public class CitationListAccessServlet implements HttpAccess
     			String href = citation.hasPreferredUrl() ? citation.getCustomUrl(citation.getPreferredUrlId()) : citation.getOpenurl();
     			
     			out.println("\t\t<td headers=\"details\">");
-    			out.println("\t\t\t<div class=\"detailsDiv\"><div class=\"titleDiv\"><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
+    			out.println("\t\t\t<div class=\"detailsDiv\"><div class=\"titleDiv\"><a href=\"" + Validator.escapeHtml(href) + "\"><img src=\"" + citation.getThumbnailURL() + "\" class=\"citationThumbnail\"></a><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
     			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
     			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getSource() )  + "</div></div>");
     			out.println("\t\t\t<div class=\"itemAction links\">");

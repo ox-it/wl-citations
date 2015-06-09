@@ -330,6 +330,10 @@ public interface Citation 	// extends Entity
      * designations and restore the open-url as the primary url for the citation.
      */
     public void setPreferredUrl(String urlid);
-
+    /**
+     * Get the thumbnail url for a citation
+     * @return a string representing the thumbnail url
+     */
+    public String getThumbnailURL();
 } // interface Citation
 
