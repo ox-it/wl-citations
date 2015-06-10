@@ -21,16 +21,13 @@
 
 package org.sakaiproject.citation.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -43,12 +40,14 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.osid.repository.Asset;
 import org.osid.repository.Part;
 import org.osid.repository.PartIterator;
@@ -71,12 +70,8 @@ import org.sakaiproject.content.api.ContentEntity;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.content.api.ContentResourceEdit;
-import org.sakaiproject.content.api.InteractionAction;
-import org.sakaiproject.content.api.ResourceType;
 import org.sakaiproject.content.api.ResourceTypeRegistry;
 import org.sakaiproject.content.api.ResourceToolAction;
-import org.sakaiproject.content.api.ServiceLevelAction;
-import org.sakaiproject.content.api.ResourceToolAction.ActionType;
 import org.sakaiproject.content.util.BaseInteractionAction;
 import org.sakaiproject.content.util.BaseResourceAction;
 import org.sakaiproject.content.util.BasicSiteSelectableResourceType;
@@ -101,8 +96,6 @@ import org.sakaiproject.id.api.IdManager;
 import org.sakaiproject.javax.Filter;
 import org.sakaiproject.time.cover.TimeService;
 import org.sakaiproject.tool.api.SessionManager;
-import org.sakaiproject.user.api.User;
-import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.util.ResourceLoader;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
@@ -175,6 +168,8 @@ public abstract class BaseCitationService implements CitationService
 		protected final static String OPENURL_CONTEXT_FORMAT = "info:ofi/fmt:kev:mtx:ctx";
 		protected final static String OPENURL_JOURNAL_FORMAT = "info:ofi/fmt:kev:mtx:journal";
 		protected final static String OPENURL_BOOK_FORMAT = "info:ofi/fmt:kev:mtx:book";
+
+		public static final String GOOGLE_BOOKS_SEARCH_API = "https://www.googleapis.com/books/v1/volumes?";
 
 		protected Map m_citationProperties = null;
 		protected Map m_urls;
@@ -2203,6 +2198,24 @@ public abstract class BaseCitationService implements CitationService
 			{
 				this.m_preferredUrl = urlid;
 			}
+		}
+
+		@Override
+		public String getThumbnailURL() {
+			String imgURL = null;
+			try {
+				URL url = new URL(GOOGLE_BOOKS_SEARCH_API + "q=isbn:" + getCitationProperty("isnIdentifier"));
+				BufferedReader input = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
+				JSONObject obj = new JSONObject(IOUtils.toString(input));
+				imgURL = (String) ((JSONObject)obj.getJSONArray("items").get(0)).getJSONObject("volumeInfo").getJSONObject("imageLinks").get("smallThumbnail");
+			} catch (JSONException e) {
+				M_log.info("Could not navigate the JSON to find a thumbnail", e);
+			} catch (MalformedURLException e) {
+				M_log.error("Could not parse the URL string", e);
+			} catch (IOException e) {
+				M_log.error("Could not open a stream to the URL", e);
+			}
+			return imgURL;
 		}
 
 	} // BaseCitationService.BasicCitation
