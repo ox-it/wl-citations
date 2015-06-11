@@ -25,10 +25,13 @@
 </script>
 <script type="text/javascript" src="#libraryLink('js/jquery-ui-latest/js/jquery-ui.min.js')">	
 </script>
+<script type="text/javascript" src="/sakai-citations-tool/js/jquery.sortable.min.js">
+</script>
 <link media="all" rel="stylesheet" type="text/css" href="#libraryLink('js/jquery-ui-latest/css/ui-lightness/jquery-ui.css')">
 <link media="all" rel="stylesheet" type="text/css" href="/sakai-citations-tool/css/citations.css">
 <style type="text/css">
 span.searchTargetLink { margin-right:50px; }
+html { overflow-y: hidden; }
 </style>
 
 <div id="citationsPortletBody" class="portletBody">
@@ -437,17 +440,15 @@ span.searchTargetLink { margin-right:50px; }
 	  </li>
 	</ul>
 	<div class="act">
-		<div class="citationsDisplay"#if(! $collectionSize || $collectionSize < 1) style="display:none;"#end>
+		<div class="citationsDisplay"#if(! ($collectionSize || $collectionSize < 1) && ! ($nestedSectionsSize || $nestedSectionsSize < 1)) style="display:none;"#end>
 			<div class="act">
 				<input type="button" name="Cancel" class="Cancel active" value="$tlang.getString("resource.done")" />
 			</div>
 			<div class="currentListCitations">
-				#if($collectionSize && $collectionSize > 0)
-					#parse( "vm/citation/_listCitations.vm" )
-				#end
+				#parse( "vm/citation/_listCitations.vm" )
 			</div>
 		</div>
-		<p class="noCitationsDisplay"#if($collectionSize && $collectionSize > 0) style="display:none;"#end>
+		<p class="noCitationsDisplay"#if($collectionSize && $collectionSize > 0 && $nestedSectionsSize && $nestedSectionsSize > 0) style="display:none;"#end>
 			$tlang.getString("resource.nocitations")
 		</p>	
 	</div>
@@ -482,7 +483,11 @@ span.searchTargetLink { margin-right:50px; }
 </script>
 <script type="text/javascript" src="/sakai-citations-tool/js/new_resource.js">	
 </script>
-
+<script type="text/javascript" src="/sakai-citations-tool/js/edit_nested_citations.js">
+</script>
+<script type="text/javascript">
+    addSectionHeightsToPageHeight($num);
+</script>
 <script type="text/javascript">
 	focus_path = [ "displayName" ];
 	function focusOnNameElement()
@@ -495,5 +500,3 @@ span.searchTargetLink { margin-right:50px; }
 </script>
 
 <iframe id="download-frame" style="display:none"></iframe>
-
-

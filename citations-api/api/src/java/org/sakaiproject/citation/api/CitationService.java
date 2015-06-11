@@ -202,5 +202,42 @@ public interface CitationService extends EntityProducer
      * if no citation is found in the request then <code>null</code> is returned.
      */
     public Citation addCitation(HttpServletRequest request);
+	/**
+	 ** This method save a CitationCollectionOrder representing a h1 section
+	 * @param citationCollectionOrder
+	 */
+	public void saveSection(CitationCollectionOrder citationCollectionOrder);
+	/**
+	 ** This method save a CitationCollectionOrder representing a h2 or h3 section
+	 * @param citationCollectionOrder
+	 */
+	public void saveSubsection(CitationCollectionOrder citationCollectionOrder);
+	/**
+	 ** This method saves CitationCollectionOrders representing a nested structure of h1 h2 h3 and citations
+	 * @param citationCollectionOrders
+	 * @param citationCollectionId
+	 */
+	public void save(List<CitationCollectionOrder> citationCollectionOrders, String citationCollectionId);
+	/**
+	 ** This method updates the value of a section
+	 * @param citationCollectionOrder
+	 */
+	public void updateSection(CitationCollectionOrder citationCollectionOrder);
+	/**
+	 ** Gets the nested sections of a citation collection
+	 * @param citationCollectionId
+	 */
+	public CitationCollectionOrder getNestedCollection(String citationCollectionId);
+	/**
+	 ** Removes the section of a citation collection and its children
+	 * @param collectionId
+	 * @param locationId
+	 */
+	public void removeSection(String collectionId, int locationId);
+	/**
+	 ** Gets a citation collection including nested and unnested citations
+	 * @param citationCollectionId
+	 */
+	public CitationCollection getFullCitationCollection(String citationCollectionId);
 }	// interface CitationService
 
