@@ -673,3 +673,7 @@ function checkRequiredFields( alertMsg ) {
   
   return true;
 }
+
+$(document).ready( function() {
+    $.fn.googleBooksCover();
+} );

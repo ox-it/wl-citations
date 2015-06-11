@@ -75,6 +75,9 @@ table.lines tr:nth-child(odd){
 	background: -ms-linear-gradient(top, #f3f3f3 0%,#e7e7e7 100%);
 	background: linear-gradient(top, #f3f3f3 0%,#e7e7e7 100%);
 }
+.googleBookCover {
+	width:64px; height:93px;
+}
 .listTitle {
 	padding: 15px;
 }

@@ -308,8 +308,9 @@ public class CitationListAccessServlet implements HttpAccess
 					+ "<link href=\"/library/skin/tool_base.css\" type=\"text/css\" rel=\"stylesheet\" media=\"all\" />\n"
 					+ "<link href=\"/library/skin/default/tool.css\" type=\"text/css\" rel=\"stylesheet\" media=\"all\" />\n"
 					+ "<link href=\"/sakai-citations-tool/css/citations.css\" type=\"text/css\" rel=\"stylesheet\" media=\"all\" />\n"
+					+ "<script type=\"text/javascript\" src=\"/sakai-citations-tool/js/jquery-1.3.2.min.js\"></script>\n"
 					+ "<script type=\"text/javascript\" src=\"/sakai-citations-tool/js/citationscript.js\"></script>\n"
-					+ "<script type=\"text/javascript\" src=\"/library/juice/jquery-1.3.2.min.js\"></script>\n"
+					+ "<script type=\"text/javascript\" src=\"/sakai-citations-tool/js/jquery.googlebooks.thumbnails.js\"></script>\n"
 					+ "<script type=\"text/javascript\" src=\"/library/juice/juice.js\"></script>\n"
 					+ "<script type=\"text/javascript\" src=\"/library/juice/juice-weblearn.js\"></script>\n"
 					+ "</head>\n<body>" );
@@ -363,6 +364,7 @@ public class CitationListAccessServlet implements HttpAccess
     			String href = citation.hasPreferredUrl() ? citation.getCustomUrl(citation.getPreferredUrlId()) : citation.getOpenurl();
     			
     			out.println("\t\t<td headers=\"details\">");
+    			out.println("\t\t\t<div class=\"detailsDiv\"><div class=\"titleDiv\"><a href=\"" + Validator.escapeHtml(href) + "\"><img data-isbn=\"" + citation.getCitationProperty("isnIdentifier") + "\" class=\"googleBookCover\"></a><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
     			out.println("\t\t\t<div class=\"detailsDiv\"><div class=\"titleDiv\"><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
     			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
     			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getSource() )  + "</div></div>");
