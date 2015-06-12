@@ -462,7 +462,7 @@ public class CitationListAccessServlet implements HttpAccess
     			out.println("\t\t\t\t<span class=\"Z3988\" title=\""+ citation.getOpenurlParameters().substring(1).replace("&", "&amp;")+ "\"></span>");
     			out.println("\t\t\t</div></div>");
 
-			    out.println("\t\t\t<div><table id=\"specialKeys\" class=\"listHier lines nolines\" cellpadding=\"0\" cellspacing=\"0\">");
+			    out.println("\t\t\t<div><table class=\"listHier lines nolines\" cellpadding=\"0\" cellspacing=\"0\">");
       			out.println("\t\t\t</table></div>");
 
     			// show detailed info
