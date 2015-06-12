@@ -364,39 +364,11 @@ public class CitationListAccessServlet implements HttpAccess
     			String href = citation.hasPreferredUrl() ? citation.getCustomUrl(citation.getPreferredUrlId()) : citation.getOpenurl();
     			
     			out.println("\t\t<td headers=\"details\">");
-    			out.println("\t\t\t<div class=\"detailsDiv\"><div class=\"titleDiv\"><a href=\"" + Validator.escapeHtml(href) + "\"><img data-isbn=\"" + citation.getCitationProperty("isnIdentifier") + "\" class=\"googleBookCover\"></a><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
-    			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
-    			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getSource() )  + "</div></div>");
-    			out.println("\t\t\t<div class=\"itemAction links\">");
-    			if( citation.hasCustomUrls() )
-    			{
-    				List<String> customUrlIds = citation.getCustomUrlIds();
-    				for( String urlId : customUrlIds )
-    				{
-        			if (!citation.hasPreferredUrl() || 
-        			    (citation.hasPreferredUrl() && (!citation.getPreferredUrlId().equals(urlId))))
-        			{
-      					String urlLabel = ( citation.getCustomUrlLabel( urlId ) == null ||
-      							citation.getCustomUrlLabel( urlId ).trim().equals("") ) ? rb.getString( "nullUrlLabel.view" ) : Validator.escapeHtml( citation.getCustomUrlLabel( urlId ) );
+    			out.println("\t\t\t<div class=\"detailsDiv\"><div><div class=\"imgDiv\"><a href=\"" + Validator.escapeHtml(href) + "\"><img data-isbn=\"" + citation.getCitationProperty("isnIdentifier") + "\" class=\"googleBookCover\"></a></div><div><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a></div>");
+    			out.println("\t\t\t\t<div class=\"creatorDiv\">" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
+    			out.println("\t\t\t\t<div class=\"sourceDiv\">" + Validator.escapeHtml( citation.getSource() )  + "</div><br/>");
               
-    					  out.println("\t\t\t\t<a href=\"" + Validator.escapeHtml(citation.getCustomUrl( urlId )) + "\" target=\"_blank\">" + urlLabel + "</a>");
-    	    			out.println("\t\t\t\t |");
-    	    		}
-    				}
-    			} else {
-    				// We only want to show the open url if no custom urls have been specified.
-    				out.println("\t\t\t\t<a href=\"" + citation.getOpenurl() + "\" target=\"_blank\">" + ConfigurationService.getSiteConfigOpenUrlLabel() + "</a>");
-    			}
-    			/* not using view citation link - using toggle triangle
-    			out.println("\t\t\t\t<a id=\"link_" + escapedId + "\" href=\"#\" onclick=\"viewFullCitation('" + escapedId + "'); return false;\">"
-    					+ rb.getString( "action.view" ) + "</a>" );
-    			*/
-    			// TODO This doesn't need any Inline HTTP Transport.
-    			out.println("\t\t\t\t<span class=\"Z3988\" title=\""+ citation.getOpenurlParameters().substring(1).replace("&", "&amp;")+ "\"></span>");
-    			out.println("\t\t\t</div></div>");
-    			
-    			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
-     			
+			    out.println("\t\t\t<div class=\"imgDiv\"><table id=\"specialKeys\" class=\"listHier lines nolines\" cellpadding=\"0\" cellspacing=\"0\">");
     			Schema schema = citation.getSchema();
     			if(schema == null)	{
     				m_log.warn("CLAS.handleViewRequest() Schema is null: " + citation);
@@ -460,14 +432,42 @@ public class CitationListAccessServlet implements HttpAccess
     					}
     				}
     			}
-      			out.println("\t\t\t</table>");
+			    out.println("\t\t\t</table></div>");
     			
-    			
-    			
+			    out.println("\t\t\t<div class=\"itemAction links\">");
+    			if( citation.hasCustomUrls() )
+    			{
+    				List<String> customUrlIds = citation.getCustomUrlIds();
+    				for( String urlId : customUrlIds )
+    				{
+        			if (!citation.hasPreferredUrl() ||
+        			    (citation.hasPreferredUrl() && (!citation.getPreferredUrlId().equals(urlId))))
+        			{
+      					String urlLabel = ( citation.getCustomUrlLabel( urlId ) == null ||
+      							citation.getCustomUrlLabel( urlId ).trim().equals("") ) ? rb.getString( "nullUrlLabel.view" ) : Validator.escapeHtml( citation.getCustomUrlLabel( urlId ) );
+
+    					  out.println("\t\t\t\t<a href=\"" + Validator.escapeHtml(citation.getCustomUrl( urlId )) + "\" target=\"_blank\">" + urlLabel + "</a>");
+    	    			out.println("\t\t\t\t |");
+    	    		}
+    				}
+    			} else {
+    				// We only want to show the open url if no custom urls have been specified.
+    				out.println("\t\t\t\t<a href=\"" + citation.getOpenurl() + "\" target=\"_blank\">" + ConfigurationService.getSiteConfigOpenUrlLabel() + "</a>");
+    			}
+    			/* not using view citation link - using toggle triangle
+    			out.println("\t\t\t\t<a id=\"link_" + escapedId + "\" href=\"#\" onclick=\"viewFullCitation('" + escapedId + "'); return false;\">"
+    					+ rb.getString( "action.view" ) + "</a>" );
+    			*/
+    			// TODO This doesn't need any Inline HTTP Transport.
+    			out.println("\t\t\t\t<span class=\"Z3988\" title=\""+ citation.getOpenurlParameters().substring(1).replace("&", "&amp;")+ "\"></span>");
+    			out.println("\t\t\t</div></div>");
+
+			    out.println("\t\t\t<div><table id=\"specialKeys\" class=\"listHier lines nolines\" cellpadding=\"0\" cellspacing=\"0\">");
+      			out.println("\t\t\t</table></div>");
 
     			// show detailed info
     			out.println("\t\t<div id=\"details_" + escapedId + "\" class=\"citationDetails\" style=\"display: none;\">");
-       			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
+       			out.println("\t\t\t<table class=\"listHier lines nolines\" cellpadding=\"0\" cellspacing=\"0\">");
 
     			out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach header\" style=\"color:" + ServerConfigurationService.getString("official.institution.background.colour") + "\" colspan=\"2\"><strong>" + rb.getString("bibl.info.header") + "</strong></td></tr>");
     			//Schema schema = citation.getSchema();
