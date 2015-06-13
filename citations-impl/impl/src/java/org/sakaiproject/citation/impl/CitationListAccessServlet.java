@@ -364,9 +364,9 @@ public class CitationListAccessServlet implements HttpAccess
     			String href = citation.hasPreferredUrl() ? citation.getCustomUrl(citation.getPreferredUrlId()) : citation.getOpenurl();
     			
     			out.println("\t\t<td headers=\"details\">");
-    			out.println("\t\t\t<div class=\"detailsDiv\"><div class=\"titleDiv\"><a href=\"" + Validator.escapeHtml(href) + "\"><img data-isbn=\"" + citation.getCitationProperty("isnIdentifier") + "\" class=\"googleBookCover\"></a><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
-    			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
-    			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getSource() )  + "</div></div>");
+    			out.println("\t\t\t<div class=\"detailsDiv\"><div><div class=\"imgDiv\"><a href=\"" + Validator.escapeHtml(href) + "\"><img data-isbn=\"" + citation.getCitationProperty("isnIdentifier") + "\" class=\"googleBookCover\"></a></div><div><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a></div>");
+    			out.println("\t\t\t\t<div class=\"creatorDiv\">" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
+    			out.println("\t\t\t\t<div class=\"sourceDiv\">" + Validator.escapeHtml( citation.getSource() )  + "</div><br/>");
     			out.println("\t\t\t<div class=\"itemAction links\">");
     			if( citation.hasCustomUrls() )
     			{
@@ -460,7 +460,7 @@ public class CitationListAccessServlet implements HttpAccess
     					}
     				}
     			}
-      			out.println("\t\t\t</table>");
+      			out.println("\t\t\t</table></div>");
     			
     			
     			
