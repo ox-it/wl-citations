@@ -532,7 +532,8 @@ public class CitationListAccessServlet implements HttpAccess
       			out.println("\t\t\t</table>");
        		    out.println("\t\t</div>");
 
-			    out.println("\t\t<div class=\"availabilityHeader\"></div>");
+			    out.println("\t\t<div class=\"availabilityHeader\" style=\"color:" +
+					    ServerConfigurationService.getString("official.institution.background.colour") + "\">" + "<strong>Availability</strong>" + "</div>");
 
 			    out.println("\t\t</td>");
        		    out.println("\t\t</tr>");
