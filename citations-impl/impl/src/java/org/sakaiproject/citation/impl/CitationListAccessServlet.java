@@ -364,11 +364,12 @@ public class CitationListAccessServlet implements HttpAccess
     			String href = citation.hasPreferredUrl() ? citation.getCustomUrl(citation.getPreferredUrlId()) : citation.getOpenurl();
     			
     			out.println("\t\t<td headers=\"details\">");
-    			out.println("\t\t\t<div class=\"detailsDiv\"><div class=\"titleDiv\"><a href=\"" + Validator.escapeHtml(href) + "\"><img data-isbn=\"" + citation.getCitationProperty("isnIdentifier") + "\" class=\"googleBookCover\"></a><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a>");
-    			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
-    			out.println("\t\t\t\t<div>" + Validator.escapeHtml( citation.getSource() )  + "</div></div>");
-    			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
-     			
+    			out.println("\t\t\t<div class=\"detailsDiv\"><div><div class=\"imgDiv\"><a href=\"" + Validator.escapeHtml(href) + "\"><img data-isbn=\"" + citation.getCitationProperty("isnIdentifier") + "\" class=\"googleBookCover\"></a></div><div><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">" + Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a></div>");
+    			out.println("\t\t\t\t<div class=\"creatorDiv\">" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
+    			out.println("\t\t\t\t<div class=\"sourceDiv\">" + Validator.escapeHtml( citation.getSource() )  + "</div><br/>");
+
+    			out.println("\t\t\t<div class=\"imgDiv\"><table class=\"listHier lines nolines\" cellpadding=\"0\" cellspacing=\"0\">");
+
     			Schema schema = citation.getSchema();
     			if(schema == null)	{
     				m_log.warn("CLAS.handleViewRequest() Schema is null: " + citation);
@@ -432,7 +433,7 @@ public class CitationListAccessServlet implements HttpAccess
     					}
     				}
     			}
-      			out.println("\t\t\t</table>");
+    			out.println("\t\t\t</table></div>");
     			out.println("\t\t\t<div class=\"itemAction links\">");
     			if( citation.hasCustomUrls() )
     			{
@@ -461,9 +462,12 @@ public class CitationListAccessServlet implements HttpAccess
     			out.println("\t\t\t\t<span class=\"Z3988\" title=\""+ citation.getOpenurlParameters().substring(1).replace("&", "&amp;")+ "\"></span>");
     			out.println("\t\t\t</div></div>");
 
+    			out.println("\t\t\t<div><table class=\"listHier lines nolines\" cellpadding=\"0\" cellspacing=\"0\">");
+    			out.println("\t\t\t</table></div>");
+
     			// show detailed info
     			out.println("\t\t<div id=\"details_" + escapedId + "\" class=\"citationDetails\" style=\"display: none;\">");
-       			out.println("\t\t\t<table class=\"listHier lines nolines\" style=\"margin-left: 2em;\" cellpadding=\"0\" cellspacing=\"0\">");
+       			out.println("\t\t\t<table class=\"listHier lines nolines\" cellpadding=\"0\" cellspacing=\"0\">");
 
     			out.println("\t\t\t\t<tr>\n\t\t\t\t\t<td class=\"attach header\" style=\"color:" + ServerConfigurationService.getString("official.institution.background.colour") + "\" colspan=\"2\"><strong>" + rb.getString("bibl.info.header") + "</strong></td></tr>");
     			//Schema schema = citation.getSchema();
@@ -532,7 +536,9 @@ public class CitationListAccessServlet implements HttpAccess
       			out.println("\t\t\t</table>");
        		    out.println("\t\t</div>");
 
-			    out.println("\t\t<div class=\"availabilityHeader\"></div>");
+
+			    out.println("\t\t<div class=\"availabilityHeader\" style=\"color:" +
+					    ServerConfigurationService.getString("official.institution.background.colour") + "\">" + "<strong>Availability</strong>" + "</div>");
 
 			    out.println("\t\t</td>");
        		    out.println("\t\t</tr>");
