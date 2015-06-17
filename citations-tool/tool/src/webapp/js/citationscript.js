@@ -675,5 +675,7 @@ function checkRequiredFields( alertMsg ) {
 }
 
 $(document).ready( function() {
-    $.fn.googleBooksCover();
+    if (typeof $.fn.googleBooksCover != "undefined"){
+        $.fn.googleBooksCover();
+    }
 } );
