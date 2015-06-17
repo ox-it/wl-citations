@@ -96,8 +96,8 @@ var resetSelectableActions = function() {
 		$( ".selectAction" ).attr( "disabled", "disabled" );
 	}
 }
-var exportCheckedCitations = function( baseUrl, citationCollectionId, resourceDisplayName ) {
-  var exportUrl = baseUrl + "?citationCollectionId=" + citationCollectionId + "&resourceDisplayName=" + resourceDisplayName;
+var exportCheckedCitations = function( baseUrl, citationCollectionId, resourceDisplayName, contentCollectionId ) {
+  var exportUrl = baseUrl + "?citationCollectionId=" + citationCollectionId + "&resourceDisplayName=" + resourceDisplayName + "&contentCollectionId=" + contentCollectionId;
   
   // get each selected checkbox and append it to be exported
   $( ".itemCheckbox input:checked" ).each( function() {
@@ -108,8 +108,8 @@ var exportCheckedCitations = function( baseUrl, citationCollectionId, resourceDi
   //window.location.assign( exportUrl );
 };
 
-var exportAllCitations = function( baseUrl, citationCollectionId, resourceDisplayName ) {
-  var exportUrl = baseUrl + "?citationCollectionId=" + citationCollectionId + "&resourceDisplayName=" + resourceDisplayName;
+var exportAllCitations = function( baseUrl, citationCollectionId, resourceDisplayName, contentCollectionId  ) {
+  var exportUrl = baseUrl + "?citationCollectionId=" + citationCollectionId + "&resourceDisplayName=" + resourceDisplayName + "&contentCollectionId=" + contentCollectionId;
   
   $('#download-frame').attr('src', exportUrl);
   //window.location.assign( exportUrl );
@@ -130,18 +130,19 @@ var doCitationAction = function( eventTarget ) {
 	// do action
 	var citationCollectionId = $('#citationCollectionId').val();
 	var resourceDisplayName = $('#displayName').val();
+	var contentCollectionId = $('#contentCollectionId').val();
 	var action = $(eventTarget).val();
 	if( action == "exportSelected" ) {
 		if( countCitationsSelected() > 0 ) {
 			var url = $(eventTarget).siblings('#exportUrlSel').text();
-			exportCheckedCitations( url, citationCollectionId, resourceDisplayName );
+			exportCheckedCitations( url, citationCollectionId, resourceDisplayName, contentCollectionId );
 		} else {
 			var msg = $(eventTarget).siblings('#selectActionWarnLabel').text();
 			alert( msg );
 		}
 	} else if( action == "exportList" ) {
 		var url = $(eventTarget).siblings('#exportUrlAll').text();
-		exportAllCitations( url, citationCollectionId, resourceDisplayName );
+		exportAllCitations( url, citationCollectionId, resourceDisplayName, contentCollectionId  );
 	} else if( action == "removeSelected" ) {
 		if( countCitationsSelected() > 0 ) {
 			var url = $(eventTarget).siblings('#removeUrlSel').text();
