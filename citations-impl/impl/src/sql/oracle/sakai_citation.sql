@@ -29,7 +29,7 @@ CREATE TABLE CITATION_COLLECTION_ORDER
 (
 	COLLECTION_ID VARCHAR2 (36) NOT NULL,
 	CITATION_ID VARCHAR (36),
-	SECTION_TYPE ENUM('heading1','heading2', 'heading3', 'description'),
+	SECTION_TYPE ENUM('heading1','heading2', 'heading3', 'description', 'citation'),
 	VALUE TEXT,
 	LOCATION NUMBER(10,0) NOT NULL
 );
