@@ -495,6 +495,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	protected CitationService citationService;
 	protected ConfigurationService configurationService;
 	protected SearchManager searchManager;
+	protected ServerConfigurationService scs;
 
 	protected ContentHostingService contentService;
 	protected EntityManager entityManager;
@@ -645,7 +646,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 
 	public void init() throws ServletException {
-		ServerConfigurationService scs
+		scs
 			= (ServerConfigurationService) ComponentManager.get(ServerConfigurationService.class);
 		
 		String resourceClass = scs.getString(RESOURCECLASS, DEFAULT_RESOURCECLASS);
@@ -2219,7 +2220,8 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		}
     	context.put("citationCollectionId", citationCollectionId);
 		context.put( "collectionSize", new Integer( collectionSize ) );
-    	
+		context.put( "sectionBackgroundColour", scs.getString("official.institution.background.colour"));
+		context.put( "sectionTextColour", scs.getString("official.institution.text.colour"));
 
 		Locale locale = rb.getLocale();
 		List<Map<String,String>> saveciteClients = getConfigurationService().getSaveciteClientsForLocale(locale);
