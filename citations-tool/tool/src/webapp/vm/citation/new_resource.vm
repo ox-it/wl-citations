@@ -492,12 +492,6 @@ span.searchTargetLink { margin-right:50px; }
 </script>
 
 <script type="text/javascript">
-    // Turn off automatic editor creation first.
-    CKEDITOR.disableAutoInline = true;
-    CKEDITOR.inline('sectionInlineEditor');
-</script>
-
-<script type="text/javascript">
 	focus_path = [ "displayName" ];
 	function focusOnNameElement()
 	{
