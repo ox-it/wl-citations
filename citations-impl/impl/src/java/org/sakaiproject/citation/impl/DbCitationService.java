@@ -329,16 +329,36 @@ public class DbCitationService extends BaseCitationService
          */
 		protected void commitCitationCollectionOrder(CitationCollectionOrder citationCollectionOrder)
 		{
-			String orderStatement = "insert into " + m_collectionOrderTableName + " VALUES(?,?,?,?,?)";
+			String statement = "select * from " + m_collectionOrderTableName + " where (COLLECTION_ID = ? and LOCATION = ? and CITATION_ID is NULL and SECTION_TYPE = 'heading1')";
 
-			Object[] orderFields = new Object[5];
-			orderFields [0] = citationCollectionOrder.getCollectionId();
-			orderFields [1] = null;
-			orderFields [2] = citationCollectionOrder.getLocation();
-			orderFields [3] = citationCollectionOrder.getSectionType();
-			orderFields [4] = citationCollectionOrder.getValue();
+			Object fields[] = new Object[2];
+			fields[0] = citationCollectionOrder.getCollectionId();
+			fields[1] = citationCollectionOrder.getLocation();
 
-			m_sqlService.dbWrite(orderStatement, orderFields);
+			List list = m_sqlService.dbRead(statement, fields, null);
+
+			if (list.isEmpty()) {
+				String orderStatement = "insert into " + m_collectionOrderTableName + " VALUES(?,?,?,?,?)";
+
+				Object[] orderFields = new Object[5];
+				orderFields [0] = citationCollectionOrder.getCollectionId();
+				orderFields [1] = null;
+				orderFields [2] = citationCollectionOrder.getLocation();
+				orderFields [3] = citationCollectionOrder.getSectionType();
+				orderFields [4] = citationCollectionOrder.getValue();
+
+				m_sqlService.dbWrite(orderStatement, orderFields);
+			}
+			else {
+				String updateStatement = "update " + m_collectionOrderTableName + " set VALUE = ? where (COLLECTION_ID = ? and LOCATION = ? and CITATION_ID is NULL and SECTION_TYPE = 'heading1')";
+
+				Object[] orderFields = new Object[3];
+				orderFields [0] = citationCollectionOrder.getValue();
+				orderFields [1] = citationCollectionOrder.getCollectionId();
+				orderFields [2] = citationCollectionOrder.getLocation();
+
+				m_sqlService.dbWrite(updateStatement, orderFields);
+			}
 		}
 
 		/* (non-Javadoc)

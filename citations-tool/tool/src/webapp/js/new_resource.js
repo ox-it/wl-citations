@@ -336,6 +336,12 @@ citations_new_resource.checkForClosedWindows = function() {
 
 citations_new_resource.refreshDemanded = false;
 
+citations_new_resource.locationId = 0;
+
+citations_new_resource.getNextLocationId = function() {
+    return citations_new_resource.locationId++;
+};
+
 citations_new_resource.watchForUpdates = function(timestamp) {
 	
 	var size = function(obj) {
@@ -789,17 +795,22 @@ $(document).ready(function(){
 
     // show inline ckeditor for section
     $('#addSectionButton').on('click', function(e) {
-        $( "#addSectionDiv" ).append( '<div id="sectionInlineEditor" title="Click here to edit" contenteditable="true">' +
-            '<div class="listTitle" style="background-color: #002147; color:#FFF;"><h1>Section Title</h1></div></div>');
+
+        var locationId = citations_new_resource.getNextLocationId();
+        var divId = 'sectionInlineEditor' + locationId;
+        var html = "<div id='" + divId + "' title='Click here to edit' contenteditable='true'>" +
+            "<div class='listTitle' style='background-color: #002147; color:#FFF;'><h1>Section Title</h1></div></div>";
+        $( "#addSectionDiv" ).append(html);
 
         CKEDITOR.disableAutoInline = true;
-        CKEDITOR.inline('sectionInlineEditor');
-        CKEDITOR.instances.sectionInlineEditor.on( 'blur', function( evt ) {
+        CKEDITOR.inline('sectionInlineEditor' + locationId);
+        CKEDITOR.instances['sectionInlineEditor' + locationId].on( 'blur', function( evt ) {
 
             var actionUrl = $('#newCitationListForm').attr('action');
             $('#citation_action').val('add_section');
             var params = $('#newCitationListForm').serializeArray();
             params.push({name:'addSectionHTML', value:$(evt.editor.getData()).html()});
+            params.push({name:'locationId', value:evt.editor.name.substring('sectionInlineEditor'.length, evt.editor.name.length)});
 
             $.ajax({
                 type		: 'POST',

@@ -977,8 +977,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		Map<String, Object> results = new HashMap<String, Object>();
 		try {
 			String addSectionHTML = params.getString("addSectionHTML");
+			int locationId = params.getInt("locationId");
 			CitationCollection collection = getCitationCollection(state, false);
-			CitationCollectionOrder citationCollectionOrder = new CitationCollectionOrder(collection.getId(), 0, "heading1", addSectionHTML);
+			CitationCollectionOrder citationCollectionOrder = new CitationCollectionOrder(collection.getId(), locationId, "heading1", addSectionHTML);
 			getCitationService().save(citationCollectionOrder);
 			message = "Resource updated";
 		}
