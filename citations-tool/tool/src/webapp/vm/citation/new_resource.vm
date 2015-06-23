@@ -441,13 +441,8 @@ span.searchTargetLink { margin-right:50px; }
 			<div class="act">
 				<input type="button" name="Cancel" class="Cancel active" value="$tlang.getString("resource.done")" />
 			</div>
-			<div class="act">
+			<div class="act" id="addSectionDiv">
 				<input id="addSectionButton" type="button" name="AddSection" class="active" value="Add Section"/>
-			</div>
-			<div id="sectionInlineEditor" contenteditable="true" style="display: none;">
-				<div class="listTitle" style="background-color: $sectionBackgroundColour; color:$sectionTextColour;">
-					<h1>Section Title</h1>
-				</div>
 			</div>
 			<div class="currentListCitations">
 				#if($collectionSize && $collectionSize > 0)

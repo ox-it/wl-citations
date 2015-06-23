@@ -789,39 +789,41 @@ $(document).ready(function(){
 
     // show inline ckeditor for section
     $('#addSectionButton').on('click', function(e) {
-        $('#sectionInlineEditor').show();
-    });
+        $( "#addSectionDiv" ).append( '<div id="sectionInlineEditor" title="Click here to edit" contenteditable="true">' +
+            '<div class="listTitle" style="background-color: #002147; color:#FFF;"><h1>Section Title</h1></div></div>');
 
-    CKEDITOR.instances.sectionInlineEditor.on( 'blur', function( evt ) {
+        CKEDITOR.disableAutoInline = true;
+        CKEDITOR.inline('sectionInlineEditor');
+        CKEDITOR.instances.sectionInlineEditor.on( 'blur', function( evt ) {
 
-        var actionUrl = $('#newCitationListForm').attr('action');
-        $('#citation_action').val('add_section');
-        var params = $('#newCitationListForm').serializeArray();
-        params.push({name:'addSectionHTML', value:$(evt.editor.getData()).html()});
+            var actionUrl = $('#newCitationListForm').attr('action');
+            $('#citation_action').val('add_section');
+            var params = $('#newCitationListForm').serializeArray();
+            params.push({name:'addSectionHTML', value:$(evt.editor.getData()).html()});
 
-        $.ajax({
-            type		: 'POST',
-            url			: actionUrl,
-            cache		: false,
-            data		: params,
-            dataType	: 'json',
-            success		: function(jsObj) {
-                $.each(jsObj, function(key, value) {
-                    if(key === 'message' && value && 'null' !== value && '' !== $.trim(value)) {
-                        reportSuccess(value);
-                    } else if(key === 'secondsBetweenSaveciteRefreshes') {
-                        citations_new_resource.secondsBetweenSaveciteRefreshes = value;
-                    } else if($.isArray(value)) {
-                        reportError('result for key ' + key + ' is an array: ' + value);
-                    } else {
-                        $('input[name=' + key + ']').val(value);
-                    }
-                });
-            },
-            error		: function(jqXHR, textStatus, errorThrown) {
-                reportError("failed: " + textStatus + " :: " + errorThrown);
-            }
+            $.ajax({
+                type		: 'POST',
+                url			: actionUrl,
+                cache		: false,
+                data		: params,
+                dataType	: 'json',
+                success		: function(jsObj) {
+                    $.each(jsObj, function(key, value) {
+                        if(key === 'message' && value && 'null' !== value && '' !== $.trim(value)) {
+                            reportSuccess(value);
+                        } else if(key === 'secondsBetweenSaveciteRefreshes') {
+                            citations_new_resource.secondsBetweenSaveciteRefreshes = value;
+                        } else if($.isArray(value)) {
+                            reportError('result for key ' + key + ' is an array: ' + value);
+                        } else {
+                            $('input[name=' + key + ']').val(value);
+                        }
+                    });
+                },
+                error		: function(jqXHR, textStatus, errorThrown) {
+                    reportError("failed: " + textStatus + " :: " + errorThrown);
+                }
+            });
         });
     });
 });
-
