@@ -441,6 +441,12 @@ span.searchTargetLink { margin-right:50px; }
 			<div class="act">
 				<input type="button" name="Cancel" class="Cancel active" value="$tlang.getString("resource.done")" />
 			</div>
+			<div class="act">
+				<input id="addSectionButton" type="button" name="AddSection" class="active" value="Add Section"/>
+			</div>
+			<div id="sectionInlineEditor" contenteditable="true" style="display: none;">
+				<h1>Section Title</h1>
+			</div>
 			<div class="currentListCitations">
 				#if($collectionSize && $collectionSize > 0)
 					#parse( "vm/citation/_listCitations.vm" )
@@ -481,6 +487,12 @@ span.searchTargetLink { margin-right:50px; }
 <script type="text/javascript" src="/sakai-citations-tool/js/citationscript.js">	
 </script>
 <script type="text/javascript" src="/sakai-citations-tool/js/new_resource.js">	
+</script>
+
+<script type="text/javascript">
+    // Turn off automatic editor creation first.
+    CKEDITOR.disableAutoInline = true;
+    CKEDITOR.inline('sectionInlineEditor');
 </script>
 
 <script type="text/javascript">

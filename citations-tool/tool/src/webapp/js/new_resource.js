@@ -786,5 +786,10 @@ citations_new_resource.init = function() {
 $(document).ready(function(){
 	citations_new_resource.init();
 	citations_new_resource.setupToggleAreas('toggleAnchor', 'toggledContent', false, 'fast');
+
+    // show inline ckeditor for section
+    $('#addSectionButton').on('click', function(e) {
+        $('#sectionInlineEditor').show();
+    });
 });
 
