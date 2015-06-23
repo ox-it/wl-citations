@@ -35,10 +35,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.sakaiproject.citation.api.Citation;
-import org.sakaiproject.citation.api.CitationCollection;
-import org.sakaiproject.citation.api.CitationService;
-import org.sakaiproject.citation.api.Schema;
+import org.sakaiproject.citation.api.*;
 import org.sakaiproject.citation.api.Schema.Field;
 import org.sakaiproject.db.api.SqlReader;
 import org.sakaiproject.db.api.SqlService;
@@ -215,6 +212,11 @@ public class DbCitationService extends BaseCitationService
 			this.commitCollection(collection);
 		}
 
+		@Override
+		public void saveCitationCollectionOrder(CitationCollectionOrder citationCollectionOrder) {
+			this.commitCitationCollectionOrder(citationCollectionOrder);
+		}
+
 		public void updateSchema(Schema schema)
 		{
 			this.reviseSchema(schema);
@@ -321,6 +323,23 @@ public class DbCitationService extends BaseCitationService
 				ok = m_sqlService.dbWrite(statement, fields);
 			}
         }
+
+		/* (non-Javadoc)
+         * @see org.sakaiproject.citation.impl.BaseCitationService.Storage#commitCitationCollectionOrder(org.sakaiproject.citation.api.CitationCollectionOrder)
+         */
+		protected void commitCitationCollectionOrder(CitationCollectionOrder citationCollectionOrder)
+		{
+			String orderStatement = "insert into " + m_collectionOrderTableName + " VALUES(?,?,?,?,?)";
+
+			Object[] orderFields = new Object[5];
+			orderFields [0] = citationCollectionOrder.getCollectionId();
+			orderFields [1] = null;
+			orderFields [2] = citationCollectionOrder.getLocation();
+			orderFields [3] = citationCollectionOrder.getSectionType();
+			orderFields [4] = citationCollectionOrder.getValue();
+
+			m_sqlService.dbWrite(orderStatement, orderFields);
+		}
 
 		/* (non-Javadoc)
          * @see org.sakaiproject.citation.impl.BaseCitationService.Storage#saveCollection(java.util.Collection)

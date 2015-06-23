@@ -791,5 +791,37 @@ $(document).ready(function(){
     $('#addSectionButton').on('click', function(e) {
         $('#sectionInlineEditor').show();
     });
+
+    CKEDITOR.instances.sectionInlineEditor.on( 'blur', function( evt ) {
+
+        var actionUrl = $('#newCitationListForm').attr('action');
+        $('#citation_action').val('add_section');
+        var params = $('#newCitationListForm').serializeArray();
+        params.push({name:'addSectionHTML', value:$(evt.editor.getData()).html()});
+
+        $.ajax({
+            type		: 'POST',
+            url			: actionUrl,
+            cache		: false,
+            data		: params,
+            dataType	: 'json',
+            success		: function(jsObj) {
+                $.each(jsObj, function(key, value) {
+                    if(key === 'message' && value && 'null' !== value && '' !== $.trim(value)) {
+                        reportSuccess(value);
+                    } else if(key === 'secondsBetweenSaveciteRefreshes') {
+                        citations_new_resource.secondsBetweenSaveciteRefreshes = value;
+                    } else if($.isArray(value)) {
+                        reportError('result for key ' + key + ' is an array: ' + value);
+                    } else {
+                        $('input[name=' + key + ']').val(value);
+                    }
+                });
+            },
+            error		: function(jqXHR, textStatus, errorThrown) {
+                reportError("failed: " + textStatus + " :: " + errorThrown);
+            }
+        });
+    });
 });
 

@@ -202,5 +202,10 @@ public interface CitationService extends EntityProducer
      * if no citation is found in the request then <code>null</code> is returned.
      */
     public Citation addCitation(HttpServletRequest request);
+	/**
+	 ** This method adds a CitationCollectionOrder
+	 * @param citationCollectionOrder
+	 */
+	public void save(CitationCollectionOrder citationCollectionOrder);
 }	// interface CitationService
 

@@ -32,6 +32,7 @@ import java.util.Vector;
 
 import org.sakaiproject.citation.api.Citation;
 import org.sakaiproject.citation.api.CitationCollection;
+import org.sakaiproject.citation.api.CitationCollectionOrder;
 import org.sakaiproject.citation.api.Schema;
 import org.sakaiproject.citation.impl.BaseCitationService.BasicCitationCollection;
 import org.sakaiproject.entity.api.Entity;
@@ -262,6 +263,14 @@ public class BasicCitationService extends BaseCitationService
         {
         	this.m_collections.put(collection.getId(), collection);
         }
+
+		/* (non-Javadoc)
+         * @see org.sakaiproject.citation.impl.BaseCitationService.Storage#saveCitationCollectionOrder(org.sakaiproject.citation.api.CitationCollectionOrder)
+         */
+		public void saveCitationCollectionOrder(CitationCollectionOrder citationCollectionOrder)
+		{
+
+		}
 
 		/* (non-Javadoc)
          * @see org.sakaiproject.citation.impl.BaseCitationService.Storage#addCitation(java.lang.String)

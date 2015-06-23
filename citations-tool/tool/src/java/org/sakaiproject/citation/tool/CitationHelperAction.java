@@ -65,18 +65,8 @@ import org.sakaiproject.cheftool.JetspeedRunData;
 import org.sakaiproject.cheftool.RunData;
 import org.sakaiproject.cheftool.VelocityPortlet;
 import org.sakaiproject.cheftool.VelocityPortletPaneledAction;
-import org.sakaiproject.citation.api.ActiveSearch;
-import org.sakaiproject.citation.api.Citation;
-import org.sakaiproject.citation.api.CitationCollection;
-import org.sakaiproject.citation.api.CitationHelper;
-import org.sakaiproject.citation.api.CitationIterator;
-import org.sakaiproject.citation.api.CitationService;
-import org.sakaiproject.citation.api.ConfigurationService;
-import org.sakaiproject.citation.api.Schema;
+import org.sakaiproject.citation.api.*;
 import org.sakaiproject.citation.api.Schema.Field;
-import org.sakaiproject.citation.api.SearchCategory;
-import org.sakaiproject.citation.api.SearchDatabaseHierarchy;
-import org.sakaiproject.citation.api.SearchManager;
 import org.sakaiproject.citation.util.api.SearchCancelException;
 import org.sakaiproject.citation.util.api.SearchException;
 import org.sakaiproject.citation.util.api.SearchQuery;
@@ -117,8 +107,6 @@ import org.sakaiproject.tool.api.Tool;
 import org.sakaiproject.tool.api.ToolException;
 import org.sakaiproject.tool.api.ToolManager;
 import org.sakaiproject.tool.api.ToolSession;
-import org.sakaiproject.user.api.User;
-import org.sakaiproject.user.cover.UserDirectoryService;
 import org.sakaiproject.util.FileItem;
 import org.sakaiproject.util.ParameterParser;
 import org.sakaiproject.util.Resource;
@@ -627,6 +615,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 	public static final String CITATION_ACTION = "citation_action";
 	public static final String UPDATE_RESOURCE = "update_resource";
+	public static final String ADD_SECTION = "add_section";
 	public static final String CREATE_RESOURCE = "create_resource";
 	public static final String IMPORT_CITATIONS = "import_citations";
 	public static final String UPDATE_SAVED_SORT = "update_saved_sort";
@@ -875,6 +864,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		if(citation_action != null && citation_action.trim().equals(UPDATE_RESOURCE)) {
 			Map<String,Object> result = this.updateCitationList(params, state, req, res);
 			jsonMap.putAll(result);
+		} else if(citation_action != null && citation_action.trim().equals(ADD_SECTION)) {
+			Map<String,Object> result = this.addSection(params, state);
+			jsonMap.putAll(result);
 		} else if(citation_action != null && citation_action.trim().equals(UPDATE_SAVED_SORT)) {
 			Map<String,Object> result = this.updateSavedSort(params, state, req, res);
 			jsonMap.putAll(result);
@@ -976,6 +968,26 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			if(message != null && ! message.trim().equals("")) {
 				results.put("message", message);
 			}
+		}
+		return results;
+	}
+
+	protected Map<String, Object> addSection(ParameterParser params, SessionState state) {
+		String message;
+		Map<String, Object> results = new HashMap<String, Object>();
+		try {
+			String addSectionHTML = params.getString("addSectionHTML");
+			CitationCollection collection = getCitationCollection(state, false);
+			CitationCollectionOrder citationCollectionOrder = new CitationCollectionOrder(collection.getId(), 0, "heading1", addSectionHTML);
+			getCitationService().save(citationCollectionOrder);
+			message = "Resource updated";
+		}
+		catch (Exception e){
+			message = e.getMessage();
+			logger.warn("Exception in addSection() " + e);
+		}
+		if(message != null && ! message.trim().equals("")) {
+			results.put("message", message);
 		}
 		return results;
 	}

@@ -55,13 +55,7 @@ import org.osid.repository.PartIterator;
 import org.osid.repository.Record;
 import org.osid.repository.RecordIterator;
 import org.osid.repository.RepositoryException;
-import org.sakaiproject.citation.api.ActiveSearch;
-import org.sakaiproject.citation.api.Citation;
-import org.sakaiproject.citation.api.CitationCollection;
-import org.sakaiproject.citation.api.CitationIterator;
-import org.sakaiproject.citation.api.CitationService;
-import org.sakaiproject.citation.api.ConfigurationService;
-import org.sakaiproject.citation.api.Schema;
+import org.sakaiproject.citation.api.*;
 import org.sakaiproject.citation.api.Schema.Field;
 import org.sakaiproject.citation.impl.openurl.ContextObject;
 import org.sakaiproject.citation.impl.openurl.OpenURLServiceImpl;
@@ -3864,6 +3858,8 @@ public abstract class BaseCitationService implements CitationService
 
 		public void saveCollection(CitationCollection collection);
 
+		public void saveCitationCollectionOrder(CitationCollectionOrder citationCollectionOrder);
+
 		public void updateSchema(Schema schema);
 
 		public void updateSchemas(Collection schemas);
@@ -5468,6 +5464,15 @@ public abstract class BaseCitationService implements CitationService
 	public void save(CitationCollection collection)
 	{
 		this.m_storage.saveCollection(collection);
+	}
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.sakaiproject.citation.api.CitationService#save(org.sakaiproject.citation.api.CitationCollectionOrder)
+	 */
+	public void save(CitationCollectionOrder citationCollectionOrder)
+	{
+		this.m_storage.saveCitationCollectionOrder(citationCollectionOrder);
 	}
 	/**
 	 * Dependency: ConfigurationService.
