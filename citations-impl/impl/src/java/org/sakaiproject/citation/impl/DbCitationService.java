@@ -217,6 +217,11 @@ public class DbCitationService extends BaseCitationService
 			this.commitCitationCollectionOrder(citationCollectionOrder);
 		}
 
+		@Override
+		public List<CitationCollectionOrder> getNestedSections(String citationCollectionId) {
+			return this.getNestedCollectionSections(citationCollectionId);
+		}
+
 		public void updateSchema(Schema schema)
 		{
 			this.reviseSchema(schema);
@@ -362,6 +367,22 @@ public class DbCitationService extends BaseCitationService
 		}
 
 		/* (non-Javadoc)
+		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#getNestedCollectionSections(java.lang.String)
+		*/
+		protected List<CitationCollectionOrder> getNestedCollectionSections(String citationCollectionId)
+		{
+			String statement = "select COLLECTION_ID, LOCATION, SECTION_TYPE, VALUE from " + m_collectionOrderTableName
+					+ " where (COLLECTION_ID = ? and SECTION_TYPE is not NULL) ORDER BY LOCATION";
+
+			Object fields[] = new Object[1];
+			fields[0] = citationCollectionId;
+
+			List<CitationCollectionOrder> citationCollectionOrders = m_sqlService.dbRead(statement, fields, new CitationCollectionOrderReader());
+
+			return citationCollectionOrders;
+		}
+
+         /* (non-Javadoc)
          * @see org.sakaiproject.citation.impl.BaseCitationService.Storage#saveCollection(java.util.Collection)
          */
         protected void commitCollection(CitationCollection collection)
@@ -1413,6 +1434,40 @@ public class DbCitationService extends BaseCitationService
             }
 	        return triple;
         }
+
+	}
+
+	public class CitationCollectionOrderReader implements SqlReader
+	{
+
+		/* (non-Javadoc)
+         * @see org.sakaiproject.db.api.SqlReader#readSqlResultRecord(java.sql.ResultSet)
+         */
+		public Object readSqlResultRecord(ResultSet result)
+		{
+			CitationCollectionOrder citationCollectionOrder = null;
+
+			String collectionId = null;
+			int location = 0;
+			String sectionType = null;
+			String value = null;
+			try
+			{
+				collectionId = result.getString(1);
+				location = result.getInt(2);
+				sectionType = result.getString(3);
+				value = result.getString(4);
+
+				citationCollectionOrder = new CitationCollectionOrder(collectionId, location, sectionType, value);
+			}
+			catch (SQLException e)
+			{
+				M_log.debug("TripleReader: problem reading CitationCollectionOrder from result: collectionId(" + collectionId + ") location(" + location
+						+ ") sectionType(" + sectionType + ") value(" + value + ")");
+				return null;
+			}
+			return citationCollectionOrder;
+		}
 
 	}
 

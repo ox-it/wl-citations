@@ -207,5 +207,10 @@ public interface CitationService extends EntityProducer
 	 * @param citationCollectionOrder
 	 */
 	public void save(CitationCollectionOrder citationCollectionOrder);
+	/**
+	 ** Gets the nested sections of a reading list bu collectionId(= list of CitationCollectionOrder)
+	 * @param citationCollectionId
+	 */
+	List<CitationCollectionOrder> getNestedSections(String citationCollectionId);
 }	// interface CitationService
 

@@ -339,7 +339,7 @@ citations_new_resource.refreshDemanded = false;
 citations_new_resource.locationId = 0;
 
 citations_new_resource.getNextLocationId = function() {
-    return citations_new_resource.locationId++;
+    return citations_new_resource.locationId;
 };
 
 citations_new_resource.watchForUpdates = function(timestamp) {
@@ -793,14 +793,58 @@ $(document).ready(function(){
 	citations_new_resource.init();
 	citations_new_resource.setupToggleAreas('toggleAnchor', 'toggledContent', false, 'fast');
 
+
+    // add ck editor and event handlers to existing sections
+    CKEDITOR.disableAutoInline = true;
+
+    $( "div[id^='sectionInlineEditor']" ).each(function( index ) {
+        CKEDITOR.instances[this.id].on( 'blur', function( evt ) {
+
+            var actionUrl = $('#newCitationListForm').attr('action');
+            $('#citation_action').val('add_section');
+            var params = $('#newCitationListForm').serializeArray();
+            params.push({name:'addSectionHTML', value:$(evt.editor.getData()).html()});
+            params.push({name:'locationId', value:evt.editor.name.substring('sectionInlineEditor'.length, evt.editor.name.length)});
+
+            $.ajax({
+                type		: 'POST',
+                url			: actionUrl,
+                cache		: false,
+                data		: params,
+                dataType	: 'json',
+                success		: function(jsObj) {
+                    $.each(jsObj, function(key, value) {
+                        if(key === 'message' && value && 'null' !== value && '' !== $.trim(value)) {
+                            reportSuccess(value);
+                        } else if(key === 'secondsBetweenSaveciteRefreshes') {
+                            citations_new_resource.secondsBetweenSaveciteRefreshes = value;
+                        } else if($.isArray(value)) {
+                            reportError('result for key ' + key + ' is an array: ' + value);
+                        } else {
+                            $('input[name=' + key + ']').val(value);
+                        }
+                    });
+                },
+                error		: function(jqXHR, textStatus, errorThrown) {
+                    reportError("failed: " + textStatus + " :: " + errorThrown);
+                }
+            });
+        });
+
+
+
+
+    });
+
     // show inline ckeditor for section
     $('#addSectionButton').on('click', function(e) {
 
         var locationId = citations_new_resource.getNextLocationId();
+        citations_new_resource.locationId++;
         var divId = 'sectionInlineEditor' + locationId;
-        var html = "<div id='" + divId + "' title='Click here to edit' contenteditable='true'>" +
+        var html = "<div id='" + divId + "' title='Click here to edit' contenteditable='true' style='border: 1px white solid'>" +
             "<div class='listTitle' style='background-color: #002147; color:#FFF;'><h1>Section Title</h1></div></div>";
-        $( "#addSectionDiv" ).append(html);
+        $( "#addSectionDiv" ).after(html);
 
         CKEDITOR.disableAutoInline = true;
         CKEDITOR.inline('sectionInlineEditor' + locationId);

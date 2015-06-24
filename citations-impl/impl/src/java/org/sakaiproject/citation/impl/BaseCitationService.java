@@ -3864,6 +3864,7 @@ public abstract class BaseCitationService implements CitationService
 
 		public void updateSchemas(Collection schemas);
 
+		public List<CitationCollectionOrder> getNestedSections(String citationCollectionId);
 	} // interface Storage
 
 	/**
@@ -5473,6 +5474,15 @@ public abstract class BaseCitationService implements CitationService
 	public void save(CitationCollectionOrder citationCollectionOrder)
 	{
 		this.m_storage.saveCitationCollectionOrder(citationCollectionOrder);
+	}
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.sakaiproject.citation.api.CitationService#getNestedSections(java.lang.String)
+	 */
+	public List<CitationCollectionOrder> getNestedSections(String citationCollectionId)
+	{
+		return this.m_storage.getNestedSections(citationCollectionId);
 	}
 	/**
 	 * Dependency: ConfigurationService.

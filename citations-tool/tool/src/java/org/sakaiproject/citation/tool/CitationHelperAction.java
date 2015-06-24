@@ -2336,6 +2336,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 //				newIterator.setPage(oldIterator.getPage());
 			}
 			context.put("citations", newIterator);
+			List<CitationCollectionOrder> nestedSections = getCitationService().getNestedSections(citationCollection.getId());
+			context.put("nestedSections", nestedSections);
+			context.put("nestedSectionsSize", nestedSections.size());
 			context.put("citationCollectionId", citationCollection.getId());
 			if(! citationCollection.isEmpty())
 			{

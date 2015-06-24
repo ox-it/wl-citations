@@ -273,6 +273,14 @@ public class BasicCitationService extends BaseCitationService
 		}
 
 		/* (non-Javadoc)
+		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#getNestedSections(java.lang.String)
+		*/
+		public List<CitationCollectionOrder> getNestedSections(String citationCollectionId)
+		{
+			return null;
+		}
+
+         /* (non-Javadoc)
          * @see org.sakaiproject.citation.impl.BaseCitationService.Storage#addCitation(java.lang.String)
          */
         public Citation addCitation(String mediatype)
