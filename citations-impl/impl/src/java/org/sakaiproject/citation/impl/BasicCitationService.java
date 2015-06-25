@@ -279,6 +279,13 @@ public class BasicCitationService extends BaseCitationService
 		{
 			return null;
 		}
+		/* (non-Javadoc)
+		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#remove(java.lang.String, int, org.sakaiproject.citation.api.CitationCollectionOrder.SectionType)
+		*/
+		public void remove (String collectionId, int locationId, CitationCollectionOrder.SectionType sectionType)
+		{
+
+		}
 
          /* (non-Javadoc)
          * @see org.sakaiproject.citation.impl.BaseCitationService.Storage#addCitation(java.lang.String)

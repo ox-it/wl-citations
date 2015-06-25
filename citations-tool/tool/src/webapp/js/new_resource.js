@@ -808,6 +808,9 @@ $(document).ready(function(){
                 $.each(jsObj, function (key, value) {
                     if (key === 'message' && value && 'null' !== value && '' !== $.trim(value)) {
                         reportSuccess(value);
+                    } else if(key === 'sectionToRemove') {
+                        // remove section from page
+                        $(value).remove();
                     } else if (key === 'secondsBetweenSaveciteRefreshes') {
                         citations_new_resource.secondsBetweenSaveciteRefreshes = value;
                     } else if ($.isArray(value)) {
@@ -823,6 +826,7 @@ $(document).ready(function(){
         });
     }
 
+    // handler for clicking outside a section
     $( "div[id^='sectionInlineEditor']" ).each(function( index ) {
         CKEDITOR.instances[this.id].on( 'blur', function( evt ) {
 
@@ -836,7 +840,7 @@ $(document).ready(function(){
         });
     });
 
-    // show inline ckeditor for section
+    // handler for adding a section
     $('#addSectionButton').on('click', function(e) {
 
         var locationId = citations_new_resource.getNextLocationId();
@@ -860,5 +864,14 @@ $(document).ready(function(){
             ajaxPost(actionUrl, params);
 
         });
+    });
+
+    // handler for deleting a section
+    $("div[id^='removeSection']").on('click', function(e) {
+        var actionUrl = $('#newCitationListForm').attr('action');
+        $('#citation_action').val('remove_section');
+        var params = $('#newCitationListForm').serializeArray();
+        params.push({name:'locationId', value:$(this).next().attr('id').substring('sectionInlineEditor'.length, $(this).next().attr('id').length)});
+        ajaxPost(actionUrl, params);
     });
 });

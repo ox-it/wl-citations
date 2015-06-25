@@ -616,6 +616,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	public static final String CITATION_ACTION = "citation_action";
 	public static final String UPDATE_RESOURCE = "update_resource";
 	public static final String ADD_SECTION = "add_section";
+	public static final String REMOVE_SECTION = "remove_section";
 	public static final String CREATE_RESOURCE = "create_resource";
 	public static final String IMPORT_CITATIONS = "import_citations";
 	public static final String UPDATE_SAVED_SORT = "update_saved_sort";
@@ -867,6 +868,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		} else if(citation_action != null && citation_action.trim().equals(ADD_SECTION)) {
 			Map<String,Object> result = this.addSection(params, state);
 			jsonMap.putAll(result);
+		} else if(citation_action != null && citation_action.trim().equals(REMOVE_SECTION)) {
+			Map<String,Object> result = this.removeSection(params, state);
+			jsonMap.putAll(result);
 		} else if(citation_action != null && citation_action.trim().equals(UPDATE_SAVED_SORT)) {
 			Map<String,Object> result = this.updateSavedSort(params, state, req, res);
 			jsonMap.putAll(result);
@@ -986,6 +990,26 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		catch (Exception e){
 			message = e.getMessage();
 			logger.warn("Exception in addSection() " + e);
+		}
+		if(message != null && ! message.trim().equals("")) {
+			results.put("message", message);
+		}
+		return results;
+	}
+
+	protected Map<String, Object> removeSection(ParameterParser params, SessionState state) {
+		String message;
+		Map<String, Object> results = new HashMap<String, Object>();
+		try {
+			int locationId = params.getInt("locationId");
+			CitationCollection collection = getCitationCollection(state, false);
+			getCitationService().remove(collection.getId(), locationId, CitationCollectionOrder.SectionType.HEADING1);
+			message = rb.getString("resource.updated");
+			results.put("sectionToRemove", "#sectionInlineEditor" + locationId);
+		}
+		catch (Exception e){
+			message = e.getMessage();
+			logger.warn("Exception in removeSection() " + e);
 		}
 		if(message != null && ! message.trim().equals("")) {
 			results.put("message", message);

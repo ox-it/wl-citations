@@ -446,6 +446,8 @@ span.searchTargetLink { margin-right:50px; }
 				#foreach($nestedSection in $nestedSections)
 					#set( $num = $velocityCount - 1)
 					#set( $divId = 'sectionInlineEditor' + $num )
+					#set( $removeDivId = 'removeSection' + $num )
+					<div id='$removeDivId' class='removeDiv'><a href="javascript:;"></a></div>
 					<div id='$divId' contenteditable='true' style='border: 1px white solid'>
 						<div class='listTitle' style='background-color: #002147; color:#FFF;'>
 							$nestedSection.getValue()

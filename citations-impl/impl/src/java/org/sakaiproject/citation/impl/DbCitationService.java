@@ -222,6 +222,11 @@ public class DbCitationService extends BaseCitationService
 			return this.getNestedCollectionSections(citationCollectionId);
 		}
 
+		@Override
+		public void remove(String collectionId, int locationId, CitationCollectionOrder.SectionType sectionType) {
+			this.removeSection(collectionId, locationId, sectionType);
+		}
+
 		public void updateSchema(Schema schema)
 		{
 			this.reviseSchema(schema);
@@ -380,6 +385,23 @@ public class DbCitationService extends BaseCitationService
 			List<CitationCollectionOrder> citationCollectionOrders = m_sqlService.dbRead(statement, fields, new CitationCollectionOrderReader());
 
 			return citationCollectionOrders;
+		}
+
+
+		/* (non-Javadoc)
+		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#removeSection(java.lang.String, int, org.sakaiproject.citation.api.CitationCollectionOrder.SectionType)
+		*/
+		protected void removeSection(String collectionId, int locationId, CitationCollectionOrder.SectionType sectionType)
+		{
+			String statement = "delete from " + m_collectionOrderTableName
+					+ " where (COLLECTION_ID = ? and LOCATION = ? and SECTION_TYPE = ?)";
+
+			Object fields[] = new Object[3];
+			fields[0] = collectionId;
+			fields[1] = locationId;
+			fields[2] = sectionType;
+
+			m_sqlService.dbWrite(statement, fields);
 		}
 
          /* (non-Javadoc)

@@ -3865,6 +3865,8 @@ public abstract class BaseCitationService implements CitationService
 		public void updateSchemas(Collection schemas);
 
 		public List<CitationCollectionOrder> getNestedSections(String citationCollectionId);
+
+		public void remove(String collectionId, int locationId, CitationCollectionOrder.SectionType sectionType);
 	} // interface Storage
 
 	/**
@@ -5483,6 +5485,15 @@ public abstract class BaseCitationService implements CitationService
 	public List<CitationCollectionOrder> getNestedSections(String citationCollectionId)
 	{
 		return this.m_storage.getNestedSections(citationCollectionId);
+	}
+	/*
+	* (non-Javadoc)
+
+	* @see org.sakaiproject.citation.api.CitationService#remove(java.lang.String, int, org.sakaiproject.citation.api.CitationCollectionOrder.SectionType)
+	*/
+	public void remove(String collectionId, int locationId, CitationCollectionOrder.SectionType sectionType)
+	{
+		this.m_storage.remove(collectionId, locationId, sectionType);
 	}
 	/**
 	 * Dependency: ConfigurationService.

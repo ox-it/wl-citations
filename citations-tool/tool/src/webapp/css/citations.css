@@ -92,3 +92,9 @@ table.lines tr:nth-child(odd), .citationDetails table.lines tr{
 .titleDiv {
 	width:50%
 }
+.removeDiv {
+	background-image: url("/library/image/silk/cross.png");
+	background-position: right top;
+	background-repeat: no-repeat;
+	height: 15px;
+}
