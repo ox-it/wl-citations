@@ -1458,7 +1458,7 @@ public class DbCitationService extends BaseCitationService
 				sectionType = result.getString(3);
 				value = result.getString(4);
 
-				citationCollectionOrder = new CitationCollectionOrder(collectionId, location, sectionType, value);
+				citationCollectionOrder = new CitationCollectionOrder(collectionId, location, CitationCollectionOrder.SectionType.HEADING1, value);
 			}
 			catch (SQLException e)
 			{

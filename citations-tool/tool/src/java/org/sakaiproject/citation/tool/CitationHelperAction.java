@@ -979,9 +979,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			String addSectionHTML = params.getString("addSectionHTML");
 			int locationId = params.getInt("locationId");
 			CitationCollection collection = getCitationCollection(state, false);
-			CitationCollectionOrder citationCollectionOrder = new CitationCollectionOrder(collection.getId(), locationId, "heading1", addSectionHTML);
+			CitationCollectionOrder citationCollectionOrder = new CitationCollectionOrder(collection.getId(), locationId, CitationCollectionOrder.SectionType.HEADING1, addSectionHTML);
 			getCitationService().save(citationCollectionOrder);
-			message = "Resource updated";
+			message = rb.getString("resource.updated");
 		}
 		catch (Exception e){
 			message = e.getMessage();

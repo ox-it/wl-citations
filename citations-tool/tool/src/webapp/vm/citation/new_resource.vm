@@ -441,11 +441,12 @@ span.searchTargetLink { margin-right:50px; }
 			<div class="act">
 				<input type="button" name="Cancel" class="Cancel active" value="$tlang.getString("resource.done")" />
 			</div>
+			<input type="hidden" id="sectionTitleText" value="$tlang.getString("nested.section.title")"/>
 			#if($nestedSectionsSize && $nestedSectionsSize > 0)
 				#foreach($nestedSection in $nestedSections)
 					#set( $num = $velocityCount - 1)
 					#set( $divId = 'sectionInlineEditor' + $num )
-					<div id='$divId' title='Click here to edit' contenteditable='true' style='border: 1px white solid'>
+					<div id='$divId' contenteditable='true' style='border: 1px white solid'>
 						<div class='listTitle' style='background-color: #002147; color:#FFF;'>
 							$nestedSection.getValue()
 						</div>
@@ -453,7 +454,7 @@ span.searchTargetLink { margin-right:50px; }
 				#end
 			#end
 			<div class="act" id="addSectionDiv">
-				<input id="addSectionButton" type="button" name="AddSection" class="active" value="Add Section"/>
+				<input id="addSectionButton" type="button" name="AddSection" class="active" value="$tlang.getString("nested.add.section.button")"/>
 			</div>
 			<div class="currentListCitations">
 				#if($collectionSize && $collectionSize > 0)
