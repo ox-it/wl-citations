@@ -335,11 +335,11 @@ public class DbCitationService extends BaseCitationService
         }
 
 		/* (non-Javadoc)
-         * @see org.sakaiproject.citation.impl.BaseCitationService.Storage#commitCitationCollectionOrder(org.sakaiproject.citation.api.CitationCollectionOrder)
-         */
+		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#commitCitationCollectionOrder(org.sakaiproject.citation.api.CitationCollectionOrder)
+		*/
 		protected void commitCitationCollectionOrder(CitationCollectionOrder citationCollectionOrder)
 		{
-			String statement = "select * from " + m_collectionOrderTableName + " where (COLLECTION_ID = ? and LOCATION = ? and CITATION_ID is NULL and SECTION_TYPE = 'heading1')";
+			String statement = "select * from " + m_collectionOrderTableName + " where (COLLECTION_ID = ? and LOCATION = ? and CITATION_ID is NULL and SECTION_TYPE = 'HEADING1')";
 
 			Object fields[] = new Object[2];
 			fields[0] = citationCollectionOrder.getCollectionId();
@@ -360,7 +360,7 @@ public class DbCitationService extends BaseCitationService
 				m_sqlService.dbWrite(orderStatement, orderFields);
 			}
 			else {
-				String updateStatement = "update " + m_collectionOrderTableName + " set VALUE = ? where (COLLECTION_ID = ? and LOCATION = ? and CITATION_ID is NULL and SECTION_TYPE = 'heading1')";
+				String updateStatement = "update " + m_collectionOrderTableName + " set VALUE = ? where (COLLECTION_ID = ? and LOCATION = ? and CITATION_ID is NULL and SECTION_TYPE = 'HEADING1')";
 
 				Object[] orderFields = new Object[3];
 				orderFields [0] = citationCollectionOrder.getValue();
@@ -1471,13 +1471,13 @@ public class DbCitationService extends BaseCitationService
 
 			String collectionId = null;
 			int location = 0;
-			String sectionType = null;
+			CitationCollectionOrder.SectionType sectionType = null;
 			String value = null;
 			try
 			{
 				collectionId = result.getString(1);
 				location = result.getInt(2);
-				sectionType = result.getString(3);
+				sectionType = CitationCollectionOrder.SectionType.valueOf(result.getString(3));
 				value = result.getString(4);
 
 				citationCollectionOrder = new CitationCollectionOrder(collectionId, location, CitationCollectionOrder.SectionType.HEADING1, value);
