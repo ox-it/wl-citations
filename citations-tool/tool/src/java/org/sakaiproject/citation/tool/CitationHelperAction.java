@@ -726,7 +726,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			} else {
 				// throw something
 			}
-	
+
 			return;
 		}
 		super.doGet(req, res);
@@ -2921,7 +2921,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		pipe.setActionCanceled(false);
 		pipe.setErrorEncountered(false);
 		pipe.setActionCompleted(true);
-
+		pipe.setRevisedMimeType(pipe.getMimeType());
 		toolSession.setAttribute(ResourceToolAction.DONE, Boolean.TRUE);
 		toolSession.removeAttribute(CitationHelper.CITATION_HELPER_INITIALIZED);
 
