@@ -74,15 +74,8 @@ import org.sakaiproject.citation.util.api.SearchException;
 import org.sakaiproject.citation.util.api.SearchQuery;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.component.cover.ComponentManager;
-import org.sakaiproject.content.api.ContentCollection;
-import org.sakaiproject.content.api.ContentEntity;
-import org.sakaiproject.content.api.ContentHostingService;
-import org.sakaiproject.content.api.ContentResource;
-import org.sakaiproject.content.api.ContentResourceEdit;
+import org.sakaiproject.content.api.*;
 import org.sakaiproject.content.api.GroupAwareEntity.AccessMode;
-import org.sakaiproject.content.api.ResourceToolAction;
-import org.sakaiproject.content.api.ResourceToolActionPipe;
-import org.sakaiproject.content.api.ResourceType;
 import org.sakaiproject.entity.api.EntityManager;
 import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.api.ResourceProperties;
@@ -526,6 +519,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		MESSAGE,
 		SEARCH,
 		RESULTS,
+		EDIT_ATTACHMENT,
 		VIEW;
 	}
 
@@ -684,7 +678,6 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			}
 			return;
 		}
-
 		super.toolModeDispatch(methodBase, methodExt, req, res);
 	}
 	
@@ -714,7 +707,6 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			} else {
 				// throw something
 			}
-	
 			return;
 		}
 		super.doGet(req, res);
@@ -822,9 +814,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			} else if(requestedMimetype != null && requestedMimetype.equals(MIMETYPE_HTML)) {
 				doPostHtmlFragmentResponse(params, state, req, res);
 			}
-
 			return;
 		}
+
 		super.doPost(req, res);
 	}
 
@@ -1169,6 +1161,21 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			}
 		}
 		return priority;
+	}
+
+	public void doPickResource(RunData rundata) throws ToolException {
+		SessionState state = ((JetspeedRunData) rundata).getPortletSessionState(((JetspeedRunData) rundata).getJs_peid());
+		ParameterParser params = rundata.getParameters();
+
+		int requestStateId = params.getInt("requestStateId", 0);
+		restoreRequestState(state, new String[]{CitationHelper.RESOURCES_REQUEST_PREFIX, CitationHelper.CITATION_PREFIX}, requestStateId);
+
+		ToolSession toolSession = getSessionManager().getCurrentToolSession();
+		toolSession.setAttribute(FilePickerHelper.FILE_PICKER_MAX_ATTACHMENTS, FilePickerHelper.CARDINALITY_SINGLE);
+		toolSession.setAttribute(FilePickerHelper.FILE_PICKER_ATTACH_LINKS, new Boolean(true).toString());
+		toolSession.setAttribute("filepicker.added_items",null);
+		startHelper(rundata.getRequest(), "sakai.filepicker");
+		setMode(state, Mode.EDIT_ATTACHMENT);
 	}
 
 	/**
@@ -1890,6 +1897,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		context.put(PARAM_FORM_NAME, ELEMENT_ID_CREATE_FORM);
 
 		Citation citation = (Citation) state.getAttribute(CitationHelper.CITATION_EDIT_ITEM);
+
 		if(citation == null)
 		{
 			doEdit(rundata);
@@ -2199,7 +2207,6 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		{
 			context.put( "resourcesAddAction", Boolean.TRUE );
 		}
-
 		// make sure observers are disabled
 		VelocityPortletPaneledAction.disableObservers(state);
 
@@ -2261,11 +2268,32 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			case VIEW:
 				template = buildViewPanelContext(portlet, context, rundata, state);
 				break;
+			case EDIT_ATTACHMENT:
+				template = buildEditAttachmentPanelContext(portlet,context,rundata,state);
 		}
 
 		return template;
 
 	}	// buildMainPanelContext
+
+	private String buildEditAttachmentPanelContext(VelocityPortlet portlet, Context context, RunData data, SessionState state) {
+		logger.debug("buildEditAttachmentPanelContext()");
+		if( state.getAttribute(FilePickerHelper.FILE_PICKER_CANCEL) != null) {
+			if(Boolean.valueOf(state.getAttribute(FilePickerHelper.FILE_PICKER_CANCEL).toString())) {
+				buildNewResourcePanelContext(portlet, context, data, state);
+				return TEMPLATE_NEW_RESOURCE;
+			}
+		}
+		CitationCollection collection = getCitationCollection(state, true);
+		Citation citation = extractCitationFromRunData(data);
+		if(citation!=null) {
+			state.setAttribute(CitationHelper.CITATION_EDIT_ITEM, citation);
+			state.setAttribute(CitationHelper.CITATION_EDIT_ID,citation.getId());
+			state.setAttribute(STATE_CITATION_COLLECTION, collection);
+			buildEditPanelContext(portlet, context, data, state);
+		}
+		return TEMPLATE_EDIT;
+	}
 
 	public String buildNewResourcePanelContext(VelocityPortlet portlet, Context context, RunData rundata, SessionState state) {
 
@@ -3045,7 +3073,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			// Remove session collection
 			state.removeAttribute(STATE_CITATION_COLLECTION_ID);
 			state.removeAttribute(STATE_CITATION_COLLECTION);
-	
+		
 			state.removeAttribute("fromListPage");
 		}
 
@@ -3122,7 +3150,6 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		
 		toolSession.setAttribute(ResourceToolAction.DONE, Boolean.TRUE);
 		toolSession.removeAttribute(CitationHelper.CITATION_HELPER_INITIALIZED);
-
 		state.removeAttribute("fromListPage");
 
 		cleanup(toolSession, CitationHelper.CITATION_PREFIX, state);
@@ -3989,7 +4016,40 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	    setMode(state, Mode.LIST);
 
 	} // doImportCitationsFromResourceUrl
-	
+
+	private Citation extractCitationFromRunData(RunData data) {
+		try {
+			SessionState session = ((JetspeedRunData)data).getPortletSessionState(((JetspeedRunData) data).getJs_peid());
+			if(session.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS) != null) {
+				List refs = (List) session
+						.getAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
+				Citation citation = null;
+				if (!refs.isEmpty()) {
+						Reference selection = (Reference) refs.get(0);
+						String resourceId = selection.getId();
+						ContentResource resource = contentService.getResource(resourceId);
+						ResourceProperties props = resource.getProperties();
+						String displayName = props.getProperty(ResourceProperties.PROP_DISPLAY_NAME);
+						citation = citationService.addCitation("unknown");
+						citation.setDisplayName(displayName);
+						citation.setCitationProperty("resourceId", resourceId);
+						String urlId = citation.addCustomUrl(resource.getUrl(), resource.getUrl());
+						citation.setPreferredUrl(urlId);
+					session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
+					session.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
+					return citation;
+				}
+			}
+		} catch (PermissionException e) {
+			logger.warn("Unable to extract citation" + e.getMessage());
+		} catch (IdUnusedException e) {
+			logger.warn("Unable to extract citation" + e.getMessage());
+		} catch (TypeException e) {
+			logger.warn("Unable to extract citation" + e.getMessage());
+		}
+		return null;
+	}
+
 	public void doShowReorderCitations( RunData data )
 	{
 		// get the state object
@@ -4109,43 +4169,37 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		else
 		{
 			String citationId = (String) state.getAttribute(CitationHelper.CITATION_EDIT_ID);
-			int location = (Integer) state.getAttribute("location");
+			int location = params.getInt("location");
+			Citation citation;
 			if(citationId != null)
 			{
-				try
-	            {
-		            // if it's a unnested citation
-		            if (location==0) {
-			            String citationCollectionId = (String) state.getAttribute("citation.citation_collection_id");
-			            collection = getCitationService().getUnnestedCitationCollection(citationCollectionId);
-		            }
-
-		            Citation citation = collection.getCitation(citationId);
-
-		            String schemaId = params.getString("type");
-		            Schema schema = getCitationService().getSchema(schemaId);
-		            citation.setSchema(schema);
-
-		    		updateCitationFromParams(citation, params);
-
-		       		// add citation to current collection
-		    		collection.saveCitation(citation);
-		        }
-	            catch (IdUnusedException e)
-	            {
-		            // TODO add alert and log error
-	            }
-
-	       		if (location==0){
-			        getCitationService().save(collection);
-		        }
+				try {
+					// if it's a unnested citation
+					if (location == 0) {
+						String citationCollectionId = (String) state.getAttribute("citation.citation_collection_id");
+						collection = getCitationService().getUnnestedCitationCollection(citationCollectionId);
+					}
+					citation = collection.getCitation(citationId);
+				}
+				catch (IdUnusedException e){
+					citation = (Citation)state.getAttribute(CitationHelper.CITATION_EDIT_ITEM);
+				}
+				String schemaId = params.getString("type");
+				Schema schema = getCitationService().getSchema(schemaId);
+				citation.setSchema(schema);
+				updateCitationFromParams(citation, params);
+				if(!collection.contains(citation)){
+					collection.add(citation);
+				}
+			}
+			// add citation to current collection
+			if (location==0){
+				getCitationService().save(collection);
 			}
  		}
-
 		//setMode(state, Mode.LIST);
 		state.setAttribute(STATE_CITATION_COLLECTION, null);
 		setMode(state, Mode.NEW_RESOURCE);
-
 	}	// doReviseCitation
 
 	/**
@@ -5169,7 +5223,6 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		}
 		return url;
 	}
-
 	public static class QuotedTextValidator
 	{
 
