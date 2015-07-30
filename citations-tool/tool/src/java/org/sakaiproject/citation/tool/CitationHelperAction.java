@@ -726,7 +726,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			} else {
 				// throw something
 			}
-	
+
 			return;
 		}
 		super.doGet(req, res);
@@ -949,6 +949,11 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 				this.captureAccess(params, state, edit, results);
 				this.captureAvailability(params, edit, results);
 				getContentService().commitResource(edit, priority);
+
+				ToolSession toolSession = getSessionManager().getCurrentToolSession();
+				ResourceToolActionPipe pipe = (ResourceToolActionPipe) toolSession.getAttribute(ResourceToolAction.ACTION_PIPE);
+				pipe.setRevisedMimeType(pipe.getMimeType());
+				
 				message = "Resource updated";
 			} catch (IdUnusedException e) {
 				message = e.getMessage();
@@ -2921,7 +2926,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		pipe.setActionCanceled(false);
 		pipe.setErrorEncountered(false);
 		pipe.setActionCompleted(true);
-
+		pipe.setRevisedMimeType(pipe.getMimeType());
 		toolSession.setAttribute(ResourceToolAction.DONE, Boolean.TRUE);
 		toolSession.removeAttribute(CitationHelper.CITATION_HELPER_INITIALIZED);
 
