@@ -949,6 +949,11 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 				this.captureAccess(params, state, edit, results);
 				this.captureAvailability(params, edit, results);
 				getContentService().commitResource(edit, priority);
+
+				ToolSession toolSession = getSessionManager().getCurrentToolSession();
+				ResourceToolActionPipe pipe = (ResourceToolActionPipe) toolSession.getAttribute(ResourceToolAction.ACTION_PIPE);
+				pipe.setRevisedMimeType(pipe.getMimeType());
+				
 				message = "Resource updated";
 			} catch (IdUnusedException e) {
 				message = e.getMessage();
