@@ -330,7 +330,7 @@ public class DbCitationService extends BaseCitationService
         	deleteCollection(collection);
 
 			String statement = "insert into " + m_collectionTableName + " (" + m_collectionTableId + ",PROPERTY_NAME,PROPERTY_VALUE) values ( ?, ?, ? )";
-			String orderStatement = "insert into " + m_collectionOrderTableName + " VALUES(?,?,?)";
+			String orderStatement = "insert into " + m_collectionOrderTableName + " (COLLECTION_ID, CITATION_ID, LOCATION) VALUES(?,?,?)";
 
 			boolean ok = true;
 
@@ -872,7 +872,7 @@ public class DbCitationService extends BaseCitationService
 					if(triple.getName().startsWith(PROPERTY_HAS_CITATION))
 					{
 						// SAK-22296. Cunningly move the citation links into the new ordering table
-						m_sqlService.dbWrite("INSERT INTO " + m_collectionOrderTableName + " VALUES(?,?,?)", new Object[] {collectionId,(String)triple.getValue(),position});
+						m_sqlService.dbWrite("INSERT INTO " + m_collectionOrderTableName + " (COLLECTION_ID, CITATION_ID, LOCATION) VALUES(?,?,?)", new Object[] {collectionId,(String)triple.getValue(),position});
 						position += 1;
 						m_sqlService.dbWrite("DELETE FROM " + m_collectionTableName + " WHERE " + m_collectionTableId + " = ? AND PROPERTY_NAME = '" + PROPERTY_HAS_CITATION + "' AND PROPERTY_VALUE LIKE ?", new Object[] {collectionId,(String)triple.getValue()});
 					}
@@ -905,7 +905,7 @@ public class DbCitationService extends BaseCitationService
 			}
 			
 			// Now add the citations into the ordering table. This has replaced the sakai:hasCitation linking mechanism.
-			String orderStatement = "select * from " + m_collectionOrderTableName + " where (COLLECTION_ID = ?) ORDER BY LOCATION";
+			String orderStatement = "select COLLECTION_ID, CITATION_ID, LOCATION from " + m_collectionOrderTableName + " where (COLLECTION_ID = ?) ORDER BY LOCATION";
 			List<Triple> orderTriples = m_sqlService.dbRead(orderStatement, new Object[] {collectionId}, new TripleReader());
 			
 			for(Triple orderTriple : orderTriples)
