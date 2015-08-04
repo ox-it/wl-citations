@@ -1196,7 +1196,7 @@ public class DbCitationService extends BaseCitationService
 
 		private void getCitationCollectionOrders(String collectionId, BasicCitationCollection edit, String whereClauseForSection) {
 			// Now add the citations into the ordering table. This has replaced the sakai:hasCitation linking mechanism.
-			String orderStatement = "select * from " + m_collectionOrderTableName + " where COLLECTION_ID = ? and " +
+			String orderStatement = "select COLLECTION_ID, CITATION_ID, LOCATION from " + m_collectionOrderTableName + " where COLLECTION_ID = ? and " +
 					whereClauseForSection + " ORDER BY LOCATION ";
 
 			List<Triple> orderTriples = m_sqlService.dbRead(orderStatement, new Object[] {collectionId}, new TripleReader());
