@@ -1,0 +1,109 @@
+<input type="hidden" id="sectionTitleText" value="$tlang.getString("nested.section.title")"/>
+<input type="hidden" id="startEditingText" value="$tlang.getString("nested.start.editing.button")"/>
+<input type="hidden" id="finishEditingText" value="$tlang.getString("nested.finish.editing.button")"/>
+<input type="hidden" id="deleteSectionText" value="$tlang.getString("nested.delete.section.button")"/>
+<input type="hidden" id="addSubsectionButtonText" value="$tlang.getString("nested.add.subsection.button")"/>
+
+#set( $num = 1 )
+## h1 sections
+#if($nestedSectionsSize && $nestedSectionsSize > 0)
+	#foreach($nestedSection in $nestedCollection.getChildren())
+		#set( $editorDivId = 'sectionInlineEditor' + $nestedSection.getLocation() )
+		#set( $linkId = 'link' + $nestedSection.getLocation() )
+		#set( $toogleId = 'toggle' + $nestedSection.getLocation())
+		#set( $removeDivId = 'removeSection' + $nestedSection.getLocation() )
+		#set( $addSubsectionId = 'addSubsection' + $nestedSection.getLocation() )
+		#set( $addH1SubsectionButtonId = 'addH1SubsectionButton' + $nestedSection.getLocation() )
+		#set( $buttonsDiv = 'buttonsDiv' + $nestedSection.getLocation() )
+		#set( $num = $num + 1)
+		<li id='$linkId' class='months h1Editor' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
+			data-sectiontype='$nestedSection.getSectiontype()'>
+			<div id='$editorDivId' class='editor h1Editor'>
+				$nestedSection.getValue()
+			</div>
+			<div id="$buttonsDiv" class="sectionButtons">
+				<input type="button" id="$toogleId" class="active" value='$tlang.getString("nested.start.editing.button")'/>
+				<input type="button" id="$removeDivId" class="active" value='$tlang.getString("nested.delete.section.button")'/>
+			</div>
+
+			## h2 sections
+			#if($nestedSection.getChildren().size() > 0)
+				<ol id="$addSubsectionId" class="h2NestedLevel">
+					#foreach($h2Section in $nestedSection.getChildren())
+						#set( $num = $num + 1)
+						#set( $editorDivId = 'sectionInlineEditor' + $h2Section.getLocation() )
+						#set( $linkId = 'link' + $h2Section.getLocation() )
+						#set( $toogleId = 'toggle' + $h2Section.getLocation())
+						#set( $removeDivId = 'removeSection' + $h2Section.getLocation() )
+						#set( $addSubsectionId = 'addSubsection' + $h2Section.getLocation() )
+						#set( $addH2SubsectionButtonId = 'addH2SubsectionButton' + $h2Section.getLocation() )
+						#set( $buttonsDiv = 'buttonsDiv' + $h2Section.getLocation() )
+						<li id='$linkId' class='h2Section' data-value='$h2Section.getValue()' data-location='$h2Section.getLocation()' data-sectiontype='$h2Section.getSectiontype()' style='background: #cef none repeat scroll 0 0;'>
+							<div id='$editorDivId' class='editor h2Editor'>
+								$h2Section.getValue()
+							</div>
+							<div id="$buttonsDiv" class="sectionButtons">
+								<input type="button" id="$toogleId" class="active" value='$tlang.getString("nested.start.editing.button")'/>
+								<input type="button" id="$removeDivId" class="active" value='$tlang.getString("nested.delete.section.button")'/>
+							</div>
+
+							## h3 sections
+							#if($h2Section.getChildren().size() > 0)
+								<ol id="$addSubsectionId" class="h3NestedLevel">
+									#foreach($h3Section in $h2Section.getChildren())
+										#set( $num = $num + 1)
+										#set( $editorDivId = 'sectionInlineEditor' + $h3Section.getLocation() )
+										#set( $linkId = 'link' + $h3Section.getLocation() )
+										#set( $toogleId = 'toggle' + $h3Section.getLocation())
+										#set( $removeDivId = 'removeSection' + $h3Section.getLocation() )
+										#set( $addSubsectionId = 'addSubsection' + $h3Section.getLocation() )
+										#set( $buttonsDiv = 'buttonsDiv' + $h3Section.getLocation() )
+										<li id='$linkId' class='h3Section' data-value='$h3Section.getValue()' data-location='$h3Section.getLocation()' data-sectiontype='$h3Section.getSectiontype()'>
+											<div id='$editorDivId' class='editor h3Editor'>
+												$h3Section.getValue()
+											</div>
+											<div id="$buttonsDiv" style="padding:5px;">
+												<input type="button" id="$toogleId" class="active" value='$tlang.getString("nested.start.editing.button")'/>
+												<input type="button" id="$removeDivId" class="active" value='$tlang.getString("nested.delete.section.button")'/>
+											</div>
+
+											## nested citations
+											#if($h3Section.getChildren().size() > 0)
+												<ol id="$addSubsectionId" class="h4NestedLevel">
+													#foreach($nestedCitation in $h3Section.getChildren())
+														#set( $num = $num + 1)
+														#set( $citation = $fullCitCollection.getCitation($nestedCitation.getCitationid()))
+														#set( $editorDivId = 'sectionInlineEditor' + $nestedCitation.getLocation() )
+														#set( $linkId = 'link' + $nestedCitation.getLocation() )
+														#set( $addSubsectionId = 'addSubsection' + $nestedCitation.getLocation() )
+														<li id='$linkId' data-citationId='$nestedCitation.getCitationid()' data-location='$num' data-sectiontype='CITATION'>
+															#parse( "vm/citation/_nestableCitation.vm" )
+														</li>
+													#end
+												</ol>
+											#else
+												<ol class="h4NestedLevel"></ol>
+											#end ##  end of nested citations
+										</li>
+									#end
+								</ol>
+							#else
+								<ol class="h3NestedLevel"></ol>
+							#end 	## end of h3 sections
+                            <div style="padding:5px;"><input type="button" id="$addH2SubsectionButtonId" class="active" value='$tlang.getString("nested.add.subsection.button")'/></div>
+						</li>
+					#end
+				</ol>
+			#else
+				<ol class="h2NestedLevel"></ol>
+			#end 	## end of h2 sections
+			## h2 section Add Section button
+			<div style="padding:5px;"><input type="button" id="$addH1SubsectionButtonId" class="active" value='$tlang.getString("nested.add.subsection.button")'/></div>
+		</li>
+	#end
+#end  ## end of h1 sections
+
+## add section button
+<div class="act" id="addSectionDiv">
+	<input id="addSectionButton" type="button" name="AddSection" class="active" value="$tlang.getString("nested.add.section.button")"/>
+</div>
