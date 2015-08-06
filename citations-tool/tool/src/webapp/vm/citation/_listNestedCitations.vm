@@ -3,6 +3,7 @@
 <input type="hidden" id="finishEditingText" value="$tlang.getString("nested.finish.editing.button")"/>
 <input type="hidden" id="deleteSectionText" value="$tlang.getString("nested.delete.section.button")"/>
 <input type="hidden" id="addSubsectionButtonText" value="$tlang.getString("nested.add.subsection.button")"/>
+<input type="hidden" id="deleteButtonConfirmText" value="$tlang.getString("nested.delete.section.confirm")"/>
 
 #set( $num = 1 )
 ## h1 sections
@@ -19,7 +20,7 @@
 		<li id='$linkId' class='months h1Editor' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
 			data-sectiontype='$nestedSection.getSectiontype()'>
 			<div id='$editorDivId' class='editor h1Editor'>
-				$nestedSection.getValue()
+				$!nestedSection.getValue()
 			</div>
 			<div id="$buttonsDiv" class="sectionButtons">
 				<input type="button" id="$toogleId" class="active" value='$tlang.getString("nested.start.editing.button")'/>
@@ -40,7 +41,7 @@
 						#set( $buttonsDiv = 'buttonsDiv' + $h2Section.getLocation() )
 						<li id='$linkId' class='h2Section' data-value='$h2Section.getValue()' data-location='$h2Section.getLocation()' data-sectiontype='$h2Section.getSectiontype()' style='background: #cef none repeat scroll 0 0;'>
 							<div id='$editorDivId' class='editor h2Editor'>
-								$h2Section.getValue()
+								$!h2Section.getValue()
 							</div>
 							<div id="$buttonsDiv" class="sectionButtons">
 								<input type="button" id="$toogleId" class="active" value='$tlang.getString("nested.start.editing.button")'/>
@@ -60,7 +61,7 @@
 										#set( $buttonsDiv = 'buttonsDiv' + $h3Section.getLocation() )
 										<li id='$linkId' class='h3Section' data-value='$h3Section.getValue()' data-location='$h3Section.getLocation()' data-sectiontype='$h3Section.getSectiontype()'>
 											<div id='$editorDivId' class='editor h3Editor'>
-												$h3Section.getValue()
+												$!h3Section.getValue()
 											</div>
 											<div id="$buttonsDiv" style="padding:5px;">
 												<input type="button" id="$toogleId" class="active" value='$tlang.getString("nested.start.editing.button")'/>
@@ -72,7 +73,7 @@
 												<ol id="$addSubsectionId" class="h4NestedLevel">
 													#foreach($nestedCitation in $h3Section.getChildren())
 														#set( $num = $num + 1)
-														#set( $citation = $fullCitCollection.getCitation($nestedCitation.getCitationid()))
+														#set( $citation = $allCitationCollection.getCitation($nestedCitation.getCitationid() ))
 														#set( $editorDivId = 'sectionInlineEditor' + $nestedCitation.getLocation() )
 														#set( $linkId = 'link' + $nestedCitation.getLocation() )
 														#set( $addSubsectionId = 'addSubsection' + $nestedCitation.getLocation() )

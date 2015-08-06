@@ -233,13 +233,13 @@ public class DbCitationService extends BaseCitationService
 		}
 
 		@Override
-		public CitationCollection getFullCitationCollection(String citationCollectionId) {
-			return this.getFullCitationColl(citationCollectionId);
+		public CitationCollection getUnnestedCitationCollection(String citationCollectionId) {
+			return this.getUnnestedCitationColl(citationCollectionId);
 		}
 
 		@Override
-		public void removeSection(String collectionId, int locationId) {
-			this.removeNestedSection(collectionId, locationId);
+		public void removeLocation(String collectionId, int locationId) {
+			this.removeNestedLocation(collectionId, locationId);
 		}
 
 		public void updateSchema(Schema schema)
@@ -511,12 +511,12 @@ public class DbCitationService extends BaseCitationService
 		}
 
 		/* (non-Javadoc)
-		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#getFullCitationColl(java.lang.String)
+		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#getUnnestedCitationColl(java.lang.String)
 		*/
-		protected CitationCollection getFullCitationColl(String collectionId)
+		protected CitationCollection getUnnestedCitationColl(String collectionId)
 		{
 			BasicCitationCollection edit = getBasicCitationCollection(collectionId);
-			getCitationCollectionOrders(collectionId, edit, "  ((SECTION_TYPE is NULL AND CITATION_ID is not null) or (SECTION_TYPE = 'CITATION')) ");
+			getCitationCollectionOrders(collectionId, edit, " and SECTION_TYPE is NULL ");
 
 			return edit;
 		}
@@ -590,9 +590,9 @@ public class DbCitationService extends BaseCitationService
 
 
 		/* (non-Javadoc)
-		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#removeNestedSection(java.lang.String, int)
+		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#removeNestedLocation(java.lang.String, int)
 		*/
-		protected void removeNestedSection(final String collectionId, int locationId)
+		protected void removeNestedLocation(final String collectionId, int locationId)
 		{
 			// get all the sections from the db
 			final CitationCollectionOrder citationCollectionOrder = this.getNestedCollection(collectionId);
@@ -610,7 +610,9 @@ public class DbCitationService extends BaseCitationService
 								if (citationCollectionOrder1.getLocation() != locationId) {
 									toSave.add(citationCollectionOrder1);
 									for (CitationCollectionOrder citationCollectionOrder2 : citationCollectionOrder1.getChildren()) {
-										toSave.add(citationCollectionOrder2);
+										if (citationCollectionOrder2.getLocation() != locationId) {
+											toSave.add(citationCollectionOrder2);
+										}
 									}
 								}
 							}
@@ -1190,13 +1192,13 @@ public class DbCitationService extends BaseCitationService
 		protected CitationCollection retrieveCollection(String collectionId)
 		{
 			BasicCitationCollection edit = getBasicCitationCollection(collectionId);
-			getCitationCollectionOrders(collectionId, edit, "SECTION_TYPE is NULL");
+			getCitationCollectionOrders(collectionId, edit, "  and ((SECTION_TYPE is NULL AND CITATION_ID is not null) or (SECTION_TYPE = 'CITATION'))  ");
 			return edit;
 		}
 
 		private void getCitationCollectionOrders(String collectionId, BasicCitationCollection edit, String whereClauseForSection) {
 			// Now add the citations into the ordering table. This has replaced the sakai:hasCitation linking mechanism.
-			String orderStatement = "select COLLECTION_ID, CITATION_ID, LOCATION from " + m_collectionOrderTableName + " where COLLECTION_ID = ? and " +
+			String orderStatement = "select COLLECTION_ID, CITATION_ID, LOCATION from " + m_collectionOrderTableName + " where COLLECTION_ID = ?  " +
 					whereClauseForSection + " ORDER BY LOCATION ";
 
 			List<Triple> orderTriples = m_sqlService.dbRead(orderStatement, new Object[] {collectionId}, new TripleReader());

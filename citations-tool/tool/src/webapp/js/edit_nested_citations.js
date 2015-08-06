@@ -260,6 +260,7 @@
             if ( !CKEDITOR.instances[sectionInlineEditor] ) {
                 CKEDITOR.inline( sectionInlineEditor, {
                     startupFocus: true,
+                    forcePasteAsPlainText : true,
                     on:
                     {
                         instanceReady:function(event)
@@ -275,7 +276,6 @@
                     toolbar :
                         [
                             { name: 'basicstyles', items : [ 'Bold','Italic', 'Underline', 'Strike' ] },
-                            { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText' ] },
                             { name: 'styles', items : [ 'Format' ] }
                         ]
                 } );
@@ -319,13 +319,16 @@
         }
 
         function removeSection() {
-            var actionUrl = $('#newCitationListForm').attr('action');
-            $('#citation_action').val('remove_section');
-            var params = $('#newCitationListForm').serializeArray();
-            params.push({name:'locationId', value:this.id.replace('removeSection', '')});
-            ajaxPost(actionUrl, params, false);
+            var confirmMessage = $('#deleteButtonConfirmText').val();
+            if(confirm(confirmMessage)) {
+                var actionUrl = $('#newCitationListForm').attr('action');
+                $('#citation_action').val('remove_section');
+                var params = $('#newCitationListForm').serializeArray();
+                params.push({name: 'locationId', value: this.id.replace('removeSection', '')});
+                ajaxPost(actionUrl, params, false);
 
-            refreshIdsOnPage();
+                refreshIdsOnPage();
+            }
         }
 
 
@@ -388,8 +391,8 @@
                     $('li[id^="link"]').each(function( ) {
                         var editorId = $(this).attr('id').replace('link', 'sectionInlineEditor');
                         var outerHTML = '';
-                        if ($('#' + editorId).children()!=null && $('#' + editorId).children().first()!=null && $('#' + editorId).children().first().get(0)!=null){
-                            outerHTML = $('#' + editorId).children().first().get(0).outerHTML;
+                        if ($('#' + editorId).html()!=null){
+                            outerHTML = $('#' + editorId).html().trim();
                         }
                         $(this).data('value', outerHTML);
                     });

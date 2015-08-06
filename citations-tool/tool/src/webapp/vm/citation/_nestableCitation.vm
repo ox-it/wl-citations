@@ -28,10 +28,11 @@
             <a href="$citation.openurl" target="_blank">${openUrlLabel}</a>
             |
 		#end
-        <a href="#toolLink("CitationHelperAction" "doView")&citationId=${citation.id}&collectionId=$collectionId">$tlang.getString( "action.view" )</a>
+
+        <a href="#toolLink("CitationHelperAction" "doView")&citationId=${citation.id}&citationCollectionId=$citationCollectionId#if($nestedCitation)&location=$nestedCitation.getLocation()#end">$tlang.getString( "action.view" )</a>
         |
-        <a href="#toolLink("CitationHelperAction" "doEdit")&citationId=$citation.id&collectionId=$collectionId">$tlang.getString("action.edit")</a>
+        <a href="#toolLink("CitationHelperAction" "doEdit")&citationId=$citation.id&citationCollectionId=$citationCollectionId#if($nestedCitation)&location=$nestedCitation.getLocation()#end">$tlang.getString("action.edit")</a>
         |
-        <a href="#toolLink("CitationHelperAction" "doRemoveSelectedCitations")&citationId=$citation.id&collectionId=$collectionId">$tlang.getString("action.remove")</a>
+        <a href="#toolLink("CitationHelperAction" "doRemoveSelectedCitations")&citationId=$citation.id&citationCollectionId=$citationCollectionId#if($nestedCitation)&location=$nestedCitation.getLocation()#end">$tlang.getString("action.remove")</a>
     </div>
 </div>
