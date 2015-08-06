@@ -72,7 +72,7 @@
 												<ol id="$addSubsectionId" class="h4NestedLevel">
 													#foreach($nestedCitation in $h3Section.getChildren())
 														#set( $num = $num + 1)
-														#set( $citation = $fullCitCollection.getCitation($nestedCitation.getCitationid()))
+														#set( $citation = $allCitationCollection.getCitation($nestedCitation.getCitationid() ))
 														#set( $editorDivId = 'sectionInlineEditor' + $nestedCitation.getLocation() )
 														#set( $linkId = 'link' + $nestedCitation.getLocation() )
 														#set( $addSubsectionId = 'addSubsection' + $nestedCitation.getLocation() )

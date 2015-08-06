@@ -960,6 +960,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 				this.captureAvailability(params, edit, results);
 				getContentService().commitResource(edit, priority);
 				message = "Resource updated";
+				state.setAttribute(STATE_CITATION_COLLECTION, null);
 			} catch (IdUnusedException e) {
 				message = e.getMessage();
 				logger.warn("IdUnusedException in updateCitationList() " + e);
@@ -1106,7 +1107,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		try {
 			int locationId = params.getInt("locationId");
 			CitationCollection collection = getCitationCollection(state, false);
-			getCitationService().removeSection(collection.getId(), locationId);
+			getCitationService().removeLocation(collection.getId(), locationId);
 			message = rb.getString("resource.updated");
 			results.put("sectionToRemove", "#sectionInlineEditor" + locationId);
 		}
@@ -2352,12 +2353,13 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		context.put("nestedCollection", nestedCollection);
 		context.put("nestedSectionsSize", nestedCollection.getChildren().size());
 
-		// all citations (nested and unnested)
-		CitationCollection fullCitationCollection = getCitationService().getFullCitationCollection(citationCollection.getId());
-		context.put("fullCitCollection", fullCitationCollection);
-
 		// unnested citations
-		context.put("citCollection", citationCollection);
+		CitationCollection unnestedCitationCollection = getCitationService().getUnnestedCitationCollection(citationCollection.getId());
+		context.put("unnestedCitationCollection", unnestedCitationCollection);
+		context.put("unnestedCitationCollectionSize", unnestedCitationCollection.size());
+
+		// all citations
+		context.put("allCitationCollection", citationCollection);
 
 		if(citationCollection == null) {
 			logger.warn( "buildAddCitationsPanelContext unable to access citationCollection " + citationCollectionId );
@@ -2420,7 +2422,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			context.put( "searchLibrary", Boolean.TRUE );
 		}
 		
-		if(citationCollection == null || (citationCollection.size() <= 0 && fullCitationCollection.size()<=0) && nestedCollection.getChildren().size()<=0) {
+		if(citationCollection == null || (citationCollection.size() <= 0 && unnestedCitationCollection.size()<=0) && nestedCollection.getChildren().size()<=0) {
 			
 		} else {
 			context.put("openUrlLabel", getConfigurationService().getSiteConfigOpenUrlLabel());
@@ -3684,6 +3686,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 		int requestStateId = params.getInt("requestStateId", 0);
 		restoreRequestState(state, new String[]{CitationHelper.RESOURCES_REQUEST_PREFIX, CitationHelper.CITATION_PREFIX}, requestStateId);
+		state.setAttribute("location", params.getInt("location"));
 
 		String citationId = params.getString("citationId");
 		String citationCollectionId = params.getString("citationCollectionId");
@@ -3997,9 +4000,13 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 		String citationCollectionId = params.getString("citationCollectionId");
 
-		CitationCollection collection = getCitationCollection(state, false);
+		CitationCollection collection = getCitationService().getUnnestedCitationCollection(citationCollectionId);
 
-		if(collection == null)
+		int location = params.getInt("location");
+		if (location!=0) {
+			getCitationService().removeLocation(citationCollectionId, location);
+		}
+		else if(collection == null)
 		{
 			// TODO add alert and log error
 	        logger.warn("doRemoveSelectedCitation() collection null: " + citationCollectionId);
@@ -4029,6 +4036,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			}
 		}
 
+		state.setAttribute(STATE_CITATION_COLLECTION, null);
 		state.setAttribute( STATE_LIST_NO_SCROLL, Boolean.TRUE );
 		//setMode(state, Mode.LIST);
 		setMode(state, Mode.NEW_RESOURCE);
@@ -4050,7 +4058,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		// Set validPropertyNames = getCitationService().getValidPropertyNames();
 		// String mediatype = params.getString("type");
 
-		CitationCollection collection = getCitationCollection(state, false);
+		CitationCollection collection = getCitationCollection(state, true);
 
 		if(collection == null)
 		{
@@ -4059,11 +4067,18 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		else
 		{
 			String citationId = (String) state.getAttribute(CitationHelper.CITATION_EDIT_ID);
+			int location = (Integer) state.getAttribute("location");
 			if(citationId != null)
 			{
 				try
 	            {
-					Citation citation = collection.getCitation(citationId);
+		            // if it's a unnested citation
+		            if (location==0) {
+			            String citationCollectionId = (String) state.getAttribute("citation.citation_collection_id");
+			            collection = getCitationService().getUnnestedCitationCollection(citationCollectionId);
+		            }
+
+		            Citation citation = collection.getCitation(citationId);
 
 		            String schemaId = params.getString("type");
 		            Schema schema = getCitationService().getSchema(schemaId);
@@ -4079,11 +4094,14 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		            // TODO add alert and log error
 	            }
 
-	       		getCitationService().save(collection);
+	       		if (location==0){
+			        getCitationService().save(collection);
+		        }
 			}
  		}
 
 		//setMode(state, Mode.LIST);
+		state.setAttribute(STATE_CITATION_COLLECTION, null);
 		setMode(state, Mode.NEW_RESOURCE);
 
 	}	// doReviseCitation

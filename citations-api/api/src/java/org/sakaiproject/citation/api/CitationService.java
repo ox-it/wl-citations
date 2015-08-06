@@ -229,15 +229,15 @@ public interface CitationService extends EntityProducer
 	 */
 	public CitationCollectionOrder getNestedCollection(String citationCollectionId);
 	/**
-	 ** Removes the section of a citation collection and its children
+	 ** Removes the section of a citation collection and its children or removes a citation
 	 * @param collectionId
 	 * @param locationId
 	 */
-	public void removeSection(String collectionId, int locationId);
+	public void removeLocation(String collectionId, int locationId);
 	/**
 	 ** Gets a citation collection including nested and unnested citations
 	 * @param citationCollectionId
 	 */
-	public CitationCollection getFullCitationCollection(String citationCollectionId);
+	public CitationCollection getUnnestedCitationCollection(String citationCollectionId);
 }	// interface CitationService
 
