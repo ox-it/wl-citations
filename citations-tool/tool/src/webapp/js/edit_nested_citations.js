@@ -260,6 +260,7 @@
             if ( !CKEDITOR.instances[sectionInlineEditor] ) {
                 CKEDITOR.inline( sectionInlineEditor, {
                     startupFocus: true,
+                    forcePasteAsPlainText : true,
                     on:
                     {
                         instanceReady:function(event)
@@ -275,7 +276,6 @@
                     toolbar :
                         [
                             { name: 'basicstyles', items : [ 'Bold','Italic', 'Underline', 'Strike' ] },
-                            { name: 'clipboard', items : [ 'Cut','Copy','Paste','PasteText' ] },
                             { name: 'styles', items : [ 'Format' ] }
                         ]
                 } );
