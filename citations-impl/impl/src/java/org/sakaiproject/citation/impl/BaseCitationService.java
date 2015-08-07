@@ -3843,9 +3843,9 @@ public abstract class BaseCitationService implements CitationService
 
 		public CitationCollectionOrder getNestedSections(String citationCollectionId);
 
-		public CitationCollection getFullCitationCollection(String citationCollectionId);
+		public CitationCollection getUnnestedCitationCollection(String citationCollectionId);
 
-		public void removeSection(String collectionId, int locationId);
+		public void removeLocation(String collectionId, int locationId);
 
 		public void updateSchema(Schema schema);
 
@@ -5503,21 +5503,21 @@ public abstract class BaseCitationService implements CitationService
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see org.sakaiproject.citation.api.CitationService#getFullCitationCollection(java.lang.String)
+	 * @see org.sakaiproject.citation.api.CitationService#getUnnestedCitationCollection(java.lang.String)
 	 */
-	public CitationCollection getFullCitationCollection(String citationCollectionId)
+	public CitationCollection getUnnestedCitationCollection(String citationCollectionId)
 	{
-		return this.m_storage.getFullCitationCollection(citationCollectionId);
+		return this.m_storage.getUnnestedCitationCollection(citationCollectionId);
 	}
 
 	/*
 	* (non-Javadoc)
 
-	* @see org.sakaiproject.citation.api.CitationService#removeSection(java.lang.String, int)
+	* @see org.sakaiproject.citation.api.CitationService#removeLocation(java.lang.String, int)
 	*/
-	public void removeSection(String collectionId, int locationId)
+	public void removeLocation(String collectionId, int locationId)
 	{
-		this.m_storage.removeSection(collectionId, locationId);
+		this.m_storage.removeLocation(collectionId, locationId);
 	}
 	/**
 	 * Dependency: ConfigurationService.

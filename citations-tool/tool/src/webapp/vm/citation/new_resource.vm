@@ -448,7 +448,7 @@ html { overflow-y: hidden; }
 				#parse( "vm/citation/_listCitations.vm" )
 			</div>
 		</div>
-		<p class="noCitationsDisplay"#if($collectionSize && $collectionSize > 0 && $nestedSectionsSize && $nestedSectionsSize > 0) style="display:none;"#end>
+		<p class="noCitationsDisplay"#if($collectionSize && $collectionSize > 0 && $unnestedCitationCollectionSize && $unnestedCitationCollectionSize > 0) style="display:none;"#end>
 			$tlang.getString("resource.nocitations")
 		</p>	
 	</div>

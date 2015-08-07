@@ -41,6 +41,7 @@ import org.sakaiproject.citation.api.Schema;
 import org.sakaiproject.citation.api.Schema.Field;
 import org.sakaiproject.citation.cover.CitationService;
 import org.sakaiproject.citation.cover.ConfigurationService;
+import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.content.cover.ContentHostingService;
@@ -294,7 +295,8 @@ public class CitationListAccessServlet implements HttpAccess
     		String description = properties.getProperty( ResourceProperties.PROP_DESCRIPTION );
     		
      		String citationCollectionId = new String( resource.getContent() );
-    		CitationCollection collection = CitationService.getCollection(citationCollectionId);
+	        org.sakaiproject.citation.api.CitationService citationService = (org.sakaiproject.citation.api.CitationService) ComponentManager.get(org.sakaiproject.citation.api.CitationService.class);
+	        CitationCollection collection = citationService.getUnnestedCitationCollection(citationCollectionId);
 
     		res.setContentType("text/html; charset=UTF-8");
     		PrintWriter out = res.getWriter();

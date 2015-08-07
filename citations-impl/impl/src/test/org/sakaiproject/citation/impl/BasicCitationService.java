@@ -296,17 +296,17 @@ public class BasicCitationService extends BaseCitationService
 			return (CitationCollectionOrder) m_citationCollections.get(0);
 		}
 		/* (non-Javadoc)
-		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#getFullCitationCollection(java.lang.String)
+		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#getUnnestedCitationCollection(java.lang.String)
 		*/
-		public CitationCollection getFullCitationCollection(String citationCollectionId)
+		public CitationCollection getUnnestedCitationCollection(String citationCollectionId)
 		{
 			return (CitationCollection) m_citationCollections;
 		}
 
 		/* (non-Javadoc)
-		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#removeSection(java.lang.String, int)
+		* @see org.sakaiproject.citation.impl.BaseCitationService.Storage#removeLocation(java.lang.String, int)
 		*/
-		public void removeSection(String collectionId, int locationId)
+		public void removeLocation(String collectionId, int locationId)
 		{
 			this.m_citationCollections.remove(collectionId + ":" + locationId);
 		}
