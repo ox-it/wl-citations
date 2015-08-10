@@ -1084,9 +1084,12 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			String addSectionHTML = params.getString("addSectionHTML");
 			int locationId = params.getInt("locationId");
 			String cleanAddSectionHTML = getFormattedText().processFormattedText(addSectionHTML, new StringBuilder(), true, true);
+
+			// Replace single and double quotes with their HTML entities so that they can be used as attribute values
+			cleanAddSectionHTML = cleanAddSectionHTML.replaceAll("'", "&#39;").replaceAll("\"", "&#34;");
+
 			CitationCollectionOrder.SectionType sectionType = CitationCollectionOrder.SectionType.valueOf(params.getString("sectionType"));
 			CitationCollection collection = getCitationCollection(state, false);
-
 			CitationCollectionOrder citationCollectionOrder = new CitationCollectionOrder(collection.getId(), locationId, sectionType, cleanAddSectionHTML);
 			getCitationService().updateSection(citationCollectionOrder);
 			message = rb.getString("resource.updated");
@@ -3275,7 +3278,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		}
 
 		CitationCollection collection = null;
-        collection = getCitationCollection(state, false);
+		collection = getCitationService().getUnnestedCitationCollection(citationCollectionId);
 
 		String ristext = params.get("ristext");
 
@@ -3526,7 +3529,8 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		Set validPropertyNames = getCitationService().getValidPropertyNames();
 		String mediatype = params.getString("type");
 
-		CitationCollection collection = getCitationCollection(state, true);
+		String citationCollectionId = (String) state.getAttribute("citation.citation_collection_id");
+		CitationCollection collection = getCitationService().getUnnestedCitationCollection(citationCollectionId);
 		if(collection == null) {
 			// error
 		} else {
