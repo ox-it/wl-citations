@@ -3916,7 +3916,8 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	    ParameterParser params = data.getParameters();
 	    String resourceUrl = params.getString("resourceUrl");
 	
-	    CitationCollection collection = getCitationCollection(state, false);
+	    String citationCollectionId = (String) state.getAttribute("citation.citation_collection_id");
+	    CitationCollection collection = getCitationService().getUnnestedCitationCollection(citationCollectionId);
 	        
 	    if(resourceUrl != null)
 	    {
