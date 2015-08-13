@@ -499,6 +499,10 @@
         });
 
         addAccordionFunctionality(true);
+
+        $('.unnestedList').each(function( ) {
+            $(this).show();
+        });
     });
 }());
 

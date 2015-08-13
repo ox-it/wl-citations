@@ -1,4 +1,6 @@
 #if($collectionSize && $collectionSize > 0)
+<li>
+	<ol id="$addSubsectionId" class="h4NestedLevel unnestedList" style="padding: 5px; display: block;">
 	#foreach($citation in $citations)
 		#if ($unnestedCitationCollection.contains($citation))
 	        #set( $num = $num + $citation.getPosition() + 1)
@@ -7,6 +9,8 @@
 	        </li>
 		#end
 	#end
+	</ol>
+</li>
 #else
 	<ol></ol>
 #end
