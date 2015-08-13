@@ -454,7 +454,7 @@ public class DbCitationService extends BaseCitationService
 					int count = 1;
 					for (CitationCollectionOrder citationCollectionOrder : citationCollectionOrders) {
 						// top level h1 section
-						if (citationCollectionOrder.getSectiontype().equals(CitationCollectionOrder.SectionType.HEADING1)){
+						if (citationCollectionOrder.getSectiontype()!=null && citationCollectionOrder.getSectiontype().equals(CitationCollectionOrder.SectionType.HEADING1)){
 							List<CitationCollectionOrder> flattenedCitationCollectionOrders = citationCollectionOrder.flatten();
 							for (CitationCollectionOrder flattenedCitationCollectionOrder : flattenedCitationCollectionOrders) {
 								String orderStatement = "insert into " + m_collectionOrderTableName + " (COLLECTION_ID, CITATION_ID, LOCATION, SECTION_TYPE, VALUE) VALUES(?,?,?,?,?)";
@@ -471,18 +471,20 @@ public class DbCitationService extends BaseCitationService
 							}
 						}
 						// unnested citations
-						else if (citationCollectionOrder.isCitation()){
-							String orderStatement = "insert into " + m_collectionOrderTableName + " (COLLECTION_ID, CITATION_ID, LOCATION, SECTION_TYPE, VALUE) VALUES(?,?,?,?,?)";
+						else if (citationCollectionOrder.getSectiontype()==null){
+							for (CitationCollectionOrder unnestedCitation : citationCollectionOrder.getChildren()) {
+								String orderStatement = "insert into " + m_collectionOrderTableName + " (COLLECTION_ID, CITATION_ID, LOCATION, SECTION_TYPE, VALUE) VALUES(?,?,?,?,?)";
 
-							Object[] orderFields = new Object[5];
-							orderFields[0] = citationCollectionId;
-							orderFields[1] = citationCollectionOrder.getCitationid();
-							orderFields[2] = nestedCitationCount;
-							orderFields[3] = null;
-							orderFields[4] = null;
-							m_sqlService.dbWrite(orderStatement, orderFields);
+								Object[] orderFields = new Object[5];
+								orderFields[0] = citationCollectionId;
+								orderFields[1] = unnestedCitation.getCitationid();
+								orderFields[2] = nestedCitationCount;
+								orderFields[3] = null;
+								orderFields[4] = null;
+								m_sqlService.dbWrite(orderStatement, orderFields);
 
-							nestedCitationCount++;
+								nestedCitationCount++;
+							}
 						}
 					}
 					updateCitationCollectionUpdateDate(citationCollectionId);
