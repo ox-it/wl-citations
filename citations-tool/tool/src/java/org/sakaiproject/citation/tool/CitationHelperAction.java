@@ -1058,6 +1058,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 						.replaceAll(",\"children\":\\[\\[\\],", ",\"children\":[")
 						.replaceAll(",\"children\":\\[\\[", ",\"children\":[")
 						.replaceAll(",\\{\"children\":\\[\\[", ",{\"children\":[")
+						.replaceAll("\\{\"children\":\\[\\[", "{\"children\":[")
 						.replaceAll("\\}\\],\\[\\{\"section", "},{\"section")
 						.replaceAll("\\}\\]\\]", "}]").replaceAll("\\}\\],\\[\\]\\]", "}]");
 
