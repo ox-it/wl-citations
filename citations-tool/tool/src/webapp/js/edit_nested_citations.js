@@ -504,7 +504,9 @@
             $(this).show();
         });
 
-        alert('This page must be edited in Firefox to work properly.');
+        if ( !$.browser.mozilla ) {
+            alert('This page must be edited in Firefox to work properly.');
+        }
     });
 }());
 
