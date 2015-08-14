@@ -1055,6 +1055,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 						.replaceAll("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)", "")    // replace whitespace
 						.replaceAll(",\"children\":\\[\\[\\]\\]", "")
 						.replaceAll(",\"children\":\\[\\[\\],\\[\\]\\]", "")
+						.replaceAll(",\\{\"children\":\\[\\[\\]\\]\\}", "")
 						.replaceAll(",\"children\":\\[\\[\\],", ",\"children\":[")
 						.replaceAll(",\"children\":\\[\\[", ",\"children\":[")
 						.replaceAll(",\\{\"children\":\\[\\[", ",{\"children\":[")
