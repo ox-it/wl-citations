@@ -351,7 +351,7 @@
                 isValidTarget: function (item, container) {
                     var sectiontype = item.data('sectiontype');
                     if (sectiontype=='CITATION'){
-                        if (container.target.hasClass("h4NestedLevel")){
+                        if (container.target.hasClass("holdCitations")){
                             return true;
                         }
                         else {
