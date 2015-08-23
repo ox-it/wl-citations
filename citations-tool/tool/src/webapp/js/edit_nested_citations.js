@@ -30,8 +30,8 @@
             var startEditingText = $('#startEditingText').val();
             var deleteSectionText = $('#deleteSectionText').val();
             var addSubsectionButtonText = $('#addSubsectionButtonText').val();
-            var html = "<li id='link" + locationId + "' class='months h1Editor' data-value='<h1>" + sectionTitle + "</h1>' data-location='" + locationId + "' data-sectiontype='HEADING1'><div id='"
-                + divId + "' contenteditable='true' class='editor h1Editor'>" +
+            var html = "<li id='link" + locationId + "' class='months h1Editor sectionEditor' data-value='<h1>" + sectionTitle + "</h1>' data-location='" + locationId + "' data-sectiontype='HEADING1'><div id='"
+                + divId + "' contenteditable='true' class='editor h1Editor sectionEditor'>" +
                 "<h1>" + sectionTitle + "</h1></div>" +
                 " <div id='buttonsDiv" + locationId + "' class='sectionButtons'><input type='button' id='" + toggleId + "' class='active' value='" + startEditingText + "'/>" +
                 "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/>" +
@@ -128,7 +128,7 @@
                 html =
                     "" +
                     "<li id='link" + locationId + "' data-value='<h2>" + sectionTitle + "</h2>' class='h2Section' data-location='" + locationId + "' data-sectiontype='HEADING2'>" +
-                    "<div id='" + divId + "' class='editor h2Editor' contenteditable='true'>" + "<h2>" + sectionTitle + "</h2></div>" +
+                    "<div id='" + divId + "' class='editor h2Editor sectionEditor' contenteditable='true'>" + "<h2>" + sectionTitle + "</h2></div>" +
                     "<div id='buttonsDiv" + locationId + "' style='margin-left: 5px;'><input type='button' id='" + toggleId + "' class='active' value='" + startEditingText + "'/>" +
                     "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/>" +
                     "</div><ol id='addSubsection" + locationId + "' class='h3NestedLevel' style='padding: 5px; display: block;'></ol><div style='padding:5px;'><input type='button' id='" + addSubsectionButtonId + "' class='active' value='" + addSubsectionButtonText + "'/></div></li>";
@@ -138,7 +138,7 @@
             if (sectionType === 'HEADING2'){
                 html =
                     "<li id='link" + locationId + "' data-value='<h3>" + sectionTitle + "</h3>' class='h3Section' data-location='" + locationId + "' data-sectiontype='HEADING3'>" +
-                    "<div id='" + divId + "' class='editor h3Editor' contenteditable='true'>" + "<h3>" + sectionTitle + "</h3></div>" +
+                    "<div id='" + divId + "' class='editor h3Editor sectionEditor' contenteditable='true'>" + "<h3>" + sectionTitle + "</h3></div>" +
                     "<div id='buttonsDiv" + locationId + "' style='padding:5px;'><input type='button' id='" + toggleId + "' class='active' value='" + startEditingText + "'/>" +
                     "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/>" +
                     "</div><ol class='h4NestedLevel' style='padding: 5px; display: block;'></ol></li>";
@@ -430,11 +430,8 @@
 
             // remove any bound click events
             $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div[id^=sectionInlineEditor]').unbind("click");
-            $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div[id^=buttonsDiv]').unbind("click");
             $('.h2NestedLevel li[data-sectiontype="HEADING2"] > div[id^=sectionInlineEditor]').unbind("click");
-            $('.h2NestedLevel li[data-sectiontype="HEADING2"] > div[id^=buttonsDiv]').unbind("click");
             $('.h3NestedLevel li[data-sectiontype="HEADING3"] > div[id^=sectionInlineEditor]').unbind("click");
-            $('.h3NestedLevel li[data-sectiontype="HEADING3"] > div[id^=buttonsDiv]').unbind("click");
 
 
             // h1 level collapse expand
@@ -447,10 +444,6 @@
             $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div[id^=sectionInlineEditor]').click(function() {
                 $(this).parent().find('ol').slideToggle();
             });
-            $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div[id^=buttonsDiv]').click(function() {
-                $(this).parent().find('ol').slideToggle();
-            });
-
 
             // h2 level collapse expand
             if (collapseAllSections) {
@@ -462,10 +455,6 @@
             $('.h2NestedLevel li[data-sectiontype="HEADING2"] > div[id^=sectionInlineEditor]').click(function() {
                 $(this).parent().find('ol').slideToggle();
             });
-            $('.h2NestedLevel li[data-sectiontype="HEADING2"] > div[id^=buttonsDiv]').click(function() {
-                $(this).parent().find('ol').slideToggle();
-            });
-
 
             // h3 level collapse expand
             if (collapseAllSections) {
@@ -475,9 +464,6 @@
             }
 
             $('.h3NestedLevel li[data-sectiontype="HEADING3"] > div[id^=sectionInlineEditor]').click(function() {
-                $(this).parent().find('ol').slideToggle();
-            });
-            $('.h3NestedLevel li[data-sectiontype="HEADING3"] > div[id^=buttonsDiv]').click(function() {
                 $(this).parent().find('ol').slideToggle();
             });
         }
