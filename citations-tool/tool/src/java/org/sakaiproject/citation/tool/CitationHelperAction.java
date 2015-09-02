@@ -1049,10 +1049,21 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			String nestedCitations = params.getString("data");
 			if (nestedCitations!=null){
 
+				// Java has a bug where it throws a stackoverflow error when pattern matching very long strings
+				// http://bugs.java.com/view_bug.do?bug_id=5050507
+				// For very big lists, we just split the string
+				if (nestedCitations.length()>20000){
+					String[] parts = nestedCitations.split("\"sectiontype\"");
+					nestedCitations = "";
+					for (String part : parts) {
+						part = part.replaceAll("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)", "") + "\"sectiontype\"";  // replace whitespace (except between quotation marks) so can strip extra JSON arrays //  (it would be much better just to find a way of parsing the JSON without this string manipulation)
+						nestedCitations = nestedCitations + part;
+					}
+				}
+
 				// remove extra parentheses in json
 				// needed because of the extra ol's for accordion effect
 				nestedCitations = nestedCitations
-						.replaceAll("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)", "")    // replace whitespace
 						.replaceAll(",\"children\":\\[\\[\\]\\]", "")
 						.replaceAll(",\"children\":\\[\\[\\],\\[\\]\\]", "")
 						.replaceAll(",\\{\"children\":\\[\\[\\]\\]\\}", "")
