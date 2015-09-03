@@ -347,7 +347,7 @@
             var group = $("ol.serialization").sortable({
                 group: 'serialization',
                 revert: true,
-                delay: 500,
+                delay: 0,
                 isValidTarget: function (item, container) {
                     var sectiontype = item.data('sectiontype');
                     if (sectiontype=='CITATION'){
