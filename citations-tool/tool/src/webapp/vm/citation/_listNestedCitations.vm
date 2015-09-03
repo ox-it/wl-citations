@@ -17,9 +17,9 @@
 		#set( $addH1SubsectionButtonId = 'addH1SubsectionButton' + $nestedSection.getLocation() )
 		#set( $buttonsDiv = 'buttonsDiv' + $nestedSection.getLocation() )
 		#set( $num = $num + 1)
-		<li id='$linkId' class='months h1Editor' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
+		<li id='$linkId' class='months h1Editor sectionEditor' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
 			data-sectiontype='$nestedSection.getSectiontype()'>
-			<div id='$editorDivId' class='editor h1Editor'>
+			<div id='$editorDivId' class='editor h1Editor sectionEditor'>
 				$!nestedSection.getValue()
 			</div>
 			<div id="$buttonsDiv" class="sectionButtons">
@@ -44,7 +44,7 @@
 						#if ($h2Section.getSectiontype()=='HEADING2')
 
 						<li id='$linkId' class='h2Section' data-value='$h2Section.getValue()' data-location='$h2Section.getLocation()' data-sectiontype='$h2Section.getSectiontype()' style='background: #cef none repeat scroll 0 0;'>
-							<div id='$editorDivId' class='editor h2Editor'>
+							<div id='$editorDivId' class='editor h2Editor sectionEditor'>
 								$!h2Section.getValue()
 							</div>
 							<div id="$buttonsDiv" class="sectionButtons">
@@ -68,7 +68,7 @@
 										## if it's a h3 section
 										#if ($h3Section.getSectiontype()=='HEADING3')
 										<li id='$linkId' class='h3Section' data-value='$h3Section.getValue()' data-location='$h3Section.getLocation()' data-sectiontype='$h3Section.getSectiontype()'>
-											<div id='$editorDivId' class='editor h3Editor'>
+											<div id='$editorDivId' class='editor h3Editor sectionEditor'>
 												$!h3Section.getValue()
 											</div>
 											<div id="$buttonsDiv" style="padding:5px;">

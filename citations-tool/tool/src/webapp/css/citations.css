@@ -176,7 +176,7 @@ ol li.h1Editor {
 ol li div h3, ol li div h2, ol li div h1 {
 	margin: 0em 0 0;
 }
-ol.serialization li, ol.default li {
+ol.serialization li div.sectionEditor, ol.serialization ol.h4NestedLevel li div  {
 	cursor: pointer;
 }
 .switch-container {
