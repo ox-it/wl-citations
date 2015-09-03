@@ -1060,6 +1060,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 						nestedCitations = nestedCitations + part;
 					}
 				}
+				else {
+					nestedCitations = nestedCitations.replaceAll("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)", "");
+				}
 
 				// remove extra parentheses in json
 				// needed because of the extra ol's for accordion effect
