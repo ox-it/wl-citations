@@ -121,6 +121,10 @@ ol.vertical li {
 	display: block;
 	margin: 5px;
 }
+ol.vertical li div.editor ol li, ol.vertical li div.editor ul li{
+	display:list-item;
+	color: #000;
+}
 ol.vertical li.placeholder {
 	border: medium none;
 	margin: 0;
