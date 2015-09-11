@@ -162,6 +162,47 @@ ol.vertical li.placeholder::before {
 .sectionButtons {
 	margin-left:5px;
 }
+.description {
+	background: #e0ded9 none repeat scroll 0 0;
+	color: #000;
+}
+.descriptionButtons {
+	padding:5px;
+}
+.accordionArrow {
+	cursor: pointer;
+	float:left;
+	padding-top:6px;
+	padding-left:10px;
+}
+.accordionDiv {
+	color:#FFF;
+	float:left;
+	font-size:80%;
+}
+.accordionH1 {
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	padding:10px;
+	padding-left: 2px;
+}
+.logos {
+	width:209px;
+	margin:0 auto;
+}
+.descriptionView {
+	background-color: #E0DED9;
+	padding: 10px;
+}
+ol.serialization li.hasSections:hover{
+	cursor: pointer;
+	background: #2a4667 none repeat scroll 0 0;
+}
+ol.vertical li div.editor ol li, ol.vertical li div.editor ul li{
+	display:list-item;
+	color: #000;
+}
 .h2NestedLevel, .h3NestedLevel, .h4NestedLevel {
 	padding:5px;
 	display: block;
