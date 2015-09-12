@@ -65,6 +65,9 @@ public interface CitationService extends EntityProducer
 	
 	public static final String PROP_TEMPORARY_CITATION_LIST = "citations.temporary_citation_list";
 
+	/** Property for long open introduction (user settable). [String] */
+	public static final String PROP_INTRODUCTION = "CITATIONS:introduction";
+
 	/**
 	 * Checks permissions to add a CitationList.  Returns true if the user 
 	 * has permission to add a resource in the collection identified by the

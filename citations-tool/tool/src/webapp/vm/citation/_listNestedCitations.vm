@@ -5,6 +5,26 @@
 <input type="hidden" id="addSubsectionButtonText" value="$tlang.getString("nested.add.subsection.button")"/>
 <input type="hidden" id="deleteButtonConfirmText" value="$tlang.getString("nested.delete.section.confirm")"/>
 
+#if(!$resourceAdd)
+	##Banner
+	<div class="listTitle sectionButtons" style="background-color:$officialInstBackColour">
+	    <h1 style="color:$officialInstTextColour">$resourceTitle</h1>
+	</div>
+	##Introduction
+	#if ($resourceIntroduction)
+		#set( $introduction = $resourceIntroduction )
+	#else
+		#set( $introduction = 'Reading List Introduction' )
+	#end
+	<div id='sectionInlineEditorDescription' class='editor sectionEditorsectionInlineEditorDescription sectionButtons buttonsDescription'>
+		$introduction
+	</div>
+	<div id="buttonsDescription" class="sectionButtons buttonsDescription">
+		<input type="button" id="toggleDescription" class="active" value='$tlang.getString("nested.start.editing.button")'/>
+		<input type="button" id="removeSectionDescription" class="active" value='$tlang.getString("nested.delete.section.button")'/>
+	</div>
+#end
+
 #set( $num = 1 )
 ## h1 sections
 #if($nestedSectionsSize && $nestedSectionsSize > 0)
