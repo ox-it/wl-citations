@@ -605,6 +605,21 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	protected static final String PROP_USE_RELEASE_DATE = "useReleaseDate";
 	protected static final String PROP_USE_RETRACT_DATE = "useRetractDate";
 
+	/** Property for the course name. [String] */
+	static final String PROP_COURSE_NAME = "DAV:coursename";
+
+	/** Property for the department name. [String] */
+	static final String PROP_DEPARTMENT = "DAV:department";
+
+	/** Property for the core / optional paper. [String] */
+	static final String PROP_CORE_OPTIONAL_PAPER = "DAV:paper";
+
+	/** Property for the academic year. [String] */
+	static final String PROP_ACADEMIC_YEAR = "DAV:academicyear";
+
+	/** Property for the term. [String] */
+	static final String PROP_TERM = "DAV:term";
+
 
 	public static final String CITATION_ACTION = "citation_action";
 	public static final String UPDATE_RESOURCE = "update_resource";
@@ -874,9 +889,6 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		} else if(citation_action != null && citation_action.trim().equals(UPDATE_SECTION)) {
 			Map<String,Object> result = this.updateSection(params, state);
 			jsonMap.putAll(result);
-		} else if(citation_action != null && citation_action.trim().equals(UPDATE_INTRODUCTION)) {
-			Map<String,Object> result = this.updateIntroduction(params, state);
-			jsonMap.putAll(result);
 		} else if(citation_action != null && citation_action.trim().equals(REMOVE_SECTION)) {
 			Map<String,Object> result = this.removeSection(params, state);
 			jsonMap.putAll(result);
@@ -951,6 +963,11 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 				String resourceId = this.getContentService().resolveUuid(resourceUuid);
 				ContentResourceEdit edit = getContentService().editResource(resourceId);
 				this.captureDisplayName(params, state, edit, results);
+				this.captureCourseName(params, state, edit, results);
+				this.captureDepartment(params, state, edit, results);
+				this.captureCoreOptionalPaper(params, state, edit, results);
+				this.captureAcademicYear(params, state, edit, results);
+				this.captureTerm(params, state, edit, results);
 				this.captureDescription(params, state, edit, results);
 				this.captureAccess(params, state, edit, results);
 				this.captureAvailability(params, edit, results);
@@ -1363,6 +1380,66 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			results.put("displayName", displayName);
 		}
 		
+	}
+
+	protected void captureCourseName(ParameterParser params, SessionState state,
+									  ContentResourceEdit edit, Map<String, Object> results) {
+		String courseName = params.getString("courseName");
+		String oldCourseName = edit.getProperties().getProperty(PROP_COURSE_NAME);
+		if(oldCourseName == null || ! oldCourseName.equals(courseName)) {
+			ResourcePropertiesEdit props = edit.getPropertiesEdit();
+			props.removeProperty(PROP_COURSE_NAME);
+			props.addProperty(PROP_COURSE_NAME, courseName);
+			results.put("courseName", courseName);
+		}
+	}
+
+	protected void captureDepartment(ParameterParser params, SessionState state,
+									 ContentResourceEdit edit, Map<String, Object> results) {
+		String department = params.getString("department");
+		String oldDepartment = edit.getProperties().getProperty(PROP_DEPARTMENT);
+		if(oldDepartment == null || ! oldDepartment.equals(department)) {
+			ResourcePropertiesEdit props = edit.getPropertiesEdit();
+			props.removeProperty(PROP_DEPARTMENT);
+			props.addProperty(PROP_DEPARTMENT, department);
+			results.put("department", department);
+		}
+	}
+
+	protected void captureCoreOptionalPaper(ParameterParser params, SessionState state,
+									 ContentResourceEdit edit, Map<String, Object> results) {
+		String paper = params.getString("paper");
+		String oldPaper = edit.getProperties().getProperty(PROP_CORE_OPTIONAL_PAPER);
+		if(oldPaper == null || ! oldPaper.equals(paper)) {
+			ResourcePropertiesEdit props = edit.getPropertiesEdit();
+			props.removeProperty(PROP_CORE_OPTIONAL_PAPER);
+			props.addProperty(PROP_CORE_OPTIONAL_PAPER, paper);
+			results.put("paper", paper);
+		}
+	}
+
+	protected void captureAcademicYear(ParameterParser params, SessionState state,
+									 ContentResourceEdit edit, Map<String, Object> results) {
+		String year = params.getString("year");
+		String oldYear = edit.getProperties().getProperty(PROP_ACADEMIC_YEAR);
+		if(oldYear == null || ! oldYear.equals(year)) {
+			ResourcePropertiesEdit props = edit.getPropertiesEdit();
+			props.removeProperty(PROP_ACADEMIC_YEAR);
+			props.addProperty(PROP_ACADEMIC_YEAR, year);
+			results.put("year", year);
+		}
+	}
+
+	protected void captureTerm(ParameterParser params, SessionState state,
+									 ContentResourceEdit edit, Map<String, Object> results) {
+		String term = params.getString("term");
+		String oldTerm = edit.getProperties().getProperty(PROP_TERM);
+		if(oldTerm == null || ! oldTerm.equals(term)) {
+			ResourcePropertiesEdit props = edit.getPropertiesEdit();
+			props.removeProperty(PROP_TERM);
+			props.addProperty(PROP_TERM, term);
+			results.put("term", term);
+		}
 	}
 
 	/**
@@ -2363,6 +2440,11 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			ResourceProperties props = resource.getProperties();
 			contentProperties = this.getProperties(resource, state);
 			context.put("resourceTitle", props.getProperty(ResourceProperties.PROP_DISPLAY_NAME));
+			context.put("resourceCourseName", props.getProperty(PROP_COURSE_NAME));
+			context.put("resourceDepartment", props.getProperty(PROP_DEPARTMENT));
+			context.put("resourceCoreOptionalPaper", props.getProperty(PROP_CORE_OPTIONAL_PAPER));
+			context.put("resourceAcademicYear", props.getProperty(PROP_ACADEMIC_YEAR));
+			context.put("resourceTerm", props.getProperty(PROP_TERM));
 			context.put("resourceDescription", props.getProperty(ResourceProperties.PROP_DESCRIPTION));
 			context.put("resourceIntroduction", (props.getProperty(CitationService.PROP_INTRODUCTION) == null ? props.getProperty(ResourceProperties.PROP_DESCRIPTION) : props.getProperty(CitationService.PROP_INTRODUCTION)));
 			context.put("officialInstBackColour", scs.getString("official.institution.background.colour"));
