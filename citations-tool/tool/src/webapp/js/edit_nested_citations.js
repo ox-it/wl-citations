@@ -268,7 +268,8 @@
                             var editorText = event.editor.getData();
                             if (editorText=='<h1>Section Title</h1>\n' ||
                                 editorText=='<h2>Section Title</h2>\n' ||
-                                editorText=='<h3>Section Title</h3>\n'){
+                                editorText=='<h3>Section Title</h3>\n' ||
+                                editorText=='<p>Reading List Introduction</p>\n'){
                                 $('#' + event.editor.name).children().first().text(' ');
                             }
                         }
@@ -296,7 +297,12 @@
 
                 // save to db
                 var actionUrl = $('#newCitationListForm').attr('action');
-                $('#citation_action').val('update_section');
+                if (this.id === 'toggleDescription') {
+                    $('#citation_action').val('update_introduction');
+                }
+                else {
+                    $('#citation_action').val('update_section');
+                }
                 var params = $('#newCitationListForm').serializeArray();
                 params.push({name:'addSectionHTML', value:$('#' + this.id.replace(TOGGLE, SECTION_INLINE_EDITOR)).get(0).innerHTML});
                 params.push({name:'sectionType', value:$('#' + this.id.replace(TOGGLE, SECTION_INLINE_EDITOR)).parent().attr('data-sectiontype')});

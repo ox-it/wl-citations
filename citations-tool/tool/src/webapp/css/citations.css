@@ -106,6 +106,15 @@ ol.vertical {
 	margin: 0 0 9px;
 	min-height: 10px;
 }
+.sectionInlineEditorDescription {
+	background-color: #E0DED9;
+	color: #000;
+	padding: 10px;
+}
+.buttonsDescription {
+	background-color: #E0DED9;
+	padding: 10px;
+}
 ol.vertical li {
 	/*background: #eeeeee none repeat scroll 0 0;*/
 	color: #0088cc;

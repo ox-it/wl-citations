@@ -89,16 +89,7 @@ import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.entity.api.ResourcePropertiesEdit;
 import org.sakaiproject.event.api.NotificationService;
 import org.sakaiproject.event.api.SessionState;
-import org.sakaiproject.exception.IdInvalidException;
-import org.sakaiproject.exception.IdLengthException;
-import org.sakaiproject.exception.IdUniquenessException;
-import org.sakaiproject.exception.IdUnusedException;
-import org.sakaiproject.exception.InUseException;
-import org.sakaiproject.exception.InconsistentException;
-import org.sakaiproject.exception.OverQuotaException;
-import org.sakaiproject.exception.PermissionException;
-import org.sakaiproject.exception.ServerOverloadException;
-import org.sakaiproject.exception.TypeException;
+import org.sakaiproject.exception.*;
 import org.sakaiproject.site.api.Group;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
@@ -614,12 +605,14 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	protected static final String PROP_USE_RELEASE_DATE = "useReleaseDate";
 	protected static final String PROP_USE_RETRACT_DATE = "useRetractDate";
 
+
 	public static final String CITATION_ACTION = "citation_action";
 	public static final String UPDATE_RESOURCE = "update_resource";
 	public static final String ADD_SECTION = "add_section";
 	public static final String ADD_SUBSECTION = "add_subsection";
 	public static final String DRAG_AND_DROP = "drag_and_drop";
 	public static final String UPDATE_SECTION = "update_section";
+	public static final String UPDATE_INTRODUCTION = "update_introduction";
 	public static final String REMOVE_SECTION = "remove_section";
 	public static final String CREATE_RESOURCE = "create_resource";
 	public static final String IMPORT_CITATIONS = "import_citations";
@@ -881,6 +874,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		} else if(citation_action != null && citation_action.trim().equals(UPDATE_SECTION)) {
 			Map<String,Object> result = this.updateSection(params, state);
 			jsonMap.putAll(result);
+		} else if(citation_action != null && citation_action.trim().equals(UPDATE_INTRODUCTION)) {
+			Map<String,Object> result = this.updateIntroduction(params, state);
+			jsonMap.putAll(result);
 		} else if(citation_action != null && citation_action.trim().equals(REMOVE_SECTION)) {
 			Map<String,Object> result = this.removeSection(params, state);
 			jsonMap.putAll(result);
@@ -1121,6 +1117,27 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		return results;
 	}
 
+	protected Map<String, Object> updateIntroduction(ParameterParser params, SessionState state) {
+		Map<String, Object> results = new HashMap<String, Object>();
+		String message = null;
+		String resourceUuid = params.getString("resourceUuid");
+		try {
+			String resourceId = this.getContentService().resolveUuid(resourceUuid);
+			String introduction = params.get("addSectionHTML");
+			introduction = getFormattedText().processFormattedText(introduction, new StringBuilder(), true, true);
+			introduction = introduction.replaceAll("'", "&apos;");
+			getContentService().addProperty(resourceId, CitationService.PROP_INTRODUCTION, introduction);
+			message = rb.getString("resource.updated");
+			state.setAttribute(STATE_CITATION_COLLECTION, null);
+		} catch (SakaiException e) {
+			logger.warn("SakaiException in updateIntroduction() for resource UUID: " + resourceUuid, e);
+		}
+		if(message != null && ! message.trim().equals("")) {
+			results.put("message", message);
+		}
+		return results;
+	}
+
 	protected Map<String, Object> removeSection(ParameterParser params, SessionState state) {
 		String message;
 		Map<String, Object> results = new HashMap<String, Object>();
@@ -1332,7 +1349,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		
 	}
 
-	protected void captureDisplayName(ParameterParser params, SessionState state, 
+	protected void captureDisplayName(ParameterParser params, SessionState state,
 			ContentResourceEdit edit, Map<String, Object> results) {
 		String displayName = params.getString("displayName");
 		if(displayName == null || displayName.trim().equals("")) {
@@ -2347,6 +2364,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			contentProperties = this.getProperties(resource, state);
 			context.put("resourceTitle", props.getProperty(ResourceProperties.PROP_DISPLAY_NAME));
 			context.put("resourceDescription", props.getProperty(ResourceProperties.PROP_DESCRIPTION));
+			context.put("resourceIntroduction", (props.getProperty(CitationService.PROP_INTRODUCTION) == null ? props.getProperty(ResourceProperties.PROP_DESCRIPTION) : props.getProperty(CitationService.PROP_INTRODUCTION)));
+			context.put("officialInstBackColour", scs.getString("official.institution.background.colour"));
+			context.put("officialInstTextColour", scs.getString("official.institution.text.colour"));
 			//resourceUuid = this.getContentService().getUuid(resourceId);
 			context.put("resourceUuid", resourceUuid );
 			context.put("contentCollectionId", resource.getContainingCollection().getId());
