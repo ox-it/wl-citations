@@ -12,6 +12,8 @@
 
         $('.googleBookCover').each(function(index, element) {
 
+            var isbn = $(element).attr('data-isbn');
+            if (isbn!=''){
             var googleBooksURL = GOOGLE_BOOKS_SEARCH_API + $(element).attr('data-isbn');
 
             $.getJSON(googleBooksURL, function(data){
@@ -24,6 +26,7 @@
                     }
                 }
             });
+            }
         });
     };
 }(jQuery));
