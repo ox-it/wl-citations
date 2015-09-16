@@ -519,14 +519,7 @@ public class CitationListAccessServlet implements HttpAccess
 			}
 			// TODO This doesn't need any Inline HTTP Transport.
 			out.println("\t\t\t\t<span class=\"Z3988\" title=\""+ citation.getOpenurlParameters().substring(1).replace("&", "&amp;")+ "\"></span>");
-
-			if (citation.getSchema().getIdentifier().equals("book") || citation.getSchema().getIdentifier().equals("chapter")){
-				out.println("\t\t\t\t<div style=\"padding: 5px;\"><a href=\"" + "http://www.bbc.co.uk" + "\" target=\"_blank\">Buy It</a></div>");
-				String exportUrlAll = collection.getUrl(org.sakaiproject.citation.api.CitationService.REF_TYPE_EXPORT_RIS_SEL)
-						+ "?citationCollectionId=" + citationCollectionId + "&resourceDisplayName=" + title + "&contentCollectionId=" + contentCollectionId
-						+ "&citationId="+  citation.getId();
-				out.println("<div style=\"padding: 5px;\"><a style='' href='" +  exportUrlAll + "' id='exportList'>Export list to Ref Man</a></div></div></div>");
-			}
+			out.println("\t\t\t</div></div>");
 
 
 			out.println("\t\t\t</div></div>");
