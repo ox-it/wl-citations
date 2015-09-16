@@ -540,21 +540,25 @@ public class DbCitationService extends BaseCitationService
 			CitationCollectionOrder currentH1Node = null;
 			CitationCollectionOrder currentH2Node = null;
 			CitationCollectionOrder currentH3Node = null;
+			CitationCollectionOrder lastNode = null;
 			for (CitationCollectionOrder citationCollectionOrder : citationCollectionOrders) {
 				if (citationCollectionOrder.getSectiontype().equals(CitationCollectionOrder.SectionType.HEADING1)){
 					root.addChild(citationCollectionOrder);
 					currentH1Node = citationCollectionOrder;
 					currentH2Node = null;
 					currentH3Node = null;
+					lastNode = currentH1Node;
 				}
 				else if (citationCollectionOrder.getSectiontype().equals(CitationCollectionOrder.SectionType.HEADING2)){
 					currentH1Node.addChild(citationCollectionOrder);
 					currentH2Node = citationCollectionOrder;
 					currentH3Node = null;
+					lastNode = currentH2Node;
 				}
 				else if (citationCollectionOrder.getSectiontype().equals(CitationCollectionOrder.SectionType.HEADING3)){
 					currentH2Node.addChild(citationCollectionOrder);
 					currentH3Node = citationCollectionOrder;
+					lastNode = currentH3Node;
 				}
 				else if (citationCollectionOrder.getSectiontype().equals(CitationCollectionOrder.SectionType.CITATION)){
 					String title = (String) getCitation(citationCollectionOrder.getCitationid()).getCitationProperty(Schema.TITLE);
@@ -568,6 +572,9 @@ public class DbCitationService extends BaseCitationService
 					else if (currentH1Node!=null){
 						currentH1Node.addChild(citationCollectionOrder);
 					}
+				}
+				else if (citationCollectionOrder.getSectiontype().equals(CitationCollectionOrder.SectionType.DESCRIPTION)){
+					lastNode.addChild(citationCollectionOrder);
 				}
 			}
 			return root;

@@ -4,11 +4,13 @@
 
         var isEditingEnabled,
             toggle = $("input[id^='toggle']"),
+            addDescriptionButtons = $("input[id^='addDescription']"),
             removeButton = $("input[id^='removeSection']"),
             addH1SubsectionButton = $("input[id^='addH1SubsectionButton']"),
             addH2SubsectionButton = $("input[id^='addH2SubsectionButton']"),
             SECTION_INLINE_EDITOR = 'sectionInlineEditor',
-            TOGGLE = 'toggle';
+            TOGGLE = 'toggle',
+            DESCRIPTION = 'descriptionToggle';
 
         CKEDITOR.disableAutoInline = true; // don't show ckeditor on page load
 
@@ -26,6 +28,7 @@
             var toggleId = 'toggle' + locationId;
             var removeDivId = 'removeSection' + locationId;
             var addSubsectionButtonId = 'addH1SubsectionButton' + locationId;
+            var addDescriptionH1ButtonId = 'addDescriptionH1Button' + locationId;
             var sectionTitle = $('#sectionTitleText').val();
             var startEditingText = $('#startEditingText').val();
             var deleteSectionText = $('#deleteSectionText').val();
@@ -34,8 +37,11 @@
                 + divId + "' contenteditable='true' class='editor h1Editor sectionEditor'>" +
                 "<h1>" + sectionTitle + "</h1></div>" +
                 " <div id='buttonsDiv" + locationId + "' class='sectionButtons'><input type='button' id='" + toggleId + "' class='active' value='" + startEditingText + "'/>" +
-                "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/>" +
-                "</div><ol id='addSubsection" + locationId + "' class='h2NestedLevel' style='display: block;'></ol>" +
+                "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/></div>" +
+                "<div id='h1AddDescriptionDiv" + locationId + "'><div id='addDescriptionH1Editor" + locationId + "' class='editor'></div><div class='h1Editor' data-citation-action='add_subsection' " +
+                "data-sectiontype='DESCRIPTION' class='h1Editor' style='margin-bottom:0px; padding-bottom:0px; padding-top:10px;'>" +
+                "<input type='button' value='Add Description' style='padding-right:3px;' class='active' id='"+ addDescriptionH1ButtonId + "'></div></div>" +
+                "<ol id='addSubsection" + locationId + "' class='h2NestedLevel' style='display: block;'></ol>" +
                 "<div style='padding:5px;'><input type='button' id='" + addSubsectionButtonId + "' class='active' value='" + addSubsectionButtonText + "'/></div></li>";
             $( "#addSectionDiv" ).before(html);
 
@@ -51,6 +57,7 @@
             onClick( $('#' + toggleId).get(0), toggleEditor );
             onClick( $('#' + removeDivId).get(0), removeSection );
             onClick( $('#' + addSubsectionButtonId).get(0), addSubsection );
+            onClick( $('#' + addDescriptionH1ButtonId).get(0), addSubsection );
 
             // refresh drag and drop list
             $("ol.serialization").sortable("destroy");
@@ -64,11 +71,17 @@
 
             // is h1 or h2
             var isH1 = $(this).attr('id').indexOf('addH1SubsectionButton')!=-1;
+            var sectionType;
             if (isH1){
                 sectionType = 'HEADING1';
             }
             else {
                 sectionType = 'HEADING2';
+            }
+
+            var isAddDescriptionButton = $(this).attr('id').indexOf('addDescription')!=-1;
+            if(isAddDescriptionButton){
+                sectionType = 'DESCRIPTION';
             }
 
             // determine location on page
@@ -111,6 +124,12 @@
                 // new location
                 locationId = parseInt(locationId)+1;
             }
+            else if (sectionType === 'DESCRIPTION') {
+                h1 = $(this).parent().parent().parent();
+
+                // new location
+                locationId = parseInt(h1.data('location'))+1;
+            }
 
 
             // create html
@@ -118,32 +137,76 @@
             var toggleId = 'toggle' + locationId;
             var removeDivId = 'removeSection' + locationId;
             var sectionTitle = $('#sectionTitleText').val();
+            var sectionDescription = $('#sectionDescriptionText').val();
+            var addDescriptionH2ButtonId = 'addDescriptionH2Button' + locationId;
+            var addDescriptionH3ButtonId = 'addDescriptionH3Button' + locationId;
             var startEditingText = $('#startEditingText').val();
             var addSubsectionButtonId = 'addH2SubsectionButton' + locationId;
             var addSubsectionButtonText = $('#addSubsectionButtonText').val();
             var deleteSectionText = $('#deleteSectionText').val();
-            var sectionType;
             var html;
             if (sectionType === 'HEADING1'){
                 html =
-                    "" +
                     "<li id='link" + locationId + "' data-value='<h2>" + sectionTitle + "</h2>' class='h2Section' data-location='" + locationId + "' data-sectiontype='HEADING2'>" +
                     "<div id='" + divId + "' class='editor h2Editor sectionEditor' contenteditable='true'>" + "<h2>" + sectionTitle + "</h2></div>" +
                     "<div id='buttonsDiv" + locationId + "' style='margin-left: 5px;'><input type='button' id='" + toggleId + "' class='active' value='" + startEditingText + "'/>" +
-                    "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/>" +
-                    "</div><ol id='addSubsection" + locationId + "' class='h3NestedLevel' style='padding: 5px; display: block;'></ol><div style='padding:5px;'><input type='button' id='" + addSubsectionButtonId + "' class='active' value='" + addSubsectionButtonText + "'/></div></li>";
+                    "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/></div>" +
+                    "<div id='h2AddDescriptionDiv" + locationId + "'><div id='addDescriptionH2Editor" + locationId + "' class='editor'></div><div class='h2Editor' data-citation-action='add_subsection' " +
+                    "data-sectiontype='DESCRIPTION' class='h2Editor' style='margin-bottom:0px; padding-bottom:0px; padding-top:10px;'>" +
+                    "<input type='button' value='Add Description' style='padding-right:3px;' class='active' id='"+ addDescriptionH2ButtonId + "'></div></div>" +
+                    "<ol id='addSubsection" + locationId + "' class='h3NestedLevel' style='padding: 5px; display: block;'></ol>" +
+                    "<div style='padding:5px;'><input type='button' id='" + addSubsectionButtonId + "' class='active' value='" + addSubsectionButtonText + "'/></div></li>";
                 $(this).parent().prevAll('ol.h2NestedLevel').show();
                 $(this).parent().prevAll('ol.h2NestedLevel').append(html);
             }
-            if (sectionType === 'HEADING2'){
+            else if (sectionType === 'HEADING2'){
                 html =
                     "<li id='link" + locationId + "' data-value='<h3>" + sectionTitle + "</h3>' class='h3Section' data-location='" + locationId + "' data-sectiontype='HEADING3'>" +
                     "<div id='" + divId + "' class='editor h3Editor sectionEditor' contenteditable='true'>" + "<h3>" + sectionTitle + "</h3></div>" +
                     "<div id='buttonsDiv" + locationId + "' style='padding:5px;'><input type='button' id='" + toggleId + "' class='active' value='" + startEditingText + "'/>" +
-                    "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/>" +
-                    "</div><ol class='h4NestedLevel' style='padding: 5px; display: block;'></ol></li>";
+                    "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/></div>" +
+                    "<div id='h3AddDescriptionDiv" + locationId + "'><div id='addDescriptionH3Editor" + locationId + "' class='editor'></div><div class='h3Editor' data-citation-action='add_subsection' " +
+                    "data-sectiontype='DESCRIPTION' class='h3Editor' style='margin-bottom:0px; padding-bottom:0px; padding-top:10px;'>" +
+                    "<input type='button' value='Add Description' style='padding-right:3px;' class='active' id='"+ addDescriptionH3ButtonId + "'></div></div>" +
+                    "<ol class='h4NestedLevel' style='padding: 5px; display: block;'></ol>" +
+                    "</li>";
                 $(this).parent().prevAll('ol.h3NestedLevel').show();
                 $(this).parent().prevAll('ol.h3NestedLevel').append(html);
+            }
+            else if (sectionType === 'DESCRIPTION'){
+
+                var li_class;
+                if ($(this).attr('id').indexOf('addDescriptionH1Button')!=-1){
+                    li_class = 'h2Section';
+                }
+                else if ($(this).attr('id').indexOf('addDescriptionH2Button')!=-1 ||
+                    $(this).attr('id').indexOf('addDescriptionH3Button')!=-1){
+                    li_class = 'h3Section';
+                }
+
+                html =
+                    "<li id='link" + locationId + "' data-value='<p>" + sectionDescription + "</p>' class='" + li_class + " description' data-location='" + locationId + "' data-sectiontype='DESCRIPTION'>" +
+                    "<div id='" + divId + "' class='editor h2Editor description' contenteditable='true'>" + "<p>" + sectionDescription + "</p></div>" +
+                    "<div id='buttonsDiv" + locationId + "' class='descriptionButtons'><input type='button' id='" + toggleId + "' class='active' value='" + startEditingText + "'/>" +
+                    "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/>" +
+                    "</div><ol class='h4NestedLevel' style='padding: 5px; display: block;'></ol></li>";
+
+                var liAbove = $(this).parent().parent();
+                if ($(this).attr('id').indexOf('addDescriptionH1Button')!=-1){
+                    liAbove.nextAll('ol.h2NestedLevel').show();
+                    liAbove.nextAll('ol.h2NestedLevel').prepend(html);
+                    liAbove.hide();
+                }
+                else if ($(this).attr('id').indexOf('addDescriptionH2Button')!=-1){
+                    liAbove.nextAll('ol.h3NestedLevel').show();
+                    liAbove.nextAll('ol.h3NestedLevel').prepend(html);
+                    liAbove.hide();
+                }
+                else if ($(this).attr('id').indexOf('addDescriptionH3Button')!=-1){
+                    liAbove.nextAll('ol.h4NestedLevel').show();
+                    liAbove.nextAll('ol.h4NestedLevel').prepend(html);
+                    liAbove.hide();
+                }
             }
 
 
@@ -152,6 +215,10 @@
             onClick( $('#' + removeDivId).get(0), removeSection );
             if (sectionType === 'HEADING1'){
                 onClick( $('#' + addSubsectionButtonId).get(0), addSubsection );
+                onClick( $('#' + addDescriptionH2ButtonId).get(0), addSubsection );
+            }
+            else if (sectionType === 'HEADING2'){
+                onClick( $('#' + addDescriptionH3ButtonId).get(0), addSubsection );
             }
 
             refreshIdsOnPage();
@@ -169,6 +236,10 @@
                 params.push({name:'addSectionHTML', value:'<h3>' + sectionTitle + '</h3>'});
                 params.push({name:'sectionType', value:'HEADING3'});
             }
+            else if (sectionType === 'DESCRIPTION'){
+                params.push({name:'addSectionHTML', value:'<p>' + 'Section Description' + '</p>'});
+                params.push({name:'sectionType', value:'DESCRIPTION'});
+            }
             params.push({name:'locationId', value:locationId});
             ajaxPost(actionUrl, params, true);
 
@@ -177,7 +248,7 @@
 
             addAccordionFunctionality(false);
 
-            if (sectionType === 'HEADING1'){
+            if (sectionType === 'HEADING1' || sectionType === 'DESCRIPTION'){
                 increasePageHeight(110);
             }
             else if (sectionType === 'HEADING2'){
@@ -256,30 +327,69 @@
             });
         }
 
-        function enableEditing(sectionInlineEditor) {
+        function enableEditing(sectionInlineEditor, showBasicEditor) {
             if ( !CKEDITOR.instances[sectionInlineEditor] ) {
-                CKEDITOR.inline( sectionInlineEditor, {
-                    startupFocus: true,
-                    forcePasteAsPlainText : true,
-                    on:
-                    {
-                        instanceReady:function(event)
+                if (showBasicEditor){
+
+                    CKEDITOR.inline( sectionInlineEditor, {
+                        startupFocus: true,
+                        forcePasteAsPlainText : true,
+                        on:
                         {
-                            var editorText = event.editor.getData();
-                            if (editorText=='<h1>Section Title</h1>\n' ||
-                                editorText=='<h2>Section Title</h2>\n' ||
-                                editorText=='<h3>Section Title</h3>\n' ||
-                                editorText=='<p>Reading List Introduction</p>\n'){
-                                $('#' + event.editor.name).children().first().text(' ');
+                            instanceReady:function(event)
+                            {
+                                var editorText = event.editor.getData();
+                                if (editorText=='<h1>Section Title</h1>\n' ||
+                                    editorText=='<h2>Section Title</h2>\n' ||
+                                    editorText=='<h3>Section Title</h3>\n' ||
+                                    editorText=='<p>Reading List Introduction</p>\n' ||
+                                    editorText=='<p>Section Description</p>\n'){
+                                    $('#' + event.editor.name).children().first().text(' ');
+                                }
                             }
-                        }
-                    },
-                    toolbar :
-                        [
-                            { name: 'basicstyles', items : [ 'Bold','Italic', 'Underline', 'Strike' ] },
-                            { name: 'styles', items : [ 'Format' ] }
-                        ]
-                } );
+                        },
+                        toolbar :
+                            [
+                                { name: 'basicstyles', items : [ 'Bold','Italic', 'Underline', 'Strike' ] },
+                                { name: 'styles', items : [ 'Format' ] }
+                            ]
+                    } );
+
+                }
+                else {
+
+                    CKEDITOR.inline( sectionInlineEditor, {
+                        startupFocus: true,
+                        forcePasteAsPlainText : true,
+                        on:
+                        {
+                            instanceReady:function(event)
+                            {
+                                var editorText = event.editor.getData();
+                                if (editorText=='<h1>Section Title</h1>\n' ||
+                                    editorText=='<h2>Section Title</h2>\n' ||
+                                    editorText=='<h3>Section Title</h3>\n' ||
+                                    editorText=='<p>Reading List Introduction</p>\n' ||
+                                    editorText=='<p>Section Description</p>\n'){
+                                    $('#' + event.editor.name).children().first().text(' ');
+                                }
+                            }
+                        },
+                        toolbar :
+                            [
+                                { name: 'editing', items : [ 'Find','Replace' ] },
+                                { name: 'basicstyles', items : [ 'Bold','Italic', 'Underline', 'Strike', 'Subscript','Superscript' ] },
+                                { name: 'paragraph', items : [ 'NumberedList','BulletedList','BidiLtr','BidiRtl' ] },
+                                { name: 'links', items : [ 'Link' ] },
+                                { name: 'styles', items : [ 'Format' ] },
+                                { name: 'colors', items : [ 'TextColor','BGColor' ] },
+                                { name: 'tools', items : [ 'Maximize'] }
+                            ]
+                    } );
+
+
+                }
+
             }
         }
 
@@ -315,7 +425,7 @@
             }
             else { // clicked 'Edit'
                 $('#' + this.id.replace(TOGGLE, SECTION_INLINE_EDITOR)).attr( 'contenteditable', true );
-                enableEditing(this.id.replace(TOGGLE, SECTION_INLINE_EDITOR));
+                enableEditing(this.id.replace(TOGGLE, SECTION_INLINE_EDITOR), $(this).parent().parent().data('sectiontype')!='DESCRIPTION');
                 this.value = $('#finishEditingText').val();
                 isEditingEnabled = true;
 
@@ -327,6 +437,13 @@
         function removeSection() {
             var confirmMessage = $('#deleteButtonConfirmText').val();
             if(confirm(confirmMessage)) {
+
+                var section = $(this).parent().parent();
+                var addButton;
+                if (section != null && section.data('sectiontype')=='DESCRIPTION'){
+                    addButton = $(this).parent().parent().parent().prev();
+                }
+
                 var actionUrl = $('#newCitationListForm').attr('action');
                 $('#citation_action').val('remove_section');
                 var params = $('#newCitationListForm').serializeArray();
@@ -334,6 +451,8 @@
                 ajaxPost(actionUrl, params, false);
 
                 refreshIdsOnPage();
+
+                addButton.show();
             }
         }
 
@@ -388,6 +507,9 @@
                             return false;
                         }
                     }
+                    else if (sectiontype=='DESCRIPTION'){
+                        return false;
+                    }
 
                     return true;
                 },
@@ -420,7 +542,8 @@
                     var params = $('#newCitationListForm').serializeArray();
                     params.push({name:'sectionType', value:item.data('sectiontype')});
                     var data = group.sortable("serialize").get()[0];
-                    var jsonString = JSON.stringify(data, null, ' ');
+                    var jsonString = JSON.stringify(data, null, ' ')
+                    jsonString  = jsonString.replace(/\\\"/g,'&quot;');
                     params.push({name:'data', value:jsonString});
 
                     ajaxPost(actionUrl, params, true);
@@ -480,6 +603,9 @@
         toggle.each(function( ) {
             onClick( this, toggleEditor );
         });
+        addDescriptionButtons.each(function( ) {
+            onClick( this, addSubsection);
+        });
         removeButton.each(function( ) {
             onClick( this, removeSection);
         });
@@ -494,6 +620,13 @@
 
         $('.unnestedList').each(function( ) {
             $(this).show();
+        });
+
+        // hide Add Description button if there's description for the section
+        $('ol.serialization li[data-sectiontype="DESCRIPTION"]').each(function() {
+            $(this).parent().prevAll('div[id^="h1AddDescriptionDiv"]').hide();// dont change these to nextall.. instead change the js if it isnt working there
+            $(this).parent().prevAll('div[id^="h2AddDescriptionDiv"]').hide();
+            $(this).parent().prevAll('div[id^="h3AddDescriptionDiv"]').hide();
         });
 
         if ( !$.browser.mozilla ) {

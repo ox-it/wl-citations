@@ -1077,6 +1077,8 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 					nestedCitations = nestedCitations.replaceAll("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)", "");
 				}
 
+				nestedCitations = nestedCitations.replaceAll("\'", "&apos;"); // escape single quotes so they can be used in attributes
+
 				// remove extra parentheses in json
 				// needed because of the extra ol's for accordion effect
 				nestedCitations = nestedCitations
@@ -1088,7 +1090,8 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 						.replaceAll(",\\{\"children\":\\[\\[", ",{\"children\":[")
 						.replaceAll("\\{\"children\":\\[\\[", "{\"children\":[")
 						.replaceAll("\\}\\],\\[\\{\"section", "},{\"section")
-						.replaceAll("\\}\\]\\]", "}]").replaceAll("\\}\\],\\[\\]\\]", "}]");
+						.replaceAll("\\}\\]\\]", "}]")
+						.replaceAll("\\}\\],\\[\\]\\]", "}]");
 
 				citationCollectionOrders = mapper.readValue(nestedCitations,
 						TypeFactory.collectionType(List.class, CitationCollectionOrder.class));
@@ -1114,9 +1117,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			String addSectionHTML = params.getString("addSectionHTML");
 			int locationId = params.getInt("locationId");
 			String cleanAddSectionHTML = getFormattedText().processFormattedText(addSectionHTML, new StringBuilder(), true, true);
-
-			// Replace single and double quotes with their HTML entities so that they can be used as attribute values
-			cleanAddSectionHTML = cleanAddSectionHTML.replaceAll("'", "&#39;").replaceAll("\"", "&#34;");
+			cleanAddSectionHTML = cleanAddSectionHTML.replaceAll("'", "&apos;"); // escape single quotes so they can be used in attributes
 
 			CitationCollectionOrder.SectionType sectionType = CitationCollectionOrder.SectionType.valueOf(params.getString("sectionType"));
 			CitationCollection collection = getCitationCollection(state, false);
