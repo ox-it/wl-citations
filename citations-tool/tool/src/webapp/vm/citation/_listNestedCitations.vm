@@ -24,7 +24,6 @@
 	</div>
 	<div id="buttonsDescription" class="sectionButtons buttonsDescription">
 		<input type="button" id="toggleDescription" class="active" value='$tlang.getString("nested.start.editing.button")'/>
-		<input type="button" id="removeSectionDescription" class="active" value='$tlang.getString("nested.delete.section.button")'/>
 	</div>
 #end
 
@@ -41,6 +40,10 @@
 		#set( $buttonsDiv = 'buttonsDiv' + $nestedSection.getLocation() )
 		#set( $num = $num + 1)
 		<li id='$linkId' class='months h1Editor sectionEditor' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
+		#if ($nestedSection.getChildren().size() > 0)
+			#set( $hasSectionsClass = ' hasSections')
+		#end
+		<li id='$linkId' class='months h1Editor $hasSectionsClass' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
 			data-sectiontype='$nestedSection.getSectiontype()'>
 			<div id='$editorDivId' class='editor h1Editor sectionEditor'>
 				$!nestedSection.getValue()
