@@ -40,9 +40,9 @@
 		#set( $addH1SubsectionButtonId = 'addH1SubsectionButton' + $nestedSection.getLocation() )
 		#set( $buttonsDiv = 'buttonsDiv' + $nestedSection.getLocation() )
 		#set( $num = $num + 1)
-		<li id='$linkId' class='months h1Editor' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
+		<li id='$linkId' class='months h1Editor sectionEditor' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
 			data-sectiontype='$nestedSection.getSectiontype()'>
-			<div id='$editorDivId' class='editor h1Editor'>
+			<div id='$editorDivId' class='editor h1Editor sectionEditor'>
 				$!nestedSection.getValue()
 			</div>
 			<div id="$buttonsDiv" class="sectionButtons">
@@ -58,9 +58,9 @@
                 </div>
             </div>
 
-			## h2 sections
+			## h2 sections and citations
 			#if($nestedSection.getChildren().size() > 0)
-				<ol id="$addSubsectionId" class="h2NestedLevel">
+				<ol id="$addSubsectionId" class="h2NestedLevel holdCitations">
 					#foreach($h2Section in $nestedSection.getChildren())
 						#set( $num = $num + 1)
 						#set( $editorDivId = 'sectionInlineEditor' + $h2Section.getLocation() )
@@ -77,8 +77,9 @@
 							#set( $descriptionStyle = 'descriptionButtons' )
 						#end
 
+
 						<li id='$linkId' class='h2Section $class' data-value='$h2Section.getValue()' data-location='$h2Section.getLocation()' data-sectiontype='$h2Section.getSectiontype()'>
-							<div id='$editorDivId' class='editor h2Editor $class' >
+							<div id='$editorDivId' class='editor h2Editor sectionEditor $class' >
 								$!h2Section.getValue()
 							</div>
 							<div id="$buttonsDiv" class="sectionButtons $descriptionStyle" >
@@ -95,9 +96,9 @@
                                 </div>
 							#end
 
-							## h3 sections
+							## h3 sections and citations
 							#if($h2Section.getChildren().size() > 0)
-								<ol id="$addSubsectionId" class="h3NestedLevel">
+								<ol id="$addSubsectionId" class="h3NestedLevel holdCitations">
 									#foreach($h3Section in $h2Section.getChildren())
 										#set( $num = $num + 1)
 										#set( $editorDivId = 'sectionInlineEditor' + $h3Section.getLocation() )
@@ -113,8 +114,14 @@
 											#set( $class = 'description' )
 											#set( $descriptionStyle = 'descriptionButtons' )
 										#end
+
+
+									    ## if it's a h3 section
+										#if ($h3Section.getSectiontype()=='HEADING3')
+
+
 										<li id='$linkId' class='h3Section $class' data-value='$h3Section.getValue()' data-location='$h3Section.getLocation()' data-sectiontype='$h3Section.getSectiontype()'>
-											<div id='$editorDivId' class='editor h3Editor $class'>
+											<div id='$editorDivId' class='editor h3Editor sectionEditor $class'>
 												$!h3Section.getValue()
 											</div>
 											<div id="$buttonsDiv" class="$descriptionStyle">
@@ -133,7 +140,7 @@
 
 											## nested citations
 											#if($h3Section.getChildren().size() > 0)
-												<ol id="$addSubsectionId" class="h4NestedLevel">
+												<ol id="$addSubsectionId" class="h4NestedLevel holdCitations">
 													#foreach($nestedCitation in $h3Section.getChildren())
 														#set( $num = $num + 1)
 														#set( $h3HasDescription = ($nestedCitation.getSectiontype() == 'DESCRIPTION') )
@@ -167,14 +174,24 @@
 													#end
 												</ol>
 											#else
-												<ol class="h4NestedLevel"></ol>
+												<ol class="h4NestedLevel holdCitations"></ol>
 											#end ##  end of nested citations
 										</li>
+										## if it's a h2 citation
+										#elseif ($h3Section.getSectiontype()=='CITATION')
+										## nested citations
+                                            <ol id="$addSubsectionId" class="h4NestedLevel holdCitations">
+												#set( $citation = $allCitationCollection.getCitation($h3Section.getCitationid() ))
+                                                <li id='$linkId' data-citationId='$h3Section.getCitationid()' data-location='$num' data-sectiontype='CITATION'>
+													#parse( "vm/citation/_nestableCitation.vm" )
+                                                </li>
+                                            </ol>
+										#end
 									#end
 								</ol>
 							#else
 								#if ($h2Section.getSectiontype()!='DESCRIPTION')
-                                    <ol class="h3NestedLevel"></ol>
+                                    <ol class="h3NestedLevel holdCitations"></ol>
 								#end
 							#end 	## end of h3 sections
 
@@ -188,7 +205,7 @@
 					#end
 				</ol>
 			#else
-				<ol class="h2NestedLevel"></ol>
+				<ol class="h2NestedLevel holdCitations"></ol>
 			#end 	## end of h2 sections
 			## h2 section Add Section button
 			<div style="padding:5px;"><input type="button" id="$addH1SubsectionButtonId" class="active" value='$tlang.getString("nested.add.subsection.button")'/></div>
