@@ -120,7 +120,7 @@
 
 
 									    ## if it's a h3 section
-										#if ($h3Section.getSectiontype()=='HEADING3')
+										#if ($h3Section.getSectiontype()=='HEADING3' || $h3Section.getSectiontype()=='DESCRIPTION')
 
 
 										<li id='$linkId' class='h3Section $class' data-value='$h3Section.getValue()' data-location='$h3Section.getLocation()' data-sectiontype='$h3Section.getSectiontype()'>
