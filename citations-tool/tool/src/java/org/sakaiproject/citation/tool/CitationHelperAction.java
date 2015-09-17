@@ -886,6 +886,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 		} else if(citation_action != null && citation_action.trim().equals(DRAG_AND_DROP)) {
 			Map<String,Object> result = this.dragAndDrop(params, state);
 			jsonMap.putAll(result);
+		} else if(citation_action != null && citation_action.trim().equals(UPDATE_INTRODUCTION)) {
+			Map<String,Object> result = this.updateIntroduction(params, state);
+			jsonMap.putAll(result);
 		} else if(citation_action != null && citation_action.trim().equals(UPDATE_SECTION)) {
 			Map<String,Object> result = this.updateSection(params, state);
 			jsonMap.putAll(result);
