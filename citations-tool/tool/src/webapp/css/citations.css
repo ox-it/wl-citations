@@ -201,7 +201,6 @@ ol.vertical li.placeholder::before {
 }
 ol.serialization li.hasSections:hover{
 	cursor: pointer;
-	background: #2a4667 none repeat scroll 0 0;
 }
 ol.vertical li div.editor ol li, ol.vertical li div.editor ul li{
 	display:list-item;
