@@ -74,6 +74,17 @@ html { overflow-y: hidden; }
 				</label>
 				<input type="text" size="40" id="displayName" name="displayName" value="$xilator.escapeHtml("$!resourceTitle")" />
 			</p>
+			<p class="shorttext">
+				<label for="managingLibrary">
+					$tlang.getString("resource.manag.lib")
+				</label>
+				<select name="managingLibrary" id="managingLibrary" style="width:420px">
+					<option value="-1">Please select</option>
+					#foreach($managingLib in $managingLibraries)
+						<option value="$managingLib.id">$managingLib.name</option>
+					#end
+				</select> (recommended - set this field to help students see their most relevant availability)
+			</p>
             <p class="shorttext">
                 <label for="displayName">
 	                $tlang.getString("resource.course.name")
@@ -256,6 +267,11 @@ html { overflow-y: hidden; }
 </script>
 <script type="text/javascript">
     addSectionHeightsToPageHeight($num);
+</script>
+<script type="text/javascript">
+    #if ($!resourceManagingLibrary)
+        selectManagingLibrary('$resourceManagingLibrary');
+    #end
 </script>
 <script type="text/javascript">
 	focus_path = [ "displayName" ];
