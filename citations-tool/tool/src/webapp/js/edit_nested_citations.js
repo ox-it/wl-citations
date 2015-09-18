@@ -41,7 +41,7 @@
                 "<div id='h1AddDescriptionDiv" + locationId + "'><div id='addDescriptionH1Editor" + locationId + "' class='editor'></div><div class='h1Editor' data-citation-action='add_subsection' " +
                 "data-sectiontype='DESCRIPTION' class='h1Editor' style='margin-bottom:0px; padding-bottom:0px; padding-top:10px;'>" +
                 "<input type='button' value='Add Description' style='padding-right:3px;' class='active' id='"+ addDescriptionH1ButtonId + "'></div></div>" +
-                "<ol id='addSubsection" + locationId + "' class='h2NestedLevel' style='display: block;'></ol>" +
+                "<ol id='addSubsection" + locationId + "' class='h2NestedLevel holdCitations' style='display: block;'></ol>" +
                 "<div style='padding:5px;'><input type='button' id='" + addSubsectionButtonId + "' class='active' value='" + addSubsectionButtonText + "'/></div></li>";
             $( "#addSectionDiv" ).before(html);
 
@@ -154,7 +154,7 @@
                     "<div id='h2AddDescriptionDiv" + locationId + "'><div id='addDescriptionH2Editor" + locationId + "' class='editor'></div><div class='h2Editor' data-citation-action='add_subsection' " +
                     "data-sectiontype='DESCRIPTION' class='h2Editor' style='margin-bottom:0px; padding-bottom:0px; padding-top:10px;'>" +
                     "<input type='button' value='Add Description' style='padding-right:3px;' class='active' id='"+ addDescriptionH2ButtonId + "'></div></div>" +
-                    "<ol id='addSubsection" + locationId + "' class='h3NestedLevel' style='padding: 5px; display: block;'></ol>" +
+                    "<ol id='addSubsection" + locationId + "' class='h3NestedLevel holdCitations' style='padding: 5px; display: block;'></ol>" +
                     "<div style='padding:5px;'><input type='button' id='" + addSubsectionButtonId + "' class='active' value='" + addSubsectionButtonText + "'/></div></li>";
                 $(this).parent().prevAll('ol.h2NestedLevel').show();
                 $(this).parent().prevAll('ol.h2NestedLevel').append(html);
@@ -168,7 +168,7 @@
                     "<div id='h3AddDescriptionDiv" + locationId + "'><div id='addDescriptionH3Editor" + locationId + "' class='editor'></div><div class='h3Editor' data-citation-action='add_subsection' " +
                     "data-sectiontype='DESCRIPTION' class='h3Editor' style='margin-bottom:0px; padding-bottom:0px; padding-top:10px;'>" +
                     "<input type='button' value='Add Description' style='padding-right:3px;' class='active' id='"+ addDescriptionH3ButtonId + "'></div></div>" +
-                    "<ol class='h4NestedLevel' style='padding: 5px; display: block;'></ol>" +
+                    "<ol class='h4NestedLevel holdCitations' style='padding: 5px; display: block;'></ol>" +
                     "</li>";
                 $(this).parent().prevAll('ol.h3NestedLevel').show();
                 $(this).parent().prevAll('ol.h3NestedLevel').append(html);
@@ -189,7 +189,7 @@
                     "<div id='" + divId + "' class='editor h2Editor description' contenteditable='true'>" + "<p>" + sectionDescription + "</p></div>" +
                     "<div id='buttonsDiv" + locationId + "' class='descriptionButtons'><input type='button' id='" + toggleId + "' class='active' value='" + startEditingText + "'/>" +
                     "<input type='button' id='" + removeDivId + "' class='active' value='" + deleteSectionText + "'/>" +
-                    "</div><ol class='h4NestedLevel' style='padding: 5px; display: block;'></ol></li>";
+                    "</div><ol class='h4NestedLevel holdCitations' style='padding: 5px; display: block;'></ol></li>";
 
                 var liAbove = $(this).parent().parent();
                 if ($(this).attr('id').indexOf('addDescriptionH1Button')!=-1){
