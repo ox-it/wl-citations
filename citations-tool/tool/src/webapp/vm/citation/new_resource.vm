@@ -104,6 +104,16 @@ html { overflow-y: hidden; }
                 </label>
                 <input type="text" size="40" id="term" name="term" value="$xilator.escapeHtml("$!resourceTerm")" />
             </p>
+            <p class="shorttext">
+                <label for="notify">
+                    $tlang.getString("resource.gen.email1")
+                </label>
+                <select name="notify" id="notify" class="emailNotifSelect">
+                    <option value="r">$tlang.getString("resource.gen.email2")</option>
+                    <option value="o">$tlang.getString("resource.gen.email3")</option>
+                    <option value="n" selected="selected">$tlang.getString("resource.gen.email4")</option>
+                </select>
+            </p>
 			<br />
 		</div>
 		<input type="hidden" name="sakai_csrf_token" value="$sakai_csrf_token" />
