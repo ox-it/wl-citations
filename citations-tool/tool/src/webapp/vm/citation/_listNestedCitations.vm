@@ -82,7 +82,7 @@
 
 
 					## if it's a h1 section or description
-					#if ($h2Section.getSectiontype()=='HEADING3' || $h2Section.getSectiontype()=='DESCRIPTION')
+					#if ($h2Section.getSectiontype()=='HEADING2' || $h2Section.getSectiontype()=='DESCRIPTION')
 
 						<li id='$linkId' class='h2Section $class' data-value='$h2Section.getValue()' data-location='$h2Section.getLocation()' data-sectiontype='$h2Section.getSectiontype()'>
 							<div id='$editorDivId' class='editor h2Editor sectionEditor $class' >
