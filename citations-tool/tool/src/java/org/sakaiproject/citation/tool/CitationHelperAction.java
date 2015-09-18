@@ -471,6 +471,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	private ResourceLoader srb;
 	
 	protected CitationService citationService;
+	protected CitationValidator citationValidator;
 	protected ConfigurationService configurationService;
 	protected SearchManager searchManager;
 	protected ServerConfigurationService scs;
@@ -1101,9 +1102,14 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 				citationCollectionOrders = mapper.readValue(nestedCitations,
 						TypeFactory.collectionType(List.class, CitationCollectionOrder.class));
-				getCitationService().save(citationCollectionOrders, citationCollectionId);
-				message = rb.getString("resource.updated");
-				state.setAttribute(STATE_CITATION_COLLECTION, null);
+				if (getCitationValidator().isValid(citationCollectionOrders)){
+					getCitationService().save(citationCollectionOrders, citationCollectionId);
+					message = rb.getString("resource.updated");
+					state.setAttribute(STATE_CITATION_COLLECTION, null);
+				}
+				else {
+					message = rb.getString("invalid nested collection") + "for collection id " + citationCollectionId;
+				}
 			}
 		}
 		catch (Exception e){
@@ -5756,6 +5762,13 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			this.citationService = (CitationService) ComponentManager.get(CitationService.class);
 		}
 		return this.citationService;
+	}
+
+	protected CitationValidator getCitationValidator() {
+		if(this.citationValidator == null) {
+			this.citationValidator = (CitationValidator) ComponentManager.get(CitationValidator.class);
+		}
+		return this.citationValidator;
 	}
 	
 	protected ConfigurationService getConfigurationService() {
