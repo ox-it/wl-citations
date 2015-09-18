@@ -199,6 +199,9 @@ ol.vertical li.placeholder::before {
 	background-color: #E0DED9;
 	padding: 10px;
 }
+.emailNotifSelect{
+	width:420px;
+}
 ol.serialization li.hasSections:hover{
 	cursor: pointer;
 }
