@@ -629,9 +629,6 @@
             $(this).parent().prevAll('div[id^="h3AddDescriptionDiv"]').hide();
         });
 
-        if ( !$.browser.mozilla ) {
-            alert('You should not edit this page in any browser other than Firefox - as you are likely to lose your data.');
-        }
     });
 }());
 
