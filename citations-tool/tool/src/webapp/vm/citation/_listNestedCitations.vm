@@ -213,7 +213,7 @@
 					## nested citations
 						<ol id="$addSubsectionId" class="h4NestedLevel holdCitations">
 							#set( $citation = $allCitationCollection.getCitation($h2Section.getCitationid() ))
-							<li id='$linkId' data-citationId='$h3Section.getCitationid()' data-location='$num' data-sectiontype='CITATION'>
+							<li id='$linkId' data-citationId='$h2Section.getCitationid()' data-location='$num' data-sectiontype='CITATION'>
 								#parse( "vm/citation/_nestableCitation.vm" )
 							</li>
 						</ol>
