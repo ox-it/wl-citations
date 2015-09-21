@@ -63,7 +63,8 @@
 
 			## h2 sections and citations
 			#if($nestedSection.getChildren().size() > 0)
-				<ol id="$addSubsectionId" class="h2NestedLevel holdCitations">
+				<ol class="h2NestedLevel holdCitations"></ol>
+				<ol id="$addSubsectionId" class="h2NestedLevel">
 					#foreach($h2Section in $nestedSection.getChildren())
 						#set( $num = $num + 1)
 						#set( $editorDivId = 'sectionInlineEditor' + $h2Section.getLocation() )
@@ -104,7 +105,8 @@
 
 							## h3 sections and citations
 							#if($h2Section.getChildren().size() > 0)
-								<ol id="$addSubsectionId" class="h3NestedLevel holdCitations">
+								<ol class="h3NestedLevel holdCitations"></ol>
+								<ol id="$addSubsectionId" class="h3NestedLevel ">
 									#foreach($h3Section in $h2Section.getChildren())
 										#set( $num = $num + 1)
 										#set( $editorDivId = 'sectionInlineEditor' + $h3Section.getLocation() )
@@ -174,6 +176,7 @@
                                                                     <input type="button" id="$removeDivId" class="active" value='$tlang.getString("nested.delete.section.button")'/>
                                                                 </div>
 															#else
+																#set ($location = $nestedCitation.getLocation())
 															#parse( "vm/citation/_nestableCitation.vm" )
 															#end
 														</li>
@@ -186,12 +189,11 @@
 										## if it's a h2 citation
 										#elseif ($h3Section.getSectiontype()=='CITATION')
 										## nested citations
-                                            <ol id="$addSubsectionId" class="h4NestedLevel holdCitations">
 												#set( $citation = $allCitationCollection.getCitation($h3Section.getCitationid() ))
                                                 <li id='$linkId' data-citationId='$h3Section.getCitationid()' data-location='$num' data-sectiontype='CITATION'>
+	                                                #set ($location = $h3Section.getLocation())
 													#parse( "vm/citation/_nestableCitation.vm" )
                                                 </li>
-                                            </ol>
 										#end
 									#end
 								</ol>
@@ -211,12 +213,11 @@
 					## else if it's a h1 citation
 					#elseif ($h2Section.getSectiontype()=='CITATION')
 					## nested citations
-						<ol id="$addSubsectionId" class="h4NestedLevel holdCitations">
 							#set( $citation = $allCitationCollection.getCitation($h2Section.getCitationid() ))
+							#set ($location = $h2Section.getLocation())
 							<li id='$linkId' data-citationId='$h2Section.getCitationid()' data-location='$num' data-sectiontype='CITATION'>
 								#parse( "vm/citation/_nestableCitation.vm" )
 							</li>
-						</ol>
 					#end
 					#end
 				</ol>
