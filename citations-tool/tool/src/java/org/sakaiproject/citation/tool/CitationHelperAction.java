@@ -1094,7 +1094,8 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 						.replaceAll("\\{\"children\":\\[\\[", "{\"children\":[")
 						.replaceAll("\\}\\],\\[\\{\"section", "},{\"section")
 						.replaceAll("\\}\\]\\]", "}]")
-						.replaceAll("\\}\\],\\[\\]\\]", "}]");
+						.replaceAll("\\}\\],\\[\\]\\]", "}]")
+						.replaceAll("\\}\\],\\[\\{", "},{");
 
 				citationCollectionOrders = mapper.readValue(nestedCitations,
 						TypeFactory.collectionType(List.class, CitationCollectionOrder.class));
