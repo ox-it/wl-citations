@@ -33,19 +33,30 @@
 	#foreach($nestedSection in $nestedCollection.getChildren())
 		#set( $editorDivId = 'sectionInlineEditor' + $nestedSection.getLocation() )
 		#set( $linkId = 'link' + $nestedSection.getLocation() )
+		#set( $linkClickId = 'linkClick' + $nestedSection.getLocation() )
+		#set( $toggleImgDiv = 'toggleImgDiv' + $nestedSection.getLocation() )
+		#set( $toggleImg = 'toggleImg' + $nestedSection.getLocation() )
 		#set( $toogleId = 'toggle' + $nestedSection.getLocation())
 		#set( $removeDivId = 'removeSection' + $nestedSection.getLocation() )
 		#set( $addSubsectionId = 'addSubsection' + $nestedSection.getLocation() )
 		#set( $addH1SubsectionButtonId = 'addH1SubsectionButton' + $nestedSection.getLocation() )
 		#set( $buttonsDiv = 'buttonsDiv' + $nestedSection.getLocation() )
 		#set( $num = $num + 1)
+		<li id='$linkId' class='h1Editor' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
 		#if ($nestedSection.getChildren().size() > 0)
 			#set( $hasSectionsClass = ' hasSections')
 		#end
-		<li id='$linkId' class='months h1Editor $hasSectionsClass' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
+		<li id='$linkId' class='h1Editor $hasSectionsClass' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
 			data-sectiontype='$nestedSection.getSectiontype()'>
-			<div id='$editorDivId' class='editor h1Editor sectionEditor'>
-				$!nestedSection.getValue()
+			<div id="$linkClickId" class="h1TopBar">
+				#if ($nestedSection.getChildren().size() > 0)
+					<div id="$toggleImgDiv"><img border="0" width="16" height="16" align="top" id="$toggleImg"
+							class="toggleIcon accordionArrow" style="padding-top: 11px;" src="/library/image/sakai/white-arrow-right.gif" alt="$tlang.getString("link.show.readonly")">
+					</div>
+				#end
+				<div id='$editorDivId' class='editor h1Editor #if($nestedSection.getChildren().size() > 0)sectionEditor#end'>
+					$!nestedSection.getValue()
+				</div>
 			</div>
 			<div id="$buttonsDiv" class="sectionButtons">
 				<input type="button" id="$toogleId" class="active" value='$tlang.getString("nested.start.editing.button")'/>
