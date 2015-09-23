@@ -39,7 +39,6 @@
 		#set( $addH1SubsectionButtonId = 'addH1SubsectionButton' + $nestedSection.getLocation() )
 		#set( $buttonsDiv = 'buttonsDiv' + $nestedSection.getLocation() )
 		#set( $num = $num + 1)
-		<li id='$linkId' class='months h1Editor sectionEditor' data-value='$nestedSection.getValue()' data-location='$nestedSection.getLocation()'
 		#if ($nestedSection.getChildren().size() > 0)
 			#set( $hasSectionsClass = ' hasSections')
 		#end
