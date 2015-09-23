@@ -47,6 +47,9 @@
 			<div id='$editorDivId' class='editor h1Editor sectionEditor'>
 				$!nestedSection.getValue()
 			</div>
+			<div class="citationNo">
+				($nestedSection.getCountCitations() citations)
+			</div>
 			<div id="$buttonsDiv" class="sectionButtons">
 				<input type="button" id="$toogleId" class="active" value='$tlang.getString("nested.start.editing.button")'/>
 				<input type="button" id="$removeDivId" class="active" value='$tlang.getString("nested.delete.section.button")'/>
