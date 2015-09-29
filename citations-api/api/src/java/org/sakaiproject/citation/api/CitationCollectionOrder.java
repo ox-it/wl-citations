@@ -107,4 +107,28 @@ public class CitationCollectionOrder {
 	public boolean isCitation() {
 		return getSectiontype().equals(CitationCollectionOrder.SectionType.CITATION);
 	}
+
+	public int getCountCitations() {
+		int citationNo = 0;
+		for (CitationCollectionOrder citationCollectionOrder : this.getChildren()) {
+			if (citationCollectionOrder.isCitation()){
+				citationNo++;
+			}
+			else {
+				for (CitationCollectionOrder collectionOrder : citationCollectionOrder.getChildren()) {
+					if (collectionOrder.isCitation()){
+						citationNo++;
+					}
+					else {
+						for (CitationCollectionOrder order : collectionOrder.getChildren()) {
+							if (order.isCitation()){
+								citationNo++;
+							}
+						}
+					}
+				}
+			}
+		}
+		return citationNo;
+	}
 }

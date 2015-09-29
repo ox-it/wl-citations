@@ -629,12 +629,13 @@ public class CitationListAccessServlet implements HttpAccess
 				String toggleImgDiv = "toggleImgDiv" + nestedSection.getLocation();
 				String toggleImg = "toggleImg" + nestedSection.getLocation();
 				String addSubsectionId = "addSubsection" + nestedSection.getLocation();
+				int citationNo = nestedSection.getCountCitations();
 				out.println("<li id = '" + linkId + "' class='h1Editor accordionH1 " + (nestedSection.getChildren().size() > 0 ? " hasSections" : "") + "' data-sectiontype='" + nestedSection.getSectiontype() + "'>" +
 						"<div id='" + linkClick +"' style='width:100%; float:left; '><div id='" + toggleImgDiv + "'>" +
 						(nestedSection.getChildren().size() > 0 ? "<img border='0' width='16' height='16' align='top' alt='Citation View' " +
 						"src='/library/image/sakai/white-arrow-right.gif' class='toggleIcon accordionArrow' id='" + toggleImg + "'>" : "") + "</div>" +
 						"<div id = '" + editorDivId + "' class='editor accordionDiv'>" +
-						nestedSection.getValue() + "</div></div>");
+						nestedSection.getValue() + (citationNo!=0 ? " (" + citationNo + " citations)" : "") + "</div></div>");
 
 				// h2 sections
 				if (nestedSection.getChildren().size() > 0) {
