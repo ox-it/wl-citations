@@ -33,7 +33,7 @@
             var startEditingText = $('#startEditingText').val();
             var deleteSectionText = $('#deleteSectionText').val();
             var addSubsectionButtonText = $('#addSubsectionButtonText').val();
-            var html = "<li id='link" + locationId + "' class='months h1Editor sectionEditor' data-value='<h1>" + sectionTitle + "</h1>' data-location='" + locationId + "' data-sectiontype='HEADING1'><div id='"
+            var html = "<li id='link" + locationId + "' class='h1Editor' data-value='<h1>" + sectionTitle + "</h1>' data-location='" + locationId + "' data-sectiontype='HEADING1'><div id='"
                 + divId + "' contenteditable='true' class='editor h1Editor sectionEditor'>" +
                 "<h1>" + sectionTitle + "</h1></div>" +
                 " <div id='buttonsDiv" + locationId + "' class='sectionButtons'><input type='button' id='" + toggleId + "' class='active' value='" + startEditingText + "'/>" +
@@ -558,9 +558,9 @@
         function addAccordionFunctionality(collapseAllSections) {
 
             // remove any bound click events
-            $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div[id^=sectionInlineEditor]').unbind("click");
-            $('.h2NestedLevel li[data-sectiontype="HEADING2"] > div[id^=sectionInlineEditor]').unbind("click");
-            $('.h3NestedLevel li[data-sectiontype="HEADING3"] > div[id^=sectionInlineEditor]').unbind("click");
+            $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div > div[id^=sectionInlineEditor]').unbind("click");
+            $('.h2NestedLevel li[data-sectiontype="HEADING2"] > div > div[id^=sectionInlineEditor]').unbind("click");
+            $('.h3NestedLevel li[data-sectiontype="HEADING3"] > div > div[id^=sectionInlineEditor]').unbind("click");
 
 
             // h1 level collapse expand
@@ -570,8 +570,15 @@
                 });
             }
 
-            $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div[id^=sectionInlineEditor]').click(function() {
-                $(this).parent().find('ol').slideToggle();
+            $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div > div[id^=sectionInlineEditor]').click(function() {
+                $(this).parent().parent().find('ol').slideToggle();
+                var image =  $('#' + this.id.replace('sectionInlineEditor', 'toggleImg')).get(0);
+
+                if( image.src.indexOf("/library/image/sakai/white-arrow-right.gif")!=-1 ) {
+                    image.src = "/library/image/sakai/white-arrow-down.gif";
+                } else {
+                    image.src = "/library/image/sakai/white-arrow-right.gif";
+                }
             });
 
             // h2 level collapse expand
