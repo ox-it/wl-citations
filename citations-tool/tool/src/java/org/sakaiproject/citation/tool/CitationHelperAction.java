@@ -21,12 +21,7 @@
 
 package org.sakaiproject.citation.tool;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -53,6 +48,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.input.BOMInputStream;
@@ -620,6 +617,10 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 	/** Property for the term. [String] */
 	static final String PROP_TERM = "DAV:term";
 
+	/** Property for the managing library. [String] */
+	static final String PROP_MANAGING_LIBRARY = "CITATIONS:managinglibrary";
+
+	public static final String MANAGING_LIBRARIES_JSON = "/group/citationsAdmin/managingLibraries/managingLibraries.json";
 
 	public static final String CITATION_ACTION = "citation_action";
 	public static final String UPDATE_RESOURCE = "update_resource";
@@ -971,6 +972,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 				this.captureCoreOptionalPaper(params, state, edit, results);
 				this.captureAcademicYear(params, state, edit, results);
 				this.captureTerm(params, state, edit, results);
+				this.captureManagingLibrary(params, state, edit, results);
 				this.captureDescription(params, state, edit, results);
 				this.captureAccess(params, state, edit, results);
 				this.captureAvailability(params, edit, results);
@@ -1444,6 +1446,18 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			props.removeProperty(PROP_TERM);
 			props.addProperty(PROP_TERM, term);
 			results.put("term", term);
+		}
+	}
+
+	protected void captureManagingLibrary(ParameterParser params, SessionState state,
+										  ContentResourceEdit edit, Map<String, Object> results) {
+		String managingLibrary = params.getString("managingLibrary");
+		String oldManagingLibrary = edit.getProperties().getProperty(PROP_MANAGING_LIBRARY);
+		if(oldManagingLibrary == null || ! oldManagingLibrary.equals(managingLibrary)) {
+			ResourcePropertiesEdit props = edit.getPropertiesEdit();
+			props.removeProperty(PROP_MANAGING_LIBRARY);
+			props.addProperty(PROP_MANAGING_LIBRARY, managingLibrary);
+			results.put("managingLibrary", managingLibrary);
 		}
 	}
 
@@ -2450,6 +2464,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			context.put("resourceCoreOptionalPaper", props.getProperty(PROP_CORE_OPTIONAL_PAPER));
 			context.put("resourceAcademicYear", props.getProperty(PROP_ACADEMIC_YEAR));
 			context.put("resourceTerm", props.getProperty(PROP_TERM));
+			context.put("resourceManagingLibrary", props.getProperty(PROP_MANAGING_LIBRARY));
 			context.put("resourceDescription", props.getProperty(ResourceProperties.PROP_DESCRIPTION));
 			context.put("resourceIntroduction", (props.getProperty(CitationService.PROP_INTRODUCTION) == null ? props.getProperty(ResourceProperties.PROP_DESCRIPTION) : props.getProperty(CitationService.PROP_INTRODUCTION)));
 			context.put("officialInstBackColour", scs.getString("official.institution.background.colour"));
@@ -2472,6 +2487,41 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			contentProperties = new HashMap<String,Object>();
 		}
 		context.put("contentProperties", contentProperties);
+
+
+		BufferedReader streamReader = null;
+		try
+		{
+			ContentResource cr = contentService.getResource(MANAGING_LIBRARIES_JSON);
+			streamReader = new BufferedReader(new InputStreamReader(cr.streamContent(), "UTF-8"));
+			StringBuilder responseStrBuilder = new StringBuilder();
+
+			String inputStr;
+			while ((inputStr = streamReader.readLine()) != null){
+				responseStrBuilder.append(inputStr);
+			}
+			JSONObject jsonObject = JSONObject.fromObject(responseStrBuilder.toString());
+			JSONArray managingLibraries = jsonObject.getJSONArray("managingLibraries");
+			context.put("managingLibraries", managingLibraries);
+		} catch(JSONException e) {
+			logger.warn("JSONException reading managingLibraries.json for collection id: " + citationCollectionId);
+		} catch (UnsupportedEncodingException e) {
+			logger.debug("UnsupportedEncodingException reading managingLibraries.json for collection id: " + citationCollectionId, e);
+		} catch (IOException e) {
+			logger.debug("IOException reading managingLibraries.json for collection id: " + citationCollectionId, e);
+		} catch (SakaiException e) {
+			logger.debug("SakaiException reading managingLibraries.json for collection id: " + citationCollectionId, e);
+		} finally {
+			try {
+				if (streamReader!= null) {
+					streamReader.close();
+				}
+			}
+			catch(IOException ex){
+				logger.error("Problem occurred. Cannot close reader : " + ex.getMessage());
+			}
+		}
+
 		int collectionSize = 0;
 		CitationCollection citationCollection = getCitationCollection(state, true);
 

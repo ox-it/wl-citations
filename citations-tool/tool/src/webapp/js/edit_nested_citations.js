@@ -646,3 +646,9 @@ function addSectionHeightsToPageHeight(numSections) {
         iFrame.height(iFrame.height() + height);
     }
 }
+
+function selectManagingLibrary(value) {
+    if (value!='-1'){
+        $('#managingLibrary option[value=' + value + ']').attr('selected','selected');
+    }
+}
