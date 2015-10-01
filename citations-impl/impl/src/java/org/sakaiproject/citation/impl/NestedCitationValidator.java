@@ -20,8 +20,6 @@ public class NestedCitationValidator implements CitationValidator {
 			public CitationCollectionOrder.SectionType[] getAllowableTypes() {
 				return new CitationCollectionOrder.SectionType[]{
 						CitationCollectionOrder.SectionType.HEADING1,
-						CitationCollectionOrder.SectionType.DESCRIPTION,
-						CitationCollectionOrder.SectionType.CITATION,
 						null // 'Null' here refers to the unnested list
 						};
 			}
@@ -79,6 +77,9 @@ public class NestedCitationValidator implements CitationValidator {
 					for (CitationCollectionOrder citation : h3Section.getChildren()) {
 						if (!Arrays.asList(NESTED_CITATION_LIST.HEADING3.getAllowableTypes()).contains(
 								citation.getSectiontype())){
+							return false;
+						}
+						if (citation.getChildren()!=null && !citation.getChildren().isEmpty()){
 							return false;
 						}
 					}
