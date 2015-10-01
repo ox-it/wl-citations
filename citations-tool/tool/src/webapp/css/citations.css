@@ -222,8 +222,11 @@ ol.serialization li div.sectionEditor:hover {
 	background-color: #E0DED9;
 	padding: 10px;
 }
-.emailNotifSelect{
-	width:420px;
+.citationFields {
+	width: 20%;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
 ol.serialization li.hasSections:hover{
 	cursor: pointer;
