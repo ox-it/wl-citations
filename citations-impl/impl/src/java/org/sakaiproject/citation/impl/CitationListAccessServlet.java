@@ -425,9 +425,9 @@ public class CitationListAccessServlet implements HttpAccess
 					+ "\" class=\"googleBookCover\"></a></div><div style=\"float:left;\"><div><a href=\"" + Validator.escapeHtml(href) + "\" target=\"_blank\">"
 					+ Validator.escapeHtml( (String)citation.getCitationProperty( Schema.TITLE, true ) ) + "</a></div>");
 			out.println("\t\t\t\t<div class=\"creatorDiv\">" + Validator.escapeHtml( citation.getCreator() )  + "</div>");
-			out.println("\t\t\t\t<div class=\"sourceDiv\">" + Validator.escapeHtml( citation.getSource() )  + "</div></div>");
+			out.println("\t\t\t\t<div class=\"sourceDiv\">" + Validator.escapeHtml( citation.getSource() )  + "</div>");
 
-			out.println("\t\t\t<div class=\"imgDiv\"><table class=\"listHier lines nolines\" cellpadding=\"0\" cellspacing=\"0\">");
+			out.println("\t\t\t<div><table class=\"listHier lines nolines\" cellpadding=\"0\" cellspacing=\"0\">");
 
 			Schema schema = citation.getSchema();
 			if(schema == null)	{
@@ -485,7 +485,7 @@ public class CitationListAccessServlet implements HttpAccess
 					}
 				}
 			}
-			out.println("\t\t\t</table></div>");
+			out.println("\t\t\t</table></div></div>");
 
 			// rhs links
 			out.println("\t\t\t<div class=\"itemAction links\" style=\"width:20%\">");
@@ -619,7 +619,7 @@ public class CitationListAccessServlet implements HttpAccess
 		CitationCollectionOrder nestedCollection = citationService.getNestedCollection(citationCollectionId);
 		int nestedSectionsSize = nestedCollection.getChildren().size();
 
-		out.println("<ol class='serialization vertical h1NestedLevel' style='padding:0;'>");
+		out.println("<ol class='serialization viewCitations h1NestedLevel' style='padding:0;'>");
 
 		// h1 sections
 		if (nestedSectionsSize > 0) {

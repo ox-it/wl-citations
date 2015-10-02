@@ -127,8 +127,12 @@ ol.vertical {
 	background-color: #E0DED9;
 	padding: 10px;
 }
+ol.viewCitations li {
+	color: #000;
+	display: block;
+	margin: 5px;
+}
 ol.vertical li {
-	/*background: #eeeeee none repeat scroll 0 0;*/
 	color: #0088cc;
 	display: block;
 	margin: 5px;
