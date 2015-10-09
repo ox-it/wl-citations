@@ -415,7 +415,7 @@
                 }
                 var params = $('#newCitationListForm').serializeArray();
                 params.push({name:'addSectionHTML', value:$('#' + this.id.replace(TOGGLE, SECTION_INLINE_EDITOR)).get(0).innerHTML});
-                params.push({name:'sectionType', value:$('#' + this.id.replace(TOGGLE, SECTION_INLINE_EDITOR)).parent().attr('data-sectiontype')});
+                params.push({name:'sectionType', value:$(this).parent().parent().attr('data-sectiontype')});
                 params.push({name:'locationId', value:this.id.replace(TOGGLE, "")});
 
                 ajaxPost(actionUrl, params, true);
