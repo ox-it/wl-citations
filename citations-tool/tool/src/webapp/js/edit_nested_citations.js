@@ -558,9 +558,9 @@
         function addAccordionFunctionality(collapseAllSections) {
 
             // remove any bound click events
-            $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div > div[id^=sectionInlineEditor]').unbind("click");
-            $('.h2NestedLevel li[data-sectiontype="HEADING2"] > div > div[id^=sectionInlineEditor]').unbind("click");
-            $('.h3NestedLevel li[data-sectiontype="HEADING3"] > div > div[id^=sectionInlineEditor]').unbind("click");
+            $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div[id^=linkClick]').unbind("click");
+            $('.h2NestedLevel li[data-sectiontype="HEADING2"] > div[id^=linkClick]').unbind("click");
+            $('.h3NestedLevel li[data-sectiontype="HEADING3"] > div[id^=linkClick]').unbind("click");
 
 
             // h1 level collapse expand
@@ -570,7 +570,7 @@
                 });
             }
 
-            $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div > div[id^=sectionInlineEditor]').click(function() {
+            $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div[id^=linkClick]').click(function() {
                 $(this).parent().parent().find('ol').slideToggle();
                 var image =  $('#' + this.id.replace('sectionInlineEditor', 'toggleImg')).get(0);
 
