@@ -193,18 +193,15 @@
 
                 var liAbove = $(this).parent().parent();
                 if ($(this).attr('id').indexOf('addDescriptionH1Button')!=-1){
-                    liAbove.nextAll('ol.h2NestedLevel').show();
-                    liAbove.nextAll('ol.h2NestedLevel').prepend(html);
+                    liAbove.next('ol.h2NestedLevel').show().prepend(html);
                     liAbove.hide();
                 }
                 else if ($(this).attr('id').indexOf('addDescriptionH2Button')!=-1){
-                    liAbove.nextAll('ol.h3NestedLevel').show();
-                    liAbove.nextAll('ol.h3NestedLevel').prepend(html);
+                    liAbove.next('ol.h3NestedLevel').show().prepend(html);
                     liAbove.hide();
                 }
                 else if ($(this).attr('id').indexOf('addDescriptionH3Button')!=-1){
-                    liAbove.nextAll('ol.h4NestedLevel').show();
-                    liAbove.nextAll('ol.h4NestedLevel').prepend(html);
+                    liAbove.next('ol.h4NestedLevel').show().prepend(html);
                     liAbove.hide();
                 }
             }
@@ -425,7 +422,9 @@
             }
             else { // clicked 'Edit'
                 $('#' + this.id.replace(TOGGLE, SECTION_INLINE_EDITOR)).attr( 'contenteditable', true );
-                enableEditing(this.id.replace(TOGGLE, SECTION_INLINE_EDITOR), $(this).parent().parent().data('sectiontype')!='DESCRIPTION');
+                var container = $(this).parent().parent();
+                var showBasicEditor = !container.hasClass('serialization') && container.data('sectiontype')!='DESCRIPTION';
+                enableEditing(this.id.replace(TOGGLE, SECTION_INLINE_EDITOR), showBasicEditor);
                 this.value = $('#finishEditingText').val();
                 isEditingEnabled = true;
 

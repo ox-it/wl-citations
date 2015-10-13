@@ -288,7 +288,7 @@ public class CitationListAccessServlet implements HttpAccess
     		ResourceProperties properties = resource.getProperties();
    
     		String title = properties.getProperty(ResourceProperties.PROP_DISPLAY_NAME);
-    		String description = properties.getProperty( ResourceProperties.PROP_DESCRIPTION );
+    		String introduction = properties.getProperty( org.sakaiproject.citation.api.CitationService.PROP_INTRODUCTION );
     		
      		String citationCollectionId = new String( resource.getContent() );
 	        org.sakaiproject.citation.api.CitationService citationService = (org.sakaiproject.citation.api.CitationService) ComponentManager.get(org.sakaiproject.citation.api.CitationService.class);
@@ -324,12 +324,9 @@ public class CitationListAccessServlet implements HttpAccess
     		out.println("\t<div style=\"position:relative;width:100%;  min-height:90px;\">" +  "<div class=\"listTitle\" style=\"position: absolute; width: 100%;  background-color:" + ServerConfigurationService.getString("official.institution.background.colour") +"; \"><h1 style=\"color:" + ServerConfigurationService.getString("official.institution.text.colour") + ";\">" + Validator.escapeHtml(title) + "</h1></div>");
     		out.println("\t</div>");
     		out.println("<div style=\"clear:both;\"></div>");
-    		if( description != null && !description.trim().equals("") )
+    		if( introduction != null && !introduction.trim().equals("") )
     		{
-    			out.println("\t<div class='descriptionView'>" + description + "</div>");
-    		}
-    		else {
-    			out.println("\t<div class='descriptionView'></div>");
+    			out.println("\t<div class='descriptionView'>" + introduction + "</div>");
     		}
 
     		// nested sections
