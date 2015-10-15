@@ -156,8 +156,7 @@
                     "<input type='button' value='Add Description' style='padding-right:3px;' class='active' id='"+ addDescriptionH2ButtonId + "'></div></div>" +
                     "<ol id='addSubsection" + locationId + "' class='h3NestedLevel holdCitations' style='padding: 5px; display: block;'></ol>" +
                     "<div style='padding:5px;'><input type='button' id='" + addSubsectionButtonId + "' class='active' value='" + addSubsectionButtonText + "'/></div></li>";
-                $(this).parent().prevAll('ol.h2NestedLevel').show();
-                $(this).parent().prevAll('ol.h2NestedLevel').append(html);
+                $(this).parent().prev('ol.h2NestedLevel').show().append(html);
             }
             else if (sectionType === 'HEADING2'){
                 html =
@@ -170,8 +169,7 @@
                     "<input type='button' value='Add Description' style='padding-right:3px;' class='active' id='"+ addDescriptionH3ButtonId + "'></div></div>" +
                     "<ol class='h4NestedLevel holdCitations' style='padding: 5px; display: block;'></ol>" +
                     "</li>";
-                $(this).parent().prevAll('ol.h3NestedLevel').show();
-                $(this).parent().prevAll('ol.h3NestedLevel').append(html);
+                $(this).parent().prev('ol.h3NestedLevel').show().append(html);
             }
             else if (sectionType === 'DESCRIPTION'){
 

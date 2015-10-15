@@ -193,7 +193,7 @@ ol.vertical li.placeholder::before {
 .descriptionButtons {
 	padding:5px;
 }
-ol.serialization li div.sectionEditor:hover {
+ol.serialization li div.sectionEditor.h1Editor:hover {
 	cursor: pointer;
 	background: #2a4667 none repeat scroll 0 0;
 }
