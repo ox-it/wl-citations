@@ -64,7 +64,7 @@
 	margin: 1em;
 }
 table.lines tr:hover {
-	background-color: #FFF;
+	background-color: #e7e7e7;
 }
 table.lines tr:nth-child(odd), .citationDetails table.lines tr{
 	background: #eeeeee;
