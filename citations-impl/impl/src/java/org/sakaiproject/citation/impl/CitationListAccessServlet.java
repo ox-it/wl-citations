@@ -633,7 +633,7 @@ public class CitationListAccessServlet implements HttpAccess
 						(nestedSection.getChildren().size() > 0 ? "<img border='0' width='16' height='16' align='top' alt='Citation View' " +
 						"src='/library/image/sakai/white-arrow-right.gif' class='toggleIcon accordionArrow' id='" + toggleImg + "'>" : "") + "</div>" +
 						"<div id = '" + editorDivId + "' class='editor accordionDiv'>" +
-						nestedSection.getValue() + (citationNo!=0 ? " (" + citationNo + " citations)" : "") + "</div></div>");
+						(nestedSection.getValue()!=null ? nestedSection.getValue() : "") + (citationNo!=0 ? " (" + citationNo + " citations)" : "") + "</div></div>");
 
 				// h2 sections
 				if (nestedSection.getChildren().size() > 0) {
@@ -649,7 +649,7 @@ public class CitationListAccessServlet implements HttpAccess
 							out.println("<li id = '" + linkId + "' class='h2Section' data-location='" + h2Section.getLocation() + "' data-sectiontype='" +
 									h2Section.getSectiontype() + "' style='background: #cef none repeat scroll 0 0;'>" +
 									"<div id = '" + editorDivId + "' class='editor h2Editor' style='min-height:30px; padding:5px;'>" +
-									h2Section.getValue() + "</div>");
+									(h2Section.getValue()!=null ? h2Section.getValue() : "") + "</div>");
 
 							// h3 sections
 							if (h2Section.getChildren().size() > 0) {
@@ -665,7 +665,7 @@ public class CitationListAccessServlet implements HttpAccess
 												h3Section.getSectiontype() + "'>" +
 												"<div style='' id = '" + editorDivId + "' class='editor h3Editor' " +
 												"style='padding-left:20px; '>" +
-												"<div style=''>" + h3Section.getValue() + "</div></div>");
+												"<div style=''>" + (h3Section.getValue()!=null ? h3Section.getValue() : "") + "</div></div>");
 
 										//  nested citations
 										if (h3Section.getChildren().size() > 0) {
