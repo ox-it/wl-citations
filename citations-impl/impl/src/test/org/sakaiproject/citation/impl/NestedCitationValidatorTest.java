@@ -82,6 +82,17 @@ public class NestedCitationValidatorTest extends BaseCitationServiceSupport {
 		assertFalse(isValid);
 	}
 
+	public void testInvalidList_NullCitationIdAndNullSectionType() {
+
+		List<CitationCollectionOrder> citationCollectionOrders = new ArrayList<CitationCollectionOrder>();
+
+		CitationCollectionOrder citation = getNullCitationIdAndNullSectionType();
+		citationCollectionOrders.add(citation);
+
+		boolean isValid = citationValidator.isValid(citationCollectionOrders);
+		assertFalse(isValid);
+	}
+
 	public void testInvalidList_H1_H3() {
 
 		List<CitationCollectionOrder> citationCollectionOrders = new ArrayList<CitationCollectionOrder>();
@@ -138,6 +149,13 @@ public class NestedCitationValidatorTest extends BaseCitationServiceSupport {
 	private CitationCollectionOrder getCitation() {
 		CitationCollectionOrder citation = new CitationCollectionOrder();
 		citation.setSectiontype(CitationCollectionOrder.SectionType.CITATION);
+		return citation;
+	}
+
+	private CitationCollectionOrder getNullCitationIdAndNullSectionType() {
+		CitationCollectionOrder citation = new CitationCollectionOrder();
+		citation.setCollectionId("xxx");
+		citation.setLocation(1);
 		return citation;
 	}
 
