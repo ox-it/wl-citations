@@ -92,6 +92,27 @@
 		</property>
 	</bean>
 
+	<bean id="org.sakaiproject.citation.api.SoloApiServiceImpl"
+		class="org.sakaiproject.citation.impl.soloapi.SoloApiServiceImpl"
+		init-method="init" singleton="true">
+		<property name="converters">
+			<list>
+				<bean class="org.sakaiproject.citation.impl.soloapi.BookConverter">
+					<property name="citationService" ref="org.sakaiproject.citation.api.CitationService" />
+				</bean>
+				<bean class="org.sakaiproject.citation.impl.soloapi.JournalConverter">
+					<property name="citationService" ref="org.sakaiproject.citation.api.CitationService" />
+				</bean>
+				<bean class="org.sakaiproject.citation.impl.soloapi.GenericConverter">
+					<property name="citationService" ref="org.sakaiproject.citation.api.CitationService" />
+				</bean>
+			</list>
+		</property>
+		<property name="serverConfigurationService">
+			<ref bean="org.sakaiproject.component.api.ServerConfigurationService" />
+		</property>
+	</bean>
+
 	<bean id="org.sakaiproject.citation.api.CitationService" class="org.sakaiproject.citation.impl.DbCitationService"
 		init-method="init" destroy-method="destroy" singleton="true">
 
@@ -103,6 +124,9 @@
 		</property>
 		<property name="contentHostingService">
 			<ref bean="org.sakaiproject.content.api.ContentHostingService" />
+		</property>
+		<property name="soloApiService">
+			<ref bean="org.sakaiproject.citation.api.SoloApiServiceImpl" />
 		</property>
 		<property name="serverConfigurationService">
 			<ref bean="org.sakaiproject.component.api.ServerConfigurationService" />
