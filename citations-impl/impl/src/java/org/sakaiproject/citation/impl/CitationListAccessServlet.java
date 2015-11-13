@@ -488,6 +488,14 @@ public class CitationListAccessServlet implements HttpAccess
 			out.println("\t\t\t<div class=\"itemAction links\" style=\"width:20%\">");
 			if( citation.hasCustomUrls() )
 			{
+				try {
+					String urlId = (String) citation.getCustomUrlIds().get(0);
+					out.println("\t\t\t\t<div class=\"e-avail\"><a href=\"" + Validator.escapeHtml(citation.getCustomUrl( urlId )) + "\" target=\"_blank\">"
+							+ rb.getString( "e.avail.link.view" ) + "</a></div>");
+				} catch (IdUnusedException e) {
+					// no need to blow up the page if we can't find the e-availability url for one citation on it
+				}
+				out.println("\t\t\t\t |");
 				List<String> customUrlIds = citation.getCustomUrlIds();
 				for( String urlId : customUrlIds )
 				{
