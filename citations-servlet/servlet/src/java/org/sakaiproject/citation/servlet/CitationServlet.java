@@ -159,9 +159,12 @@ public class CitationServlet extends VmServlet
 
 				boolean fromGoogle = false;
 				Citation citation = findOpenURLVersion01(paramParser);
-				if (citation == null) {
+				if (citation == null && req.getParameterMap().size()>1) {// the open url has many parameters
 
 					citation = findOpenUrlCitation(req);
+				}
+				if (citation == null) {
+					citation = findSoloApiCitation(req);
 				}
 				// set the success flag
 				setVmReference("success", citation != null, req);
@@ -203,6 +206,15 @@ public class CitationServlet extends VmServlet
 	protected Citation findOpenUrlCitation(HttpServletRequest req) {
 		Citation citation = citationService.addCitation(req);
 		return citation;
+	}
+
+	/**
+	 * Looks for an Solo API citation in the request.
+	 * @param req
+	 * @return
+	 */
+	protected Citation findSoloApiCitation(HttpServletRequest req) {
+		return citationService.addSoloApiCitation(req);
 	}
 
 
