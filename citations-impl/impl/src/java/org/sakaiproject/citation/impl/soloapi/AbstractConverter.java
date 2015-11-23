@@ -21,7 +21,7 @@ public abstract class AbstractConverter implements Converter {
 		this.citationService = citationService;
 	}
 
-	protected void setCitationProperty(Citation citation, JsonNode primoNMBibNode, String citationKey, ArrayList<String> jsonPath) {
+	protected void setCitationProperty(Citation citation, String citationKey, JsonNode primoNMBibNode, String... jsonPath) {
 
 		// find the json node
 		for (String jsonNode : jsonPath) {
@@ -83,12 +83,12 @@ public abstract class AbstractConverter implements Converter {
 
 		Citation citation = citationService.addCitation(getType().toLowerCase());
 
-		setCitationProperty(citation, primoNMBibNode, "year", new ArrayList<String>(){{  add("record"); add("addata"); add("date");}} );
-		setCitationProperty(citation, primoNMBibNode, "publisher", new ArrayList<String>(){{  add("record"); add("addata"); add("pub");}} );
-		setCitationProperty(citation, primoNMBibNode, "publicationLocation", new ArrayList<String>(){{  add("record"); add("addata"); add("cop");}} );
-		setCitationProperty(citation, primoNMBibNode, "edition", new ArrayList<String>(){{  add("record"); add("display"); add("edition");}} );
-		setCitationProperty(citation, primoNMBibNode, "doi", new ArrayList<String>(){{ add("record"); add("addata"); add("doi"); }} );
-		setCitationProperty(citation, getItNode, "otherIds", new ArrayList<String>(){{  add("@GetIt2"); }} );
+		setCitationProperty(citation, "year", primoNMBibNode, "record", "addata", "date" );
+		setCitationProperty(citation, "publisher", primoNMBibNode, "record", "addata", "pub" );
+		setCitationProperty(citation, "publicationLocation", primoNMBibNode, "record", "addata", "cop" );
+		setCitationProperty(citation, "edition", primoNMBibNode, "record", "display", "edition" );
+		setCitationProperty(citation, "doi", primoNMBibNode, "record", "addata", "doi" );
+		setCitationProperty(citation, "otherIds", getItNode, "@GetIt2" );
 
 		return citation;
 
