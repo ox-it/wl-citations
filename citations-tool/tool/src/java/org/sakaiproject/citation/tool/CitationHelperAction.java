@@ -966,9 +966,6 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 				this.captureAcademicYear(params, state, edit, results);
 				this.captureTerm(params, state, edit, results);
 				this.captureManagingLibrary(params, state, edit, results);
-				this.captureDescription(params, state, edit, results);
-				this.captureAccess(params, state, edit, results);
-				this.captureAvailability(params, edit, results);
 				getContentService().commitResource(edit, priority);
 				message = "Resource updated";
 				state.setAttribute(STATE_CITATION_COLLECTION, null);
@@ -2500,7 +2497,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			context.put("resourceTerm", props.getProperty(PROP_TERM));
 			context.put("resourceManagingLibrary", props.getProperty(PROP_MANAGING_LIBRARY));
 			context.put("resourceDescription", props.getProperty(ResourceProperties.PROP_DESCRIPTION));
-			context.put("resourceIntroduction", (props.getProperty(CitationService.PROP_INTRODUCTION) == null ? props.getProperty(ResourceProperties.PROP_DESCRIPTION) : props.getProperty(CitationService.PROP_INTRODUCTION)));
+			context.put("resourceIntroduction", props.getProperty(CitationService.PROP_INTRODUCTION));
 			context.put("officialInstBackColour", scs.getString("official.institution.background.colour"));
 			context.put("officialInstTextColour", scs.getString("official.institution.text.colour"));
 			//resourceUuid = this.getContentService().getUuid(resourceId);
