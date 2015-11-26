@@ -19,25 +19,25 @@ public class JournalConverter extends AbstractConverter  {
 	public Citation convert(ContextObject context) {
 		Citation citation = super.convert(context);
 
-		setCitationProperty(citation, primoNMBibNode, "creator", new ArrayList<String>(){{  add("record"); add("addata"); add("au");}} );
-		setCitationProperty(citation, primoNMBibNode, "creator", new ArrayList<String>(){{  add("record"); add("addata"); add("addau");}} );
+		setCitationProperty(citation, "creator", primoNMBibNode, "record", "addata", "au" );
+		setCitationProperty(citation, "creator", primoNMBibNode, "record", "addata", "addau" );
 
-		setCitationProperty(citation, primoNMBibNode, "title", new ArrayList<String>(){{  add("record"); add("addata"); add("atitle");}} );
+		setCitationProperty(citation, "title", primoNMBibNode, "record", "addata", "atitle" );
 		if (citation.getCitationProperty("title", false)==null || citation.getCitationProperty("title", false).equals("")){
-			setCitationProperty(citation, primoNMBibNode, "title", new ArrayList<String>(){{  add("record");add("addata"); add("stitle"); }} );
+			setCitationProperty(citation, "title", primoNMBibNode, "record", "addata", "stitle" );
 		}
-		setCitationProperty(citation, primoNMBibNode, "sourceTitle", new ArrayList<String>(){{  add("record");add("addata"); add("jtitle"); }} );
+		setCitationProperty(citation, "sourceTitle", primoNMBibNode, "record", "addata", "jtitle" );
 
-		setCitationProperty(citation, primoNMBibNode, "date", new ArrayList<String>(){{  add("record"); add("addata"); add("date");}} );
-		setCitationProperty(citation, primoNMBibNode, "volume", new ArrayList<String>(){{  add("record"); add("addata"); add("volume");}} );
-		setCitationProperty(citation, primoNMBibNode, "issue", new ArrayList<String>(){{  add("record"); add("addata"); add("issue");}} );
-		setCitationProperty(citation, primoNMBibNode, "pages", new ArrayList<String>(){{  add("record"); add("addata"); add("pages");}} );
-		setCitationProperty(citation, primoNMBibNode, "startPage", new ArrayList<String>(){{  add("record"); add("addata"); add("spage");}} );
-		setCitationProperty(citation, primoNMBibNode, "endPage", new ArrayList<String>(){{  add("record"); add("addata"); add("epage");}} );
+		setCitationProperty(citation, "date", primoNMBibNode, "record", "addata", "date" );
+		setCitationProperty(citation, "volume", primoNMBibNode, "record", "addata", "volume" );
+		setCitationProperty(citation, "issue", primoNMBibNode, "record", "addata", "issue" );
+		setCitationProperty(citation, "pages", primoNMBibNode, "record", "addata", "pages" );
+		setCitationProperty(citation, "startPage", primoNMBibNode, "record", "addata", "spage" );
+		setCitationProperty(citation, "endPage", primoNMBibNode, "record", "addata", "epage" );
 
-		setCitationProperty(citation, primoNMBibNode, "isnIdentifier", new ArrayList<String>(){{ add("record"); add("addata"); add("issn"); }} );
+		setCitationProperty(citation, "isnIdentifier", primoNMBibNode, "record", "addata", "issn" );
 		if (citation.getCitationProperty("isnIdentifier")==null || citation.getCitationProperty("isnIdentifier").equals("")){
-			setCitationProperty(citation, primoNMBibNode, "isnIdentifier", new ArrayList<String>(){{ add("record"); add("addata"); add("eissn"); }} );
+			setCitationProperty(citation, "isnIdentifier", primoNMBibNode, "record", "addata", "eissn" );
 		}
 
 		return citation;

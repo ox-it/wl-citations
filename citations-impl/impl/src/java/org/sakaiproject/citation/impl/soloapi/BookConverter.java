@@ -19,16 +19,16 @@ public class BookConverter extends AbstractConverter {
 	public Citation convert(ContextObject context) {
 		Citation citation = super.convert(context);
 
-		setCitationProperty(citation, primoNMBibNode, "creator", new ArrayList<String>(){{  add("record"); add("addata"); add("au");}} );
+		setCitationProperty(citation, "creator", primoNMBibNode, "record", "addata", "au");
 		if (citation.getCitationProperty("creator")!=null && !citation.getCitationProperty("creator").equals("")){
-			setCitationProperty(citation, primoNMBibNode, "creator", new ArrayList<String>(){{  add("record"); add("addata"); add("addau"); }} );
+			setCitationProperty(citation, "creator", primoNMBibNode, "record", "addata", "addau" );
 		}
 		else {
-			setCitationProperty(citation, primoNMBibNode, "editor", new ArrayList<String>(){{  add("record"); add("addata"); add("addau"); }} );
+			setCitationProperty(citation, "editor", primoNMBibNode, "record", "addata", "addau" );
 		}
-		setCitationProperty(citation, primoNMBibNode, "title", new ArrayList<String>(){{  add("record"); add("addata"); add("btitle");}} );
-		setCitationProperty(citation, primoNMBibNode, "sourceTitle", new ArrayList<String>(){{  add("addata"); add("seriestitle"); }} );
-		setCitationProperty(citation, primoNMBibNode, "isnIdentifier", new ArrayList<String>(){{ add("record"); add("addata"); add("isbn"); }} );
+		setCitationProperty(citation, "title", primoNMBibNode, "record", "addata", "btitle" );
+		setCitationProperty(citation, "sourceTitle", primoNMBibNode, "addata", "seriestitle" );
+		setCitationProperty(citation, "isnIdentifier", primoNMBibNode, "record", "addata", "isbn" );
 
 		return citation;
 	}
