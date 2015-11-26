@@ -24,7 +24,7 @@ public class GenericConverter extends AbstractConverter  {
 		setCitationProperty(citation, "creator", primoNMBibNode, "record", "addata", "addau" );
 
 		setCitationProperty(citation, "title",  primoNMBibNode, "record", "addata", "btitle" );
-		if (citation.getCitationProperty("title", false)==null || citation.getCitationProperty("title", false).equals(", ")){
+		if (citation.getCitationProperty("title", false)==null || citation.getCitationProperty("title", false).equals("")){
 			setCitationProperty(citation, "title", primoNMBibNode, "record", "addata", "atitle" );
 		}
 		setCitationProperty(citation, "sourceTitle", primoNMBibNode, "record", "addata", "jtitle" );
@@ -37,10 +37,10 @@ public class GenericConverter extends AbstractConverter  {
 		setCitationProperty(citation, "endPage", primoNMBibNode, "record", "addata", "epage" );
 
 		setCitationProperty(citation, "isnIdentifier", primoNMBibNode, "record", "addata", "issn" );
-		if (citation.getCitationProperty("isnIdentifier")==null || citation.getCitationProperty("isnIdentifier").equals(", ")){
+		if (citation.getCitationProperty("isnIdentifier")==null || citation.getCitationProperty("isnIdentifier").equals("")){
 			setCitationProperty(citation, "isnIdentifier", primoNMBibNode, "record", "addata", "isbn" );
 		}
-		if (citation.getCitationProperty("isnIdentifier")==null || citation.getCitationProperty("isnIdentifier").equals(", ")){
+		if (citation.getCitationProperty("isnIdentifier")==null || citation.getCitationProperty("isnIdentifier").equals("")){
 			setCitationProperty(citation, "isnIdentifier", primoNMBibNode, "record", "addata", "eissn" );
 		}
 
