@@ -5318,9 +5318,13 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 
 	protected String validateURL(String url) throws MalformedURLException
 	{
-		if (url == null || url.trim().equals (""))
+		if (url == null)
 		{
 			throw new MalformedURLException();
+		}
+		if(url.trim().equals(""))
+		{
+			return url;
 		}
 
 		url = url.trim();
