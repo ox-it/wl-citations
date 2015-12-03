@@ -1326,6 +1326,9 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 				logger.debug("ensureCitationListExists() created new resource with resourceUuid == " + resourceUuid + " and resourceId == " + resourceId);
 			}
 			results.put("resourceUuid", resourceUuid );
+			//Set the resourceId and resourceUuid into the state as after adding resources to citation display revise citation screen.
+			state.setAttribute(CitationHelper.RESOURCE_ID, resourceId);
+			state.setAttribute(CitationHelper.RESOURCE_UUID, resourceUuid);
 			String clientId = params.getString("saveciteClientId");
 			
 			if(clientId != null && ! clientId.trim().equals("")) {
@@ -4338,6 +4341,10 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			}
  		}
 		//setMode(state, Mode.LIST);
+		/** Since we are in revise citation method should remove STATE_RESOURCES_ADD from state as citation has
+		 *  already been created.
+		 **/
+		state.removeAttribute( STATE_RESOURCES_ADD );
 		state.setAttribute(STATE_CITATION_COLLECTION, null);
 		setMode(state, Mode.NEW_RESOURCE);
 	}	// doReviseCitation
