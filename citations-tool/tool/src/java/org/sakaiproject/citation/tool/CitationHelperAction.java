@@ -2514,7 +2514,7 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			} catch (ServerOverloadException e) {
 				logger.warn("ServerOverloadException geting props in buildNewResourcePanelContext() " + e);
 			}
-
+			
 			context.put(CITATION_ACTION, UPDATE_RESOURCE);
 		}
 		if(contentProperties == null) {
@@ -2665,11 +2665,10 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			context.put( "collectionSize", new Integer( citationCollection.size() ) );
 
 			// export URLs
-			String exportUrlSel = citationCollection.getUrl(CitationService.REF_TYPE_EXPORT_RIS_SEL);
-			String contentCollectionId = resource.getContainingCollection().getId();
-			String resourceDisplayName = resource.getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME);
-			String exportUrlAll = citationCollection.getUrl(CitationService.REF_TYPE_EXPORT_RIS_ALL) + "?citationCollectionId="
-					+ citationCollectionId + "&resourceDisplayName=" + resourceDisplayName + "&contentCollectionId=" + contentCollectionId;
+			String exportParams =  "?resourceDisplayName=" + resource.getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME)
+					+ "&resourceId=" + resourceId;
+			String exportUrlSel = citationCollection.getUrl(CitationService.REF_TYPE_EXPORT_RIS_SEL) + exportParams;
+			String exportUrlAll = citationCollection.getUrl(CitationService.REF_TYPE_EXPORT_RIS_ALL) + exportParams;
 			context.put("exportUrlSel", exportUrlSel);
 			context.put("exportUrlAll", exportUrlAll);
 
