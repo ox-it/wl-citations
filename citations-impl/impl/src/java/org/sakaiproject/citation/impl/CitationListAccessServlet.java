@@ -320,9 +320,11 @@ public class CitationListAccessServlet implements HttpAccess
     		String contentCollectionId = resource.getContainingCollection().getId();
     		String exportUrlAll = collection.getUrl(org.sakaiproject.citation.api.CitationService.REF_TYPE_EXPORT_RIS_ALL) + "?citationCollectionId=" + citationCollectionId + "&resourceDisplayName=" + title + "&contentCollectionId=" + contentCollectionId;
 
-    		out.println("<div class=\"portletBody\">\n\t<div class=\"indnt1 citationList\" style=\"margin-left: 0px !important;\">");
-    		out.println("\t<div style=\"position:relative;width:100%;  min-height:90px;\">" +  "<div class=\"listTitle\" style=\"position: absolute; width: 100%;  background-color:" + ServerConfigurationService.getString("official.institution.background.colour") +"; \"><h1 style=\"color:" + ServerConfigurationService.getString("official.institution.text.colour") + ";\">" + Validator.escapeHtml(title) + "</h1></div>");
-    		out.println("\t</div>");
+    		out.println("<div class=\"portletBody\">\n\t<div class=\"listWidth citationList\">");
+    		out.println("\t<div style=\"width: 100%; height: 90px; line-height: 90px; background-color:" +
+					ServerConfigurationService.getString("official.institution.background.colour") +"; \">" +
+					"<h1 style=\" margin-left:15px; color:" + ServerConfigurationService.getString("official.institution.text.colour") + ";\">" +
+					Validator.escapeHtml(title) + "</h1></div>");
     		out.println("<div style=\"clear:both;\"></div>");
     		if( introduction != null && !introduction.trim().equals("") )
     		{

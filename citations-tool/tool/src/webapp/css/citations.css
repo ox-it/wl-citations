@@ -130,7 +130,13 @@ ol.vertical {
 ol.viewCitations li {
 	color: #000;
 	display: block;
-	margin: 5px;
+}
+.availability {
+	margin-right: 15px;
+}
+.listWidth {
+	margin: auto;
+	max-width: 1024px;
 }
 ol.vertical li {
 	color: #0088cc;
