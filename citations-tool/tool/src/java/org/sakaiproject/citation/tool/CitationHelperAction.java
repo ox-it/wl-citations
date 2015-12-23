@@ -2665,8 +2665,10 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 			context.put( "collectionSize", new Integer( citationCollection.size() ) );
 
 			// export URLs
-			String exportUrlSel = citationCollection.getUrl(CitationService.REF_TYPE_EXPORT_RIS_SEL);
-			String exportUrlAll = citationCollection.getUrl(CitationService.REF_TYPE_EXPORT_RIS_ALL);
+			String exportParams =  "?resourceDisplayName=" + resource.getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME)
+					+ "&resourceId=" + resourceId;
+			String exportUrlSel = citationCollection.getUrl(CitationService.REF_TYPE_EXPORT_RIS_SEL) + exportParams;
+			String exportUrlAll = citationCollection.getUrl(CitationService.REF_TYPE_EXPORT_RIS_ALL) + exportParams;
 			context.put("exportUrlSel", exportUrlSel);
 			context.put("exportUrlAll", exportUrlAll);
 

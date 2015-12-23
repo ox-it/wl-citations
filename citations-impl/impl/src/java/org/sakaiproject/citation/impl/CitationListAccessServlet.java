@@ -54,6 +54,7 @@ import org.sakaiproject.exception.IdUnusedException;
 import org.sakaiproject.exception.PermissionException;
 import org.sakaiproject.exception.ServerOverloadException;
 import org.sakaiproject.exception.TypeException;
+import org.sakaiproject.tool.api.SessionManager;
 import org.sakaiproject.util.ResourceLoader;
 import org.sakaiproject.util.Validator;
 
@@ -131,6 +132,9 @@ public class CitationListAccessServlet implements HttpAccess
 			Reference ref, String format, String subtype) 
 			throws EntityNotDefinedException, EntityAccessOverloadException, EntityPermissionException 
 	{
+		SessionManager sessionManager = (SessionManager) ComponentManager.get(SessionManager.class);
+		org.sakaiproject.content.api.ContentHostingService contentHostingService = (org.sakaiproject.content.api.ContentHostingService) ComponentManager.get(org.sakaiproject.content.api.ContentHostingService.class);
+
 		if(! ContentHostingService.allowGetResource(req.getParameter("resourceId")))
 		{
 			String url = (req.getRequestURL()).toString();
@@ -149,7 +153,25 @@ public class CitationListAccessServlet implements HttpAccess
 		
 		if(org.sakaiproject.citation.api.CitationService.RIS_FORMAT.equals(format))
 		{
-			String citationCollectionId = req.getParameter("citationCollectionId");
+			String citationCollectionId = null;
+			ContentResource resource = null;
+			try {
+				resource = contentHostingService.getResource(req.getParameter("resourceId"));
+				citationCollectionId = new String(resource.getContent());
+			}
+			catch (PermissionException e) {
+				throw new EntityPermissionException(sessionManager.getCurrentSessionUserId(), "handleExportRequest", ref.getReference());
+			}
+			catch (IdUnusedException e) {
+				throw new EntityNotDefinedException(ref.getReference());
+			}
+			catch (TypeException e) {
+				throw new IllegalStateException("Resource Mismatch: " + ref.getReference(), e);
+			}
+			catch (ServerOverloadException e){
+				throw new EntityAccessOverloadException(ref.getReference());
+			}
+
 			List<String> citationIds = new java.util.ArrayList<String>();
 			CitationCollection collection = null;
 			try 
