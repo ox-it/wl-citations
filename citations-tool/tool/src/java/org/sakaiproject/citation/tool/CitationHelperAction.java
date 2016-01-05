@@ -4175,14 +4175,15 @@ public class CitationHelperAction extends VelocityPortletPaneledAction
 						ContentResource resource = contentService.getResource(resourceId);
 						ResourceProperties props = resource.getProperties();
 						String displayName = props.getProperty(ResourceProperties.PROP_DISPLAY_NAME);
-						citation = citationService.addCitation("unknown");
+						//As this citation will always have resource url so it should be of type 'electronic' not 'unknown'
+						citation = citationService.addCitation("electronic");
 						citation.setDisplayName(displayName);
 						citation.setCitationProperty("resourceId", resourceId);
 						String urlId = citation.addCustomUrl(resource.getUrl(), resource.getUrl());
 						citation.setPreferredUrl(urlId);
-					session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
-					session.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
-					return citation;
+						session.removeAttribute(FilePickerHelper.FILE_PICKER_CANCEL);
+						session.removeAttribute(FilePickerHelper.FILE_PICKER_ATTACHMENTS);
+						return citation;
 				}
 			}
 		} catch (PermissionException e) {
