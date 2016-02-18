@@ -569,7 +569,7 @@
 
             $('.h1NestedLevel li[data-sectiontype="HEADING1"] > div[id^=linkClick]').click(function() {
                 $(this).parent().find('ol').slideToggle();
-                var image =  $('#' + this.id.replace('sectionInlineEditor', 'toggleImg')).get(0);
+                var image =  $('#' + this.id.replace('linkClick', 'toggleImg')).get(0);
 
                 if( image.src.indexOf("/library/image/sakai/white-arrow-right.gif")!=-1 ) {
                     image.src = "/library/image/sakai/white-arrow-down.gif";
