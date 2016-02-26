@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.osid.repository.Asset;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.EntityProducer;
+import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.exception.IdUnusedException;
 
 import org.sakaiproject.citation.api.Citation;
@@ -184,6 +185,12 @@ public interface CitationService extends EntityProducer
 	 * @param edit The CitationCollection to remove.
 	 */
 	public void removeCollection(CitationCollection edit);
+
+	/**
+	 * This method copies a CitationCollection and all Citations it contains.
+	 * @param reference A reference to the CitationCollection to copy.
+	 */
+	public void copyCitationCollection(Reference reference);
 
 	/**
      * 
