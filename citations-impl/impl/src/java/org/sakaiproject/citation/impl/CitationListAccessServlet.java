@@ -24,6 +24,7 @@ package org.sakaiproject.citation.impl;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.text.DateFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,13 +42,7 @@ import org.sakaiproject.component.cover.ComponentManager;
 import org.sakaiproject.component.cover.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentResource;
 import org.sakaiproject.content.cover.ContentHostingService;
-import org.sakaiproject.entity.api.EntityAccessOverloadException;
-import org.sakaiproject.entity.api.EntityCopyrightException;
-import org.sakaiproject.entity.api.EntityNotDefinedException;
-import org.sakaiproject.entity.api.EntityPermissionException;
-import org.sakaiproject.entity.api.HttpAccess;
-import org.sakaiproject.entity.api.Reference;
-import org.sakaiproject.entity.api.ResourceProperties;
+import org.sakaiproject.entity.api.*;
 import org.sakaiproject.event.api.Event;
 import org.sakaiproject.event.cover.EventTrackingService;
 import org.sakaiproject.exception.IdUnusedException;
@@ -340,13 +335,29 @@ public class CitationListAccessServlet implements HttpAccess
 
     		List<Citation> citations = collection.getCitations();
     		String contentCollectionId = resource.getContainingCollection().getId();
-    		String exportUrlAll = collection.getUrl(org.sakaiproject.citation.api.CitationService.REF_TYPE_EXPORT_RIS_ALL) + "?citationCollectionId=" + citationCollectionId + "&resourceDisplayName=" + title + "&contentCollectionId=" + contentCollectionId;
+    		String exportParams =  "?resourceDisplayName=" + resource.getProperties().getProperty(ResourceProperties.PROP_DISPLAY_NAME) + "&resourceId=" + resource.getId();
+    		String exportUrlAll = fullCollection.getUrl(org.sakaiproject.citation.api.CitationService.REF_TYPE_EXPORT_RIS_ALL) + exportParams;
+    		String displayDate = null;
+    		try {
+    			DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM, rb.getLocale());
+    			displayDate = df.format(properties.getDateProperty(ResourceProperties.PROP_MODIFIED_DATE));
+    		} catch (EntityPropertyNotDefinedException e) {
+    			m_log.warn("CitationListAccessServlet.handleViewRequest() : Property name requested is not defined - for contentCollectionId" + contentCollectionId);
+    		} catch (EntityPropertyTypeException e) {
+    			m_log.warn("CitationListAccessServlet.handleViewRequest() : Named property found does not match the type of access requested - for contentCollectionId" + contentCollectionId);
+    		}
 
     		out.println("<div class=\"portletBody\">\n\t<div class=\"listWidth citationList\">");
-    		out.println("\t<div style=\"width: 100%; height: 90px; line-height: 90px; background-color:" +
-					ServerConfigurationService.getString("official.institution.background.colour") +"; \">" +
-					"<h1 style=\" margin-left:15px; color:" + ServerConfigurationService.getString("official.institution.text.colour") + ";\">" +
-					Validator.escapeHtml(title) + "</h1></div>");
+    		out.println("\t<div style=\"float:left; width: 100%; height: 90px; background-color:" +
+    				ServerConfigurationService.getString("official.institution.background.colour") +"; \">" +
+    				"<div class=\"banner\">" +
+    				"<h1 style=\" margin-left:15px; color:" + ServerConfigurationService.getString("official.institution.text.colour") + ";\">" +
+    				Validator.escapeHtml(title) + "</h1></div>" +
+    				"<div class=\"bannerLinks\">" +
+    				"<a class=\"export\" href=\"" + exportUrlAll + "\">Export</a>" +
+    				"<a class=\"print\" target=\"_blank\" href=\"" + req.getRequestURL() + "?printView" + "\">Print</a>" +
+    				"<div class=\"lastUpdated\">Last updated: " +  displayDate + "</div>" +
+    				"</div></div>");
     		out.println("<div style=\"clear:both;\"></div>");
     		if( introduction != null && !introduction.trim().equals("") )
     		{
