@@ -470,6 +470,10 @@ citations_new_resource.init = function() {
 		}
 	};
 	$('#ExternalSearch').click(function(eventObject) {
+
+        // disable editing of nested list during import to avoid data inconsistencies
+        $(".currentListCitations *").attr("disabled", "disabled").off('click');
+
 		var successObj = {
 			citationCollectionId: $('#citationCollectionId').val(),
 			linkId				: $(eventObject.target).attr('id'),
