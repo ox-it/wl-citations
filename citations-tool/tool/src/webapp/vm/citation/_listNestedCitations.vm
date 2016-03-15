@@ -1,7 +1,5 @@
 <input type="hidden" id="sectionTitleText" value="$tlang.getString("nested.section.title")"/>
 <input type="hidden" id="sectionDescriptionText" value="$tlang.getString("nested.section.description.text")"/>
-<input type="hidden" id="startEditingDescriptionText" value="$tlang.getString("nested.edit.description.section.button")"/>
-<input type="hidden" id="finishEditingDescriptionText" value="$tlang.getString("nested.finish.editing.description.button")"/>
 <input type="hidden" id="startEditingText" value="$tlang.getString("nested.start.editing.button")"/>
 <input type="hidden" id="finishEditingText" value="$tlang.getString("nested.finish.editing.button")"/>
 <input type="hidden" id="deleteSectionText" value="$tlang.getString("nested.delete.section.button")"/>
