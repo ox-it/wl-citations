@@ -3220,22 +3220,17 @@ public abstract class BaseCitationService implements CitationService
 			while(iterator.hasNext()) {
 				CitationCollectionOrder citationCollectionOrder = (CitationCollectionOrder) iterator.next();
 				if (citationCollectionOrder.isCitation()){
-					try {
-						// copy the citation
-						CitationCollection collection = getCollection(citationCollectionOrder.getCollectionId());
-						BasicCitation oldCitation = (BasicCitation) collection.getCitation(citationCollectionOrder.getCitationid());
-						BasicCitation newCitation = new BasicCitation();
-						newCitation.copy(oldCitation);
-						newCitation.m_temporary = isTemporary;
-						this.saveCitation(newCitation);
+					// copy the citation
+					BasicCitation oldCitation = (BasicCitation) other.m_citations.get(citationCollectionOrder.getCitationid());
+					BasicCitation newCitation = new BasicCitation();
+					newCitation.copy(oldCitation);
+					newCitation.m_temporary = true;
+					this.saveCitation(newCitation);
 
-						// copy the citation's citationCollectionOrder
-						CitationCollectionOrder newCitationCollectionOrder = citationCollectionOrder.copy(this.getId(), newCitation.getId());
-						this.saveCitationCollectionOrder(newCitationCollectionOrder);
+					// copy the citation's citationCollectionOrder
+					CitationCollectionOrder newCitationCollectionOrder = citationCollectionOrder.copy(this.getId(), newCitation.getId());
+					this.saveCitationCollectionOrder(newCitationCollectionOrder);
 
-					} catch (IdUnusedException e) {
-						M_log.warn("copying citationcollectionorder(" + citationCollectionOrder.getCitationid() + ") ==> " + citationCollectionOrder.getValue(), e);
-					}
 				}
 				else {
 					// copy the citationCollectionOrder
