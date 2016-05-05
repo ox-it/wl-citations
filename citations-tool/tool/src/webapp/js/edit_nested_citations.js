@@ -395,6 +395,11 @@
 
         function toggleEditor() {
             if ( isEditingEnabled ) {  // clicked 'Finish Editing'
+
+                // re-enable editing of 'Search Library' and nested list
+                $('#ExternalSearch').closest('li').show();
+                $(".act *").removeAttr("disabled");
+
                 disableEditing(this.id.replace(TOGGLE, SECTION_INLINE_EDITOR));
                 $('#' + this.id.replace(TOGGLE, SECTION_INLINE_EDITOR)).attr( 'contenteditable', false );
                 this.value = $('#startEditingText').val();
@@ -419,6 +424,11 @@
                 $("ol.serialization").sortable("enable"); //call widget-function enable
             }
             else { // clicked 'Edit'
+
+                // disable editing of 'Search Library' and nested list functionality (except 'Finish 'Editing' button)
+                $('#ExternalSearch').closest('li').hide();
+                $(".act *").not("#" + this.id).attr("disabled", "disabled");
+
                 $('#' + this.id.replace(TOGGLE, SECTION_INLINE_EDITOR)).attr( 'contenteditable', true );
                 var container = $(this).parent().parent();
                 var showBasicEditor = !container.hasClass('serialization') && container.data('sectiontype')!='DESCRIPTION';
