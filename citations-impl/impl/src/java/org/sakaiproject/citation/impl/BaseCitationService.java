@@ -87,6 +87,7 @@ public abstract class BaseCitationService implements CitationService
 	protected boolean attemptToMatchSchema = false;
 
 	protected static final List<String> AUTHOR_AS_KEY = new Vector<String>();
+	
 	static
 	{
 		AUTHOR_AS_KEY.add( CitationCollection.SORT_BY_AUTHOR );
